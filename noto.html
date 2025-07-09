@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Noto CSMap タイル簡易ビューア</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Leaflet 本体（CDN） -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    html,
+    body,
+    #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    .leaflet-control-attribution {
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // --- 1. 地図オブジェクト生成（中心＝能登半島付近） ---
+    const map = L.map("map").setView([37.3, 136.9], 10);
+
+    // --- 2. ベースレイヤ（地理院タイル・淡色地図） ---
+    const gsiPale = L.tileLayer(
+      "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+      {
+        maxZoom: 18,
+        attribution: "© <a href=\"https://www.gsi.go.jp/\">国土地理院</a>"
+      }
+    ).addTo(map);
+
+    // --- 3. 能登 CSMap タイル ---
+    const notoCSMap = L.tileLayer(
+      "https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png",
+      {
+        maxZoom: 18,
+        attribution:
+          "© <a href=\"https://rinya.maff.go.jp/\">林野庁</a> (csmaptile_noto)"
+      }
+    ).addTo(map);
+
+    // --- 4. レイヤコントロール & スケールバー ---
+    L.control.layers({ "淡色地図": gsiPale }, { "Noto CSMap": notoCSMap }, {
+      collapsed: false
+    }).addTo(map);
+
+    L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
+  </script>
+</body>
+</html>
