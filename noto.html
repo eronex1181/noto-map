@@ -42,7 +42,7 @@
     L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
 
     // --- 5. GeoJSON 読込（A33_002 が 1 → 黄、2 → 赤） ---
-    fetch('geo/dosya.geojson')
+    fetch('dosya.geojson')
       .then(r => r.json())
       .then(data => {
         const colorByAttr = v => {
