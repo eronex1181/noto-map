@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>Noto CSMap タイル簡易ビューア</title>
+  <title>Noto CSMap + GeoJSON ビューア</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Leaflet 本体（CDN） -->
   <link
@@ -28,33 +28,74 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // --- 1. 地図オブジェクト生成（中心＝能登半島付近） ---
-    const map = L.map("map").setView([37.3, 136.9], 11);
+    const map = L.map('map').setView([37.3, 136.9], 11);
 
     // --- 2. Noto CSMap（ベースレイヤとして先に addTo） ---
     const notoCS = L.tileLayer(
-      "https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png",
+      'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
       {
         maxZoom: 18,
-        attribution: "© <a href=\"https://rinya.maff.go.jp/\">林野庁</a> (csmaptile_noto)"
+        attribution: '© <a href="https://rinya.maff.go.jp/">林野庁</a> (csmaptile_noto)'
       }
-    ).addTo(map); // ★これが初期表示
+    ).addTo(map);
 
     // --- 3. 淡色地図（オーバーレイとして透明度を下げて重ねる例） ---
     const gsiPale = L.tileLayer(
-      "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+      'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
       {
         maxZoom: 18,
         opacity: 0.6, // 0〜1 で調整。不要なら行ごと削除
-        attribution: "© <a href=\"https://www.gsi.go.jp/\">国土地理院</a>"
+        attribution: '© <a href="https://www.gsi.go.jp/">国土地理院</a>'
       }
     );
 
     // --- 4. レイヤーコントロール & スケールバー ---
-    const baseLayers = { "Noto CSMap": notoCS };
-    const overlays   = { "淡色地図": gsiPale }; // チェックON/OFFで切替
+    const baseLayers = { 'Noto CSMap': notoCS };
+    const overlays   = { '淡色地図': gsiPale }; // 後から GeoJSON を追加するため let ではなく const + 編集可
 
-    L.control.layers(baseLayers, overlays, { collapsed: false }).addTo(map);
-    L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
+    const layersCtl = L.control.layers(baseLayers, overlays, {
+      collapsed: false
+    }).addTo(map);
+
+    L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
+
+    // --- 5. GeoJSON レイヤを読み込み ---
+    //   - ファイルは同じリポジトリに置いた場合 "geo/sample.geojson" など相対パスで指定
+    //   - CORS を避けるため GitHub Pages 内に配置するのが手軽
+
+    fetch('geo/dosya.geojson') // ← あなたの GeoJSON パスに置き換え
+      .then(resp => resp.json())
+      .then(data => {
+        const geoLayer = L.geoJSON(data, {
+          style: {
+            color: '#ff5500',   // 線色
+            weight: 2,
+            opacity: 0.9
+          },
+          pointToLayer: (feature, latlng) =>
+            L.circleMarker(latlng, {
+              radius: 5,
+              fillColor: '#ff5500',
+              color: '#ffffff',
+              weight: 1,
+              fillOpacity: 0.8
+            }),
+          onEachFeature: (feature, layer) => {
+            // プロパティ name があればポップアップ
+            if (feature.properties && feature.properties.name) {
+              layer.bindPopup(feature.properties.name);
+            }
+          }
+        }).addTo(map);
+
+        // レイヤーコントロールに追加
+        overlays['GeoJSON'] = geoLayer;
+        layersCtl.addOverlay(geoLayer, 'GeoJSON');
+
+        // データ範囲へズーム
+        map.fitBounds(geoLayer.getBounds());
+      })
+      .catch(err => console.error('GeoJSON 読込エラー:', err));
   </script>
 </body>
 </html>
