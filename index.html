@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>CS立体図＋土砂災害警戒区域＋大字境界</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.css" />
+  <title>CS立体図 + 土砂災害警戒区域 + 現在地</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
     .legend {
@@ -15,9 +15,9 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
     .legend i {
-      display: inline-block;
       width: 18px;
       height: 18px;
+      float: left;
       margin-right: 8px;
       opacity: 0.9;
     }
@@ -28,135 +28,68 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
 
   <script>
-    // 1. 地図生成
     const map = L.map('map').setView([37.3, 136.9], 11);
 
-    // 2. ベースレイヤ
-    const notoCS = L.tileLayer(
-      'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
-      { maxZoom: 18, attribution: '© <a href="https://rinya.maff.go.jp/">林野庁</a> (csmaptile_noto)' }
+    const notoCS = L.tileLayer('https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: 'CS立体図 © <a href="https://rinya.maff.go.jp/">林野庁</a>'
+    }).addTo(map);
+
+    const gsiPale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      opacity: 0.6,
+      attribution: '© <a href="https://www.gsi.go.jp/">国土地理院</a>'
+    });
+
+    const ctl = L.control.layers(
+      { 'Noto CSMap': notoCS },
+      { '淡色地図': gsiPale },
+      { collapsed: false }
     ).addTo(map);
 
-    const gsiPale = L.tileLayer(
-      'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
-      { maxZoom: 18, opacity: 0.6, attribution: '© <a href="https://www.gsi.go.jp/">国土地理院</a>' }
-    );
-
-    // 3. コントロール
-    const baseLayers = { 'Noto CSMap': notoCS };
-    const overlays   = { '淡色地図': gsiPale };
-    const ctl = L.control.layers(baseLayers, overlays, { collapsed:false }).addTo(map);
     L.control.scale({ position:'bottomleft', imperial:false }).addTo(map);
 
-    // 4. 土砂災害警戒区域
+    // 土砂災害区域
     fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/dosya.geojson')
       .then(r => r.json())
       .then(data => {
-        const zoneColor = v => (v == 1 || v === '1') ? '#ffff00'
-                            : (v == 2 || v === '2') ? '#ff0000'
-                            : '#888888';
-        const zoneName = v => (v == 1 || v === '1') ? 'イエローゾーン'
-                           : (v == 2 || v === '2') ? 'レッドゾーン'
-                           : 'その他';
+        const zoneColor = v => (v == 1) ? '#ffff00' : (v == 2) ? '#ff0000' : '#888888';
+        const zoneName  = v => (v == 1) ? 'イエローゾーン' : (v == 2) ? 'レッドゾーン' : 'その他';
 
-        const geoLayer = L.geoJSON(data, {
-          style: f => ({
-            color : zoneColor(f.properties.A33_002),
-            weight: 2,
-            opacity: 0.9
-          }),
-          pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-            radius: 5,
-            fillColor: zoneColor(f.properties.A33_002),
-            color: '#ffffff',
-            weight: 1,
-            fillOpacity: 0.8
-          }),
+        const zoneLayer = L.geoJSON(data, {
+          style: f => ({ color: zoneColor(f.properties.A33_002), weight: 2, opacity: 0.9 }),
           onEachFeature: (f, layer) => {
-            const p = f.properties ?? {};
-            layer.bindPopup(
-              `<b>${zoneName(p.A33_002)}</b><br>` +
-              `<b>箇所番号:</b> ${p.A33_004 ?? '-'}<br>` +
-              `<b>箇所名:</b> ${p.A33_005 ?? '-'}`
-            );
+            layer.bindPopup(`<b>${zoneName(f.properties.A33_002)}</b><br>箇所番号: ${f.properties.A33_004}<br>箇所名: ${f.properties.A33_005}`);
           }
         }).addTo(map);
-        ctl.addOverlay(geoLayer, '土砂災害警戒区域');
 
-        // 検索コントロール（箇所番号）
-        new L.Control.Search({
-          layer: geoLayer,
-          propertyName: 'A33_004',
-          textPlaceholder: '箇所番号を入力',
-          zoom: 15,
-          marker: false,
-          moveToLocation: (latlng, z) => map.setView(latlng, z)
-        }).addTo(map);
-
-        // 凡例
-        const legend = L.control({ position: 'bottomright' });
-        legend.onAdd = () => {
-          const d = L.DomUtil.create('div', 'legend');
-          d.innerHTML =
-            '<i style="background:#ffff00"></i> イエローゾーン<br>' +
-            '<i style="background:#ff0000"></i> レッドゾーン<br>' +
-            '<i style="background:transparent;border:2px dashed green"></i> 大字境界';
-          return d;
-        };
-        legend.addTo(map);
+        ctl.addOverlay(zoneLayer, '土砂災害警戒区域');
       });
 
-    // 5. 大字境界レイヤ
+    // 大字境界
     fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/kyoukai.geojson')
       .then(r => r.json())
       .then(data => {
-        const kyoLayer = L.geoJSON(data, {
-          style: {
-            color: 'green',
-            weight: 2,
-            dashArray: '5,5',
-            opacity: 1
-          },
+        const kyoukaiLayer = L.geoJSON(data, {
+          style: () => ({ color: 'green', weight: 2, dashArray: '4 4', opacity: 1 }),
           onEachFeature: (f, layer) => {
-            const name = f.properties?.大字 ?? '名称不明';
-            layer.bindPopup(`<b>大字:</b> ${name}`);
+            layer.bindPopup(`<b>大字:</b> ${f.properties.大字 || '-'}<br><b>市町村:</b> ${f.properties.市町村 || '-'}`);
           }
         }).addTo(map);
-        ctl.addOverlay(kyoLayer, '大字境界');
+
+        ctl.addOverlay(kyoukaiLayer, '大字境界');
       });
 
-    // 6. 現在地表示
-    map.locate({ setView: false });
-
-    const locationBtn = L.control({ position: 'topleft' });
-    locationBtn.onAdd = () => {
-      const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-      div.innerHTML = '<a href="#" title="現在地を表示" style="font-size:18px;">📍</a>';
-      div.style.cursor = 'pointer';
-      div.onclick = e => {
-        e.preventDefault();
-        map.locate({ setView: true, maxZoom: 16 });
-      };
-      return div;
-    };
-    locationBtn.addTo(map);
-
+    // 現在地表示
+    map.locate({ setView: false, watch: false });
     map.on('locationfound', e => {
-      L.circleMarker(e.latlng, {
-        radius: 7,
-        fillColor: '#3388ff',
-        color: '#ffffff',
-        weight: 2,
-        fillOpacity: 0.9
-      }).addTo(map)
-        .bindPopup('現在地').openPopup();
+      L.marker(e.latlng).addTo(map)
+        .bindPopup("現在地はこちらです").openPopup();
     });
-
-    map.on('locationerror', () => {
-      alert('現在地を取得できませんでした。位置情報の利用を許可してください。');
+    map.on('locationerror', e => {
+      console.warn("位置情報を取得できませんでした。", e);
     });
   </script>
 </body>
