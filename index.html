@@ -1,82 +1,90 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <title>Noto CSMap + GeoJSON ビューア</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Leaflet 本体 -->
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    html, body, #map { height: 100%; margin: 0; padding: 0; }
-    .leaflet-control-attribution { font-size: 11px; }
-    .legend { background:#fff;padding:6px 10px;line-height:18px;
-              box-shadow:0 0 15px rgba(0,0,0,.2); }
-    .legend i { width:18px;height:18px;float:left;margin-right:8px;opacity:.9; }
-  </style>
+<meta charset="utf-8" />
+<title>Noto CSMap + GeoJSON ビューア</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+html,body,#map{height:100%;margin:0;padding:0}
+.leaflet-control-attribution{font-size:11px}
+.legend{background:#fff;padding:6px 10px;line-height:18px;
+        box-shadow:0 0 15px rgba(0,0,0,.2)}
+.legend i{
+  width:18px;height:18px;float:left;margin-right:8px;opacity:.9
+}
+</style>
 </head>
 <body>
-  <div id="map"></div>
+<div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    /* 1. 地図生成 */
-    const map = L.map('map').setView([37.3, 136.9], 11);
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* 1. 地図生成 */
+const map=L.map('map').setView([37.3,136.9],11);
 
-    /* 2. ベースレイヤ（Noto CSMap） */
-    const notoCS = L.tileLayer(
-      'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
-      {
-        maxZoom: 18,
-        attribution: '© <a href="https://rinya.maff.go.jp/">林野庁</a> (csmaptile_noto)'
-      }
-    ).addTo(map);
+/* 2. ベースレイヤ */
+const notoCS=L.tileLayer(
+  'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
+  {maxZoom:18,attribution:'© <a href="https://rinya.maff.go.jp/">林野庁</a> (csmaptile_noto)'}
+).addTo(map);
 
-    /* 3. オーバーレイ（淡色） */
-    const gsiPale = L.tileLayer(
-      'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
-      { maxZoom: 18, opacity: 0.6,
-        attribution: '© <a href="https://www.gsi.go.jp/">国土地理院</a>' }
-    );
+/* 3. オーバーレイ（淡色地図） */
+const gsiPale=L.tileLayer(
+  'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+  {maxZoom:18,opacity:.6,attribution:'© <a href="https://www.gsi.go.jp/">国土地理院</a>'}
+);
 
-    /* 4. コントロール */
-    const layersCtl = L.control.layers(
-      { 'Noto CSMap': notoCS },        // base
-      { '淡色地図': gsiPale },         // overlay
-      { collapsed:false }
-    ).addTo(map);
-    L.control.scale({ position:'bottomleft', imperial:false }).addTo(map);
+/* 4. コントロール */
+const layersCtl=L.control.layers(
+  {'Noto CSMap':notoCS},          // base
+  {'淡色地図':gsiPale},          // overlay
+  {collapsed:false}
+).addTo(map);
+L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
-    /* 5. GeoJSON 読込（A33_002 を色分け） */
-    fetch('dosya.geojson')   // 同じディレクトリに置く
-      .then(r => r.json())
-      .then(data => {
-        const color = v => (v==1||v==='1') ? '#ffff00'
-                      : (v==2||v==='2') ? '#ff0000' : '#888888';
+/* 5-A. dosya.geojson（A33_002 色分け） */
+fetch('dosya.geojson').then(r=>r.json()).then(data=>{
+  const col=v=>(v==1||v==='1')?'#ffff00':(v==2||v==='2')?'#ff0000':'#888';
+  const geo=L.geoJSON(data,{
+    style:f=>({color:col(f.properties.A33_002),weight:2,opacity:.9}),
+    pointToLayer:(f,latlng)=>L.circleMarker(latlng,{
+      radius:5,fillColor:col(f.properties.A33_002),
+      color:'#fff',weight:1,fillOpacity:.8}),
+    onEachFeature:(f,l)=>{
+      l.bindPopup(
+        `<b>A33_002:</b> ${f.properties.A33_002}<br>`+
+        `<b>箇所番号:</b> ${f.properties.A33_004??'-'}<br>`+
+        `<b>箇所名:</b> ${f.properties.A33_005??'-'}`
+      );
+    }
+  }).addTo(map);
 
-        const geo = L.geoJSON(data, {
-          style: f => ({ color: color(f.properties.A33_002), weight:2, opacity:.9 }),
-          pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-            radius:5, fillColor:color(f.properties.A33_002),
-            color:'#fff', weight:1, fillOpacity:.8
-          }),
-          onEachFeature: (f,l) => {
-            l.bindPopup(`<b>A33_002:</b> ${f.properties.A33_002}`);
-          }
-        }).addTo(map);
+  layersCtl.addOverlay(geo,'土砂災害警戒区域');
+  map.fitBounds(geo.getBounds());
 
-        layersCtl.addOverlay(geo,'GeoJSON');
-        map.fitBounds(geo.getBounds());
+  /* 凡例（イエロー／レッド + 大字境界はあとで追加） */
+  const legend=L.control({position:'bottomright'});
+  legend.onAdd=()=>{
+    const d=L.DomUtil.create('div','legend');
+    d.innerHTML=
+      '<i style="background:#ffff00"></i> イエローゾーン<br>'+
+      '<i style="background:#ff0000"></i> レッドゾーン<br>'+
+      /* ★ 大字境界（緑破線）プレースホルダを後で置換 */
+      '<i id="lg-kyoukai" style="background:repeating-linear-gradient(45deg,#008000 0 4px,transparent 4px 8px);"></i> 大字境界';
+    return d;
+  };
+  legend.addTo(map);
+}).catch(e=>console.error('dosya.geojson 読込失敗',e));
 
-        /* 6. 凡例 (A33_002=1/2) */
-        L.control({ position:'bottomright' }).onAdd = () => {
-          const d = L.DomUtil.create('div','legend');
-          d.innerHTML = '<i style="background:#ffff00"></i> A33_002 = 1<br>'+
-                        '<i style="background:#ff0000"></i> A33_002 = 2';
-          return d;
-        }.addTo(map);
-      })
-      .catch(err => console.error('GeoJSON 読込エラー:', err));
-  </script>
+/* 5-B. ★ kyoukai.geojson（大字境界：緑破線） */
+fetch('kyoukai.geojson').then(r=>r.json()).then(js=>{
+  const kyoukai=L.geoJSON(js,{
+    style:{color:'#008000',weight:2,opacity:1,dashArray:'6 4'}
+  }).addTo(map);
+
+  layersCtl.addOverlay(kyoukai,'大字境界');
+}).catch(e=>console.error('kyoukai.geojson 読込失敗',e));
+</script>
 </body>
 </html>
