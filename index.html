@@ -2,9 +2,8 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <title>CS立体図 + 土砂災害警戒区域 + 現在地</title>
+  <title>CS立体図 + 土砂災害警戒区域 + 大字境界 + 17000_1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
@@ -26,9 +25,7 @@
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
     const map = L.map('map').setView([37.3, 136.9], 11);
 
@@ -80,6 +77,20 @@
         }).addTo(map);
 
         ctl.addOverlay(kyoukaiLayer, '大字境界');
+      });
+
+    // ★ 新しいレイヤー（17000_1.geojson）
+    fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/17000_1.geojson')
+      .then(r => r.json())
+      .then(data => {
+        const newLayer = L.geoJSON(data, {
+          style: () => ({ color: 'blue', weight: 2, opacity: 0.7 }),
+          onEachFeature: (f, layer) => {
+            layer.bindPopup(`<b>属性情報:</b><br>${Object.entries(f.properties).map(([k,v]) => `${k}: ${v}`).join('<br>')}`);
+          }
+        }).addTo(map);
+
+        ctl.addOverlay(newLayer, '17000_1データ');
       });
 
     // 現在地表示
