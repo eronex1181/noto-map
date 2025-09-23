@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noto CSMap + 土砂災害 + 避難所 + ため池 + バス停（属性ごと検索・番号/名称対応）</title>
+<title>Noto CSMap + 土砂災害 + 避難所 + ため池 + バス停（属性ごと検索／クラスタ）</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
@@ -37,7 +37,6 @@ function loadScript(src){return new Promise((ok,ng)=>{const s=document.createEle
 
 function init(){
   const msg = document.getElementById('msg'); if (msg) msg.remove();
-
   const map = L.map('map').setView([37.3,136.9],11);
 
   // panes
@@ -52,8 +51,8 @@ function init(){
   const ctl = L.control.layers({'Noto CSMap':notoCS},{'淡色地図':gsiPale},{collapsed:false}).addTo(map);
   L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
-  // 文字正規化＆title補助
-  const z2h = s => (s ?? '').toString().replace(/[！-～]/g, ch => String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\s+/g,' ').trim();
+  // 正規化 & title 補助
+  const z2h = s => (s ?? '').toString().replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\s+/g,' ').trim();
   const setTitle = (layerOrFeat, title) => {
     const t = z2h(title);
     if (layerOrFeat?.options) layerOrFeat.options.title = t;
@@ -62,7 +61,7 @@ function init(){
     return t;
   };
 
-  // ========== 大字 ==========
+  // ===== 大字 =====
   fetch('./kyoukai.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const boundaryLayer = L.geoJSON(data,{
       pane:'boundaryPane',
@@ -81,10 +80,21 @@ function init(){
     });
   });
 
-  // ========== 土砂災害警戒区域（番号も名称も検索・数字のみ対応） ==========
+  // ===== 土砂災害（番号も名称も検索／数字のみOK） =====
   fetch('./dosya.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const col=v=>(v==1||v==='1')?'#ffff00':(v==2||v==='2')?'#ff0000':'#888';
     const nm=v=>(v==1||v==='1')?'イエローゾーン':(v==2||v==='2')?'レッドゾーン':'その他';
+
+    // 検索用キーをプロパティに前計算（_haz_key）
+    data.features?.forEach(f=>{
+      const p=f.properties??{};
+      const raw=(p.A33_004??'').toString();                 // 例: "I 0344-1"
+      const head=raw.split(/[-－―‐]/)[0];                    // → "I 0344"
+      const num =head.replace(/\D/g,'');                     // → "0344"
+      const name=(p.A33_005??'').toString();                 // 箇所名
+      p._haz_key = `${num} ${name}`.trim();                  // "0344 金川"
+    });
+
     const danger = L.geoJSON(data,{
       pane:'zonesPane',
       style:f=>({color:col(f.properties.A33_002),weight:2,opacity:.9,fillOpacity:.25}),
@@ -93,18 +103,9 @@ function init(){
     }).addTo(map);
     ctl.addOverlay(danger,'土砂災害警戒区域');
 
-    // ★ 箇所番号（数字だけでもOK）＋ 箇所名 の複合キー
-    const makeKey = (p) => {
-      const raw  = (p.A33_004 ?? '').toString();     // 例: "I 0344-1"
-      const head = raw.split(/[-－―‐]/)[0];          // → "I 0344"
-      const num  = head.replace(/\D/g,'');           // → "0344"
-      const name = (p.A33_005 ?? '').toString();     // 箇所名
-      return `${num} ${name}`.trim();                // "0344 金川"
-    };
-
     const s2 = new L.Control.Search({
       layer: danger,
-      propertyName: (props)=> makeKey(props),
+      propertyName:'_haz_key',                 // ← 複合キーで確実にインデックス化
       textPlaceholder:'箇所番号 / 箇所名',
       marker:false, zoom:16, minLength:1, autoType:true, initial:false
     }).addTo(map);
@@ -115,26 +116,28 @@ function init(){
     });
   });
 
-  // ========== 指定避難場所（施設・場所名で検索） ==========
+  // ===== 指定避難場所（クラスタ／施設・場所名で検索） =====
   fetch('./17000_1.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    const icG = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
+    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
+    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
 
-    const shelter = L.geoJSON(data,{
+    const shelters = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
-        const p=f.properties??{}; const m=L.marker(latlng,{icon:icG});
-        setTitle(m, (p['施設・場所名'] ?? p['名称'] ?? '')); // 保険
+        const p=f.properties??{};
+        p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';  // ← 統一キー
+        const m=L.marker(latlng,{icon:icon});
+        setTitle(m, p._shelter_name);
         return m;
       },
-      onEachFeature:(f,l)=>{
-        const html=Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
-        l.bindPopup(`<b>指定避難場所</b><br>${html}`);
-      }
-    }).addTo(map);
-    ctl.addOverlay(shelter,'指定避難場所（更新2025-07-09）');
+      onEachFeature:(f,l)=>l.bindPopup(`<b>指定避難場所</b><br>${Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>')}`)
+    });
+
+    cluster.addLayer(shelters); map.addLayer(cluster);
+    ctl.addOverlay(cluster,'指定避難場所（更新2025-07-09）');
 
     const s3 = new L.Control.Search({
-      layer: shelter, propertyName:'施設・場所名',
+      layer: shelters, propertyName:'_shelter_name',
       textPlaceholder:'施設・場所名', marker:false, zoom:17
     }).addTo(map);
     s3.on('search:locationfound', e=>{
@@ -143,32 +146,30 @@ function init(){
     });
   });
 
-  // ========== ため池（クラスタ＋名称検索） ==========
+  // ===== ため池（クラスタ／名称検索） =====
   fetch('./ため池.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    const icB = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
-
+    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
+
     const ponds = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
-        const p=f.properties??{};
-        p.pond_name = p.name ?? p['名称'] ?? p['Name'] ?? '';
-        const m=L.marker(latlng,{icon:icB});
-        setTitle(m,p.pond_name);
-        return m;
+        const p=f.properties??{}; p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? '';
+        const m=L.marker(latlng,{icon}); setTitle(m,p._pond_name); return m;
       },
       onEachFeature:(f,l)=>{
-        const p=f.properties??{}, nm=p.pond_name ?? '';
+        const p=f.properties??{}, nm=p._pond_name ?? '';
         const skip=new Set(['name','名称','Name']);
-        const rest=Object.entries(p).filter(([k])=>!skip.has(k)).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
+        const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_pond_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
         l.bindPopup(`<b>ため池</b>${nm?`<br><b>name:</b> ${nm}`:''}${rest?`<br>${rest}`:''}`);
       }
     });
+
     cluster.addLayer(ponds); map.addLayer(cluster);
     ctl.addOverlay(cluster,'ため池（クラスタ）');
 
     const s4 = new L.Control.Search({
-      layer: ponds, propertyName:'pond_name',
+      layer: ponds, propertyName:'_pond_name',
       textPlaceholder:'ため池名', marker:false, zoom:18
     }).addTo(map);
     s4.on('search:locationfound', e=>{
@@ -177,32 +178,33 @@ function init(){
     });
   });
 
-  // ========== バス停（名称検索） ==========
+  // ===== バス停（クラスタ／名称検索） =====
   fetch('./P11-22_17.geojson?_=now',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    const icBus = L.divIcon({html:'🚌',className:'bus-icon',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
+    const ic = L.divIcon({html:'🚌',className:'bus-icon',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
+    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const pick = (p)=>{const ks=['名称','停留所名','バス停名','name','Name','停名','停留所'];
       for(const k of ks){if(p&&p[k]) return z2h(p[k]);}
-      for(const [k,v] of Object.entries(p??{})){ if(typeof v==='string' && v.trim()) return z2h(v); }
-      return '';
-    };
+      for(const [k,v] of Object.entries(p??{})){if(typeof v==='string'&&v.trim()) return z2h(v);} return '';};
 
     const buses = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
-        const p=f.properties??{}; p.bus_name = pick(p);
-        const m=L.marker(latlng,{icon:icBus}); setTitle(m,p.bus_name); return m;
+        const p=f.properties??{}; p._bus_name = pick(p);
+        const m=L.marker(latlng,{icon:ic}); setTitle(m,p._bus_name); return m;
       },
       onEachFeature:(f,l)=>{
-        const p=f.properties??{}, n=p.bus_name ?? '';
+        const p=f.properties??{}, n=p._bus_name ?? '';
         const skip=new Set(['名称','停留所名','バス停名','name','Name','停名','停留所']);
-        const rows=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='bus_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
-        l.bindPopup(`<b>バス停（令和4年）</b>${n?`<br><b>名称:</b> ${n}`:''}${rows?`<br>${rows}`:''}`);
+        const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_bus_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
+        l.bindPopup(`<b>バス停（令和4年）</b>${n?`<br><b>名称:</b> ${n}`:''}${rest?`<br>${rest}`:''}`);
       }
-    }).addTo(map);
-    ctl.addOverlay(buses,'バス停（令和4年）');
+    });
+
+    cluster.addLayer(buses); map.addLayer(cluster);
+    ctl.addOverlay(cluster,'バス停（令和4年）');
 
     const s5 = new L.Control.Search({
-      layer: buses, propertyName:'bus_name',
+      layer: buses, propertyName:'_bus_name',
       textPlaceholder:'バス停名', marker:false, zoom:18
     }).addTo(map);
     s5.on('search:locationfound', e=>{
