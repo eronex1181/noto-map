@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Noto CSMap + 土砂災害 + 避難所 + ため池 + バス停（統合検索）</title>
 
-<!-- CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-
 <style>
   html,body{height:100%;margin:0}
   #map{height:100%;background:#f3f3f3}
@@ -25,19 +23,15 @@
 <div id="map"></div>
 <div id="msg">地図を初期化中…</div>
 
-<!-- JS（順次ロード） -->
 <script>
 function loadScript(src){return new Promise((ok,ng)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=ng;document.head.appendChild(s);});}
 (async()=>{
-  // Leaflet本体（CDNフォールバック）
   try{ await loadScript("https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"); }
   catch{ try{ await loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"); }
          catch{ await loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"); } }
-  // プラグイン
   await loadScript("https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.js");
   await loadScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js");
   await loadScript("https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js");
-
   init();
 })();
 
@@ -72,7 +66,7 @@ function init(){
     return t;
   };
 
-  // ▼ ここが肝：全レイヤを1つの検索対象にまとめる
+  // 全レイヤをまとめる検索対象
   const searchGroup = L.featureGroup().addTo(map);
 
   /* 大字 */
@@ -103,13 +97,20 @@ function init(){
     searchGroup.addLayer(danger);
   });
 
-  /* 指定避難場所 */
+  /* 指定避難場所（施設・場所名＋住所＋NO で検索可能に） */
   fetch('./17000_1.geojson',{cache:'no-store'})
   .then(r=>r.json()).then(data=>{
     const icG = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
+    const buildTitle = (p) => {
+      const parts = [];
+      for (const k of ['名称','施設・場所名','name','Name']) if (p[k]) parts.push(z2h(p[k]));
+      for (const k of ['住所','所在地','市町村'])          if (p[k]) parts.push(z2h(p[k]));
+      if (p['NO']) parts.push(String(p['NO']));
+      return parts.join(' ');
+    };
     const shelter = L.geoJSON(data,{
       pane:'markersPane',
-      pointToLayer:(f,latlng)=>{const p=f.properties??{}; const n=p['名称']??p['name']??p['Name']??''; const m=L.marker(latlng,{icon:icG}); setTitle(m,n); return m;},
+      pointToLayer:(f,latlng)=>{const p=f.properties??{}; const m=L.marker(latlng,{icon:icG}); setTitle(m,buildTitle(p)); return m;},
       onEachFeature:(f,l)=>l.bindPopup(`<b>指定避難場所</b><br>${Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>')}`)
     }).addTo(map);
     ctl.addOverlay(shelter,'指定避難場所（更新2025-07-09）');
@@ -130,7 +131,7 @@ function init(){
     });
     cluster.addLayer(ponds); map.addLayer(cluster);
     ctl.addOverlay(cluster,'ため池（クラスタ）');
-    searchGroup.addLayer(ponds); // ←クラスタではなく素レイヤを登録
+    searchGroup.addLayer(ponds);
   });
 
   /* バス停 */
@@ -150,41 +151,8 @@ function init(){
     searchGroup.addLayer(buses);
   });
 
-  // ▼ 検索ボックスを1つだけ設置（全レイヤ対象）
+  // 検索ボックス（全レイヤ対象）—1つだけ
   const searchCtl = new L.Control.Search({
     layer: searchGroup,
     propertyName: 'title',
-    textPlaceholder: '番号 / 名称 / バス停 / ため池名 を検索',
-    marker: false,
-    collapsed: false,
-    zoom: 18
-  }).addTo(map);
-
-  // 命中時：ポリゴンは範囲に合わせ、ポイントは寄ってポップアップ
-  searchCtl.on('search:locationfound', (e) => {
-    const lyr = e.layer;
-    if (lyr && typeof lyr.getBounds === 'function') {
-      map.fitBounds(lyr.getBounds(), { maxZoom: 18, padding: [24,24] });
-    } else if (e.latlng) {
-      map.setView(e.latlng, Math.max(map.getZoom(), 18));
-    }
-    if (lyr && typeof lyr.openPopup === 'function') lyr.openPopup();
-  });
-
-  // 凡例
-  const legend=L.control({position:'bottomright'}); legend.onAdd=()=>{const d=L.DomUtil.create('div','legend'); d.innerHTML =
-    '<i style="background:#ffff00;"></i> イエローゾーン<br>'+
-    '<i style="background:#ff0000;"></i> レッドゾーン<br>'+
-    '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 指定避難場所<br>'+
-    '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png" style="height:18px;vertical-align:middle;margin-right:6px;"> ため池<br>'+
-    '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🚌</span> バス停（令和4年）'; return d; };
-  legend.addTo(map);
-
-  // 現在地
-  if (L.control.locate){
-    L.control.locate({position:'topleft',flyTo:true,strings:{title:'現在地を表示'},locateOptions:{enableHighAccuracy:true}}).addTo(map);
-  }
-}
-</script>
-</body>
-</html>
+    textPlaceholder: '番号 / 名称 / 住所 / バス停 / ため池名
