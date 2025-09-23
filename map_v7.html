@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noto CSMap（属性ごと検索・クラスタ・土砂災害の番号/名称検索）</title>
+<title>Noto CSMap（ラベル付き検索・クラスタ・土砂災害番号/名称検索・広い間隔）</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
@@ -23,6 +23,13 @@
     font-size:12px;color:#fff;background:#607d8b;line-height:1.4;vertical-align:middle
   }
   .leaflet-control-search .search-input{margin-left:6px}
+  /* ★検索ボックス間隔を約3倍に拡大 */
+  .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:30px !important; }
+  /* 候補ドロップダウンが重なりにくいよう少し下げる */
+  .leaflet-control-search .search-tooltip{ margin-top:6px; }
+  @media (max-width:640px){
+    .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:24px !important; }
+  }
 </style>
 </head>
 <body>
@@ -79,6 +86,13 @@ function init(){
     return control;
   }
 
+  // 土砂災害検索を最下段へ押し下げるヘルパー
+  let s2 = null;
+  const cornerTL = map._controlCorners['topleft'];
+  function pushHazardToBottom(){
+    if (s2 && s2._container && cornerTL) cornerTL.appendChild(s2._container);
+  }
+
   // ===== 大字 =====
   fetch('./kyoukai.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const boundaryLayer = L.geoJSON(data,{
@@ -93,7 +107,8 @@ function init(){
       layer: boundaryLayer, propertyName:'大字',
       textPlaceholder:'大字名', marker:false, zoom:14, collapsed:false
     }).addTo(map);
-    decorateSearch(s1,'🗺️ 大字','#2e7d32');
+    decorateSearch(s1,'📚 大字','#2e7d32');
+    pushHazardToBottom();
     s1.on('search:locationfound', e=>{
       if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]});
     });
@@ -107,8 +122,7 @@ function init(){
     const shelters = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
-        const p=f.properties??{};
-        p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';
+        const p=f.properties??{}; p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';
         const m=L.marker(latlng,{icon}); setTitle(m,p._shelter_name); return m;
       },
       onEachFeature:(f,l)=>l.bindPopup(`<b>指定避難場所</b><br>${Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>')}`)
@@ -121,7 +135,8 @@ function init(){
       layer: shelters, propertyName:'_shelter_name',
       textPlaceholder:'施設・場所名', marker:false, zoom:17, collapsed:false
     }).addTo(map);
-    decorateSearch(s3,'🏫 避難所','#388e3c');
+    decorateSearch(s3,'🏠 避難所','#388e3c');
+    pushHazardToBottom();
     s3.on('search:locationfound', e=>{
       if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17));
       if (e.layer.openPopup) e.layer.openPopup();
@@ -155,6 +170,7 @@ function init(){
       textPlaceholder:'ため池名', marker:false, zoom:18, collapsed:false
     }).addTo(map);
     decorateSearch(s4,'💧 ため池','#1976d2');
+    pushHazardToBottom();
     s4.on('search:locationfound', e=>{
       if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18));
       if (e.layer.openPopup) e.layer.openPopup();
@@ -191,13 +207,14 @@ function init(){
       textPlaceholder:'バス停名', marker:false, zoom:18, collapsed:false
     }).addTo(map);
     decorateSearch(s5,'🚌 バス停','#6a1b9a');
+    pushHazardToBottom();
     s5.on('search:locationfound', e=>{
       if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18));
       if (e.layer.openPopup) e.layer.openPopup();
     });
   });
 
-  // ===== 土砂災害（番号も名称も検索／「0344」OK）※最後に追加＝一番下 =====
+  // ===== 土砂災害（番号も名称も検索／「0344」OK）※最後に追加し、さらに強制で最下段へ =====
   fetch('./dosya.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const col=v=>(v==1||v==='1')?'#ffff00':(v==2||v==='2')?'#ff0000':'#888';
     const nm=v=>(v==1||v==='1')?'イエローゾーン':(v==2||v==='2')?'レッドゾーン':'その他';
@@ -219,15 +236,17 @@ function init(){
     }).addTo(map);
     ctl.addOverlay(danger,'土砂災害警戒区域');
 
-    const s2 = new L.Control.Search({
+    s2 = new L.Control.Search({
       layer: danger, propertyName:'title',
       textPlaceholder:'箇所番号 / 箇所名', marker:false, zoom:16, collapsed:false
     }).addTo(map);
     decorateSearch(s2,'⚠️ 土砂災害','#e53935');
 
-    // 念のため「最下段」に固定
-    const corner = map._controlCorners['topleft'];
-    corner.appendChild(s2._container);
+    // 何が後から来ても最下段に固定
+    pushHazardToBottom();
+    setTimeout(pushHazardToBottom,200);
+    setTimeout(pushHazardToBottom,600);
+    setTimeout(pushHazardToBottom,1200);
 
     s2.on('search:locationfound', (e) => {
       if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]});
