@@ -23,9 +23,8 @@
     font-size:12px;color:#fff;background:#607d8b;line-height:1.4;vertical-align:middle
   }
   .leaflet-control-search .search-input{margin-left:6px}
-  /* ★検索ボックス間隔を約3倍に拡大 */
+  /* 検索ボックス間隔を拡大 */
   .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:30px !important; }
-  /* 候補ドロップダウンが重なりにくいよう少し下げる */
   .leaflet-control-search .search-tooltip{ margin-top:6px; }
   @media (max-width:640px){
     .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:24px !important; }
@@ -73,22 +72,20 @@ function init(){
     else if (layerOrFeat?.properties) layerOrFeat.properties.title = t;
     return t;
   };
-  const pick = (obj, keys)=>{for(const k of keys){if(obj && obj[k]!=null && obj[k]!=='' ) return obj[k];} return '';};
-  const nfJPY = new Intl.NumberFormat('ja-JP');
+  const pick = (o, arr)=>{for(const k of arr){if(o&&o[k]!=null&&o[k]!=='') return o[k]} return ''};
+  const nf = new Intl.NumberFormat('ja-JP');
   const fmtYen = v=>{
     if(v==null||v==='') return '-';
-    const n=Number(String(v).toString().replace(/[,円\/㎡\s]/g,''));
-    if(Number.isFinite(n)) return nfJPY.format(n)+'円/㎡';
-    return String(v);
+    const n = Number(String(v).replace(/[,円¥\s]|\/?m2|\/?㎡/gi,''));
+    return Number.isFinite(n) ? nf.format(n)+'円/㎡' : String(v);
   };
   const fmtPct = v=>{
     if(v==null||v==='') return '-';
-    const n=Number(String(v).toString().replace(/[,%\s]/g,''));
-    if(Number.isFinite(n)) return n.toFixed(1)+'%';
-    return String(v);
+    const n = Number(String(v).replace(/[,%％\s]/g,''));
+    return Number.isFinite(n) ? n.toFixed(1)+'%' : String(v);
   };
 
-  // 検索UIのラベル付け＋常時展開
+  // 検索ラベルUI
   function decorateSearch(control, label, color){
     control.options.collapsed = false;
     const el = control._container || control.getContainer();
@@ -101,7 +98,7 @@ function init(){
     return control;
   }
 
-  // 土砂災害検索を最下段へ押し下げるヘルパー
+  // 土砂災害検索を最下段へ
   let s2 = null;
   const cornerTL = map._controlCorners['topleft'];
   function pushHazardToBottom(){
@@ -129,7 +126,7 @@ function init(){
     });
   });
 
-  // ===== 指定避難場所（クラスタ／施設・場所名で検索） =====
+  // ===== 指定避難場所 =====
   fetch('./17000_1.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
@@ -158,7 +155,7 @@ function init(){
     });
   });
 
-  // ===== ため池（クラスタ／名称検索） =====
+  // ===== ため池 =====
   fetch('./ため池.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
@@ -192,7 +189,7 @@ function init(){
     });
   });
 
-  // ===== バス停（クラスタ／名称検索） =====
+  // ===== バス停 =====
   fetch('./P11-22_17.geojson?_=now',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const ic = L.divIcon({html:'🚌',className:'bus-icon',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
@@ -229,9 +226,8 @@ function init(){
     });
   });
 
-  // ===== 地価調査 2025（クラスタ／所在地・標準地番号で検索） =====
-  fetch('./石川地価2025.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    // オレンジ系アイコン
+  // ===== 地価調査 2025（石川） =====
+  fetch('./石川地価2025.geojson?_=20251003b',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({
       iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',
       shadowUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-shadow.png',
@@ -243,29 +239,45 @@ function init(){
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
         const p=f.properties??{};
-        const city = pick(p,['市区町村名','市町村','市区町村','所在地市区町村','都道府県市区町村']);
-        const where = pick(p,['所在地','住居表示','地番','地点名','地区名']);
-        const no = pick(p,['標準地番号','標準地番号（コード）','地点番号','番号']);
+        const city  = pick(p, ['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村']);
+        const where = pick(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名']);
+        const no    = pick(p, ['標準地番号','標準地番号（コード）','地点番号','番号']);
         p._label = z2h([city, where || no].filter(Boolean).join(' ')) || z2h(no) || z2h(where);
-        const m=L.marker(latlng,{icon}); setTitle(m,p._label || '地価調査地点'); return m;
+        const m = L.marker(latlng,{icon});
+        m.options.title = p._label || '地価調査地点';
+        return m;
       },
       onEachFeature:(f,l)=>{
         const p=f.properties??{};
-        const price = fmtYen(pick(p,['価格','価格（円/㎡）','価格_円m2','単価','price','価格_円／㎡']));
-        const yoy   = fmtPct(pick(p,['対前年変動率','対前年変動率（％）','変動率','前年比','前年比％','yoy']));
-        const use   = pick(p,['用途','用途区分','区分','用途地域']);
-        const city  = pick(p,['市区町村名','市町村','市区町村','所在地市区町村']);
-        const where = pick(p,['所在地','住居表示','地番','地点名','地区名']);
-        const no    = pick(p,['標準地番号','標準地番号（コード）','地点番号','番号']);
-        const note  = pick(p,['備考','注記','メモ']);
-        const rows = [
-          ['標準地番号', no || '-'],
-          ['所在地', [city, where].filter(Boolean).join(' ') || '-'],
-          ['用途', use || '-'],
-          ['価格', price],
-          ['対前年変動率', yoy]
-        ].map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
-        l.bindPopup(`<b>地価調査（2025）</b><br>${rows}${note?`<br><b>備考:</b> ${note}`:''}`);
+        const price = fmtYen(pick(p, [
+          '価格','価格（円/㎡）','価格_円m2','価格_円／㎡','単価','price',
+          '円/m2','円／m2','円/㎡','円／㎡','円m2'
+        ]));
+        const yoy   = fmtPct(pick(p, [
+          '対前年変動率','対前年変動率（％）','対前年変動率%','対前年変動率％',
+          '変動率','前年比','前年比％','yoy'
+        ]));
+        const use   = pick(p, ['用途','用途区分','区分','用途地域']);
+        const city  = pick(p, ['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村']);
+        const where = pick(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名']);
+        const no    = pick(p, ['標準地番号','標準地番号（コード）','地点番号','番号']);
+        const note  = pick(p, ['備考','注記','メモ']);
+
+        let html =
+          `<b>地価調査（2025）</b><br>` +
+          `<b>標準地番号:</b> ${no||'-'}<br>` +
+          `<b>所在地:</b> ${[city,where].filter(Boolean).join(' ')||'-'}<br>` +
+          `<b>用途:</b> ${use||'-'}<br>` +
+          `<b>価格:</b> ${price}<br>` +
+          `<b>対前年変動率:</b> ${yoy}`;
+
+        // 主要項目が取れない時は全属性を表示（確認用）
+        if (price==='-' && yoy==='-' && !no && !city && !where){
+          const rows = Object.entries(p).map(([k,v])=>`<tr><th style="text-align:left;padding-right:6px;">${k}</th><td>${v}</td></tr>`).join('');
+          html += `<br><div style="max-height:240px;overflow:auto;"><table>${rows}</table></div>`;
+        }
+        if (note) html += `<br><b>備考:</b> ${note}`;
+        l.bindPopup(html);
       }
     });
 
@@ -284,7 +296,7 @@ function init(){
     });
   });
 
-  // ===== 土砂災害（番号も名称も検索／「0344」OK）※最後に追加し、さらに強制で最下段へ =====
+  // ===== 土砂災害（最後に追加＋最下段へ固定） =====
   fetch('./dosya.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const col=v=>(v==1||v==='1')?'#ffff00':(v==2||v==='2')?'#ff0000':'#888';
     const nm=v=>(v==1||v==='1')?'イエローゾーン':(v==2||v==='2')?'レッドゾーン':'その他';
@@ -294,7 +306,7 @@ function init(){
       style:f=>({color:col(f.properties.A33_002),weight:2,opacity:.9,fillOpacity:.25}),
       onEachFeature:(f,l)=>{
         const p=f.properties??{};
-        const num = (p.A33_004??'').toString().split(/[-－―‐]/)[0].replace(/\D/g,''); // "0344"
+        const num = (p.A33_004??'').toString().split(/[-－―‐]/)[0].replace(/\D/g,'');
         const name = (p.A33_005??'').toString();
         setTitle(l, `${num} ${name}`.trim());
         l.bindPopup(
@@ -312,13 +324,13 @@ function init(){
     }).addTo(map);
     decorateSearch(s2,'⚠️ 土砂災害','#e53935');
 
-    // 何が後から来ても最下段に固定
+    // 最下段へ固定
     pushHazardToBottom();
     setTimeout(pushHazardToBottom,200);
     setTimeout(pushHazardToBottom,600);
     setTimeout(pushHazardToBottom,1200);
 
-    s2.on('search:locationfound', (e) => {
+    s2.on('search:locationfound', e => {
       if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]});
       if (e.layer.openPopup) e.layer.openPopup();
     });
