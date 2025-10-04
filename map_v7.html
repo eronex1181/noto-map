@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noto CSMap（検索ラベル・クラスタ・土砂災害・地価〈令和7年〉対応）</title>
+<title>Noto CSMap（検索ラベル・土砂災害・地価〈令和7年〉・ため池/避難所クラスタ無し）</title>
 
-<!-- キャッシュ回避（Blogger/CDN対策の保険） -->
+<!-- キャッシュ回避の保険 -->
 <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -13,8 +13,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <style>
   html,body{height:100%;margin:0}
   #map{height:100%;background:#f3f3f3}
@@ -41,7 +39,6 @@ function loadScript(src){return new Promise((ok,ng)=>{const s=document.createEle
          catch{ await loadScript("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"); } }
   await loadScript("https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.js");
   await loadScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js");
-  await loadScript("https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js");
   init();
 })();
 
@@ -61,39 +58,22 @@ function init(){
   const ctl = L.control.layers({'Noto CSMap':notoCS},{'淡色地図':gsiPale},{collapsed:false}).addTo(map);
   L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
-  // ---- helpers（正規化ベース）----
+  // ---- helpers ----
   const z2h = s => (s ?? '').toString()
     .replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0))
     .replace(/\s+/g,' ').trim();
-  const normKey = k => z2h(k)
-    .replace(/[ \t\r\n]/g,'')
-    .replace(/[／\/]/g,'/')
-    .replace(/[％%]/g,'%')
-    .replace(/[㎡m2]/g,'m2')
-    .toLowerCase();
+  const normKey = k => z2h(k).replace(/[ \t\r\n]/g,'').replace(/[／\/]/g,'/').replace(/[％%]/g,'%').replace(/[㎡m2]/g,'m2').toLowerCase();
   const pickKey = (obj, keysOrRegs) => {
     if (!obj) return '';
     const mapk = new Map(Object.keys(obj).map(k=>[normKey(k), k]));
-    for (const k of keysOrRegs) {
-      if (typeof k === 'string') { const nk = normKey(k); if (mapk.has(nk)) return obj[mapk.get(nk)]; }
-    }
+    for (const k of keysOrRegs) { if (typeof k === 'string') { const nk = normKey(k); if (mapk.has(nk)) return obj[mapk.get(nk)]; } }
     const entries = Object.keys(obj).map(k=>[k, normKey(k)]);
-    for (const r of keysOrRegs) {
-      if (r instanceof RegExp) { const hit = entries.find(([,nk]) => r.test(nk)); if (hit) return obj[hit[0]]; }
-    }
+    for (const r of keysOrRegs) { if (r instanceof RegExp) { const hit = entries.find(([,nk]) => r.test(nk)); if (hit) return obj[hit[0]]; } }
     return '';
   };
   const nf = new Intl.NumberFormat('ja-JP');
-  const fmtYen = v=>{
-    if(v==null||v==='') return '-';
-    const n = Number(String(v).replace(/[,円¥\s]|\/?\s*m2/gi,''));
-    return Number.isFinite(n) ? nf.format(n)+'円/㎡' : String(v);
-  };
-  const fmtPct = v=>{
-    if(v==null||v==='') return '-';
-    const n = Number(String(v).replace(/[,\s%％]/g,''));
-    return Number.isFinite(n) ? n.toFixed(1)+'%' : String(v);
-  };
+  const fmtYen = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,円¥\s]|\/?\s*m2/gi,'')); return Number.isFinite(n)? nf.format(n)+'円/㎡' : String(v); };
+  const fmtPct = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,\s%％]/g,'')); return Number.isFinite(n)? n.toFixed(1)+'%' : String(v); };
   function decorateSearch(control, label, color){
     control.options.collapsed = false;
     const el = control._container || control.getContainer();
@@ -115,8 +95,8 @@ function init(){
       style:()=>({color:'green',dashArray:'4,4',weight:1.5,opacity:1}),
       onEachFeature:(f,l)=>{const p=f.properties??{}; l.options.title=z2h(`${p['大字']??''} ${p['市町村']??''}`);
         l.bindPopup(`<b>大字:</b> ${p['大字']??'-'}<br><b>市町村:</b> ${p['市町村']??'-'}`);}
-    }); // 初期OFF（addToしない）
-    if (map.hasLayer(boundaryLayer)) map.removeLayer(boundaryLayer); // safety
+    }); // 初期OFF
+    if (map.hasLayer(boundaryLayer)) map.removeLayer(boundaryLayer);
     ctl.addOverlay(boundaryLayer,'大字境界');
 
     const s1 = new L.Control.Search({layer: boundaryLayer, propertyName:'大字', textPlaceholder:'大字名', marker:false, zoom:14, collapsed:false}).addTo(map);
@@ -124,48 +104,43 @@ function init(){
     s1.on('search:locationfound', e=>{ if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]}); });
   });
 
-  // ===== 指定避難場所（初期OFF＋安全ガード） =====
+  // ===== 指定避難場所（クラスタ無し・初期OFF＋安全ガード） =====
   fetch('./17000_1.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
-    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const shelters = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? ''; const m=L.marker(latlng,{icon}); m.options.title=p._shelter_name; return m; },
       onEachFeature:(f,l)=>l.bindPopup(`<b>指定避難場所</b><br>${Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>')}`)
-    });
-    cluster.addLayer(shelters);
-    if (map.hasLayer(cluster)) map.removeLayer(cluster); // safety（初期表示させない）
-    ctl.addOverlay(cluster,'指定避難場所（更新2025-07-09）');
+    }); // 初期OFF
+    if (map.hasLayer(shelters)) map.removeLayer(shelters);
+    ctl.addOverlay(shelters,'指定避難場所（更新2025-07-09）');
 
     const s3 = new L.Control.Search({layer: shelters, propertyName:'_shelter_name', textPlaceholder:'施設・場所名', marker:false, zoom:17, collapsed:false}).addTo(map);
     decorateSearch(s3,'🏠 避難所','#388e3c'); pushHazardToBottom();
     s3.on('search:locationfound', e=>{ if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17)); if (e.layer.openPopup) e.layer.openPopup(); });
   });
 
-  // ===== ため池（初期OFF＋安全ガード） =====
+  // ===== ため池（クラスタ無し・初期OFF＋安全ガード） =====
   fetch('./ため池.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
-    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const ponds = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? ''; const m=L.marker(latlng,{icon}); m.options.title=p._pond_name; return m; },
       onEachFeature:(f,l)=>{ const p=f.properties??{}, nm=p._pond_name ?? ''; const skip=new Set(['name','名称','Name']);
         const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_pond_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
         l.bindPopup(`<b>ため池</b>${nm?`<br><b>name:</b> ${nm}`:''}${rest?`<br>${rest}`:''}`); }
-    });
-    cluster.addLayer(ponds);
-    if (map.hasLayer(cluster)) map.removeLayer(cluster); // safety（初期表示させない）
-    ctl.addOverlay(cluster,'ため池（クラスタ）');
+    }); // 初期OFF
+    if (map.hasLayer(ponds)) map.removeLayer(ponds);
+    ctl.addOverlay(ponds,'ため池');
 
     const s4 = new L.Control.Search({layer: ponds, propertyName:'_pond_name', textPlaceholder:'ため池名', marker:false, zoom:18, collapsed:false}).addTo(map);
     decorateSearch(s4,'💧 ため池','#1976d2'); pushHazardToBottom();
     s4.on('search:locationfound', e=>{ if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18)); if (e.layer.openPopup) e.layer.openPopup(); });
   });
 
-  // ===== バス停（初期ON） =====
+  // ===== バス停（初期ON・必要ならクラスタ化してOK） =====
   fetch('./P11-22_17.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const ic = L.divIcon({html:'🚌',className:'bus-icon',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
-    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const pickName = (p)=>{const ks=['名称','停留所名','バス停名','name','Name','停名','停留所']; for(const k of ks){if(p&&p[k]) return z2h(p[k]);}
       for(const [k,v] of Object.entries(p??{})){if(typeof v==='string'&&v.trim()) return z2h(v);} return '';};
     const buses = L.geoJSON(data,{
@@ -175,8 +150,8 @@ function init(){
         const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_bus_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
         l.bindPopup(`<b>バス停（令和4年）</b>${n?`<br><b>名称:</b> ${n}`:''}${rest?`<br>${rest}`:''}`); }
     });
-    cluster.addLayer(buses); map.addLayer(cluster); // 初期ON
-    ctl.addOverlay(cluster,'バス停（令和4年）');
+    map.addLayer(buses); // 初期ON
+    ctl.addOverlay(buses,'バス停（令和4年）');
 
     const s5 = new L.Control.Search({layer: buses, propertyName:'_bus_name', textPlaceholder:'バス停名', marker:false, zoom:18, collapsed:false}).addTo(map);
     decorateSearch(s5,'🚌 バス停','#6a1b9a'); pushHazardToBottom();
@@ -190,8 +165,6 @@ function init(){
       shadowUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-shadow.png',
       iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]
     });
-    const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
-
     const land = L.geoJSON(data,{
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
@@ -228,9 +201,8 @@ function init(){
         l.bindPopup(html);
       }
     });
-
-    cluster.addLayer(land); map.addLayer(cluster);
-    ctl.addOverlay(cluster,'地価調査（令和7年・石川）');
+    map.addLayer(land); // 初期ON
+    ctl.addOverlay(land,'地価調査（令和7年・石川）');
 
     const s6 = new L.Control.Search({layer: land, propertyName:'_label', textPlaceholder:'所在地 / 標準地番号', marker:false, zoom:18, collapsed:false}).addTo(map);
     decorateSearch(s6,'💴 地価（令和7年）','#ef6c00'); pushHazardToBottom();
@@ -274,6 +246,10 @@ function init(){
 
   // 現在地
   if (L.control.locate){ L.control.locate({position:'topleft',flyTo:true,strings:{title:'現在地を表示'},locateOptions:{enableHighAccuracy:true}}).addTo(map); }
+
+  // （任意）デバッグ：ON/OFFを監視
+  // map.on('overlayadd', e => console.log('on:', e.name||e.layer));
+  // map.on('overlayremove', e => console.log('off:', e.name||e.layer));
 }
 </script>
 </body>
