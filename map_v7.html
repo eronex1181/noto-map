@@ -42,22 +42,22 @@ function init(){
   const nf = new Intl.NumberFormat('ja-JP');
   const fmtYen=v=>v?nf.format(v)+'円/㎡':'-';
   const fmtPct=v=>v?Number(v).toFixed(1)+'%':'-';
-  const tag=(c,t)=>{const e=document.createElement('span');e.textContent=t;e.className='search-tag';e.style.background=c;return e;};
 
   // === 大字 ===
   fetch('./kyoukai.geojson').then(r=>r.json()).then(d=>{
-    const Lyr=L.geoJSON(d,{style:{color:'green',dashArray:'4,4',weight:1.2},onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.市町村??''}</b><br>${f.properties.大字??''}`)});
+    const Lyr=L.geoJSON(d,{style:{color:'green',dashArray:'4,4',weight:1.2},
+      onEachFeature:(f,l)=>l.bindPopup(`<b>${f.properties.市町村??''}</b><br>${f.properties.大字??''}`)});
     ctl.addOverlay(Lyr,'大字境界');
   });
 
-  // === 避難所 ===
+  // === 避難所（デフォルト非表示） ===
   fetch('./17000_1.geojson').then(r=>r.json()).then(d=>{
     const ic=L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41]});
     const Lyr=L.geoJSON(d,{pointToLayer:(f,lat)=>L.marker(lat,{icon:ic}).bindPopup(`<b>${f.properties['施設・場所名']??''}</b>`)});
     ctl.addOverlay(Lyr,'指定避難場所（更新2025-07-09）');
   });
 
-  // === ため池 ===
+  // === ため池（デフォルト非表示） ===
   fetch('./ため池.geojson').then(r=>r.json()).then(d=>{
     const ic=L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41]});
     const Lyr=L.geoJSON(d,{pointToLayer:(f,lat)=>L.marker(lat,{icon:ic}).bindPopup(`<b>${f.properties['名称']??''}</b>`)});
@@ -72,7 +72,7 @@ function init(){
     ctl.addOverlay(Lyr,'バス停（令和4年）');
   });
 
-  // === 地価 ===
+  // === 地価（令和7年） ===
   fetch('./石川地価2025.geojson').then(r=>r.json()).then(d=>{
     const ic=L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',iconSize:[25,41],iconAnchor:[12,41]});
     const Lyr=L.geoJSON(d,{pointToLayer:(f,lat)=>{
