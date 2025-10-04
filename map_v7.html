@@ -121,7 +121,21 @@ function init(){
     decorateSearch(sBus,'🚌 バス停','#6a1b9a');
   });
 
-  // ===== 地価（令和7年・初期ON・クラスタ／検索UIなし／ポップアップ堅牢） =====
+  // ====== 地価（令和7年・初期ON・クラスタ／検索UIなし／所在地キー強化） ======
+  // 所在地キー集合（市区町村）
+  const CITY_KEYS = [
+    '市区町村名','市町村','市区町村','所在地市区町村','所在市区町村','所在市町村',
+    '基準地の地名','基準地の所在地',
+    /市区町村|市町村|所在市|基準地.*(地名|所在地)/
+  ];
+  // 所在地キー集合（町丁・番地等）
+  const WHERE_KEYS = [
+    '所在地','所在地（住居表示）','所在地（地番）','所在地並びに地番','所在地等',
+    '住居表示','地番','所在','所在・地番','所在等',
+    '地名地番','地名','地点名','地区名','町名','字名','番地','街区','丁目',
+    /所在地(?!市)|所在(?!市)|地名|字名|番地|丁目|地点名|地区名/
+  ];
+
   fetch('./石川地価2025.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({
       iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',
@@ -136,19 +150,17 @@ function init(){
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
         const p=f.properties??{};
-        const city  = pickKey(p, ['市区町村名','市町村','市区町村','所在地市区町村', /市区町村/]);
-        const where = pickKey(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名', /所在地/]);
+        const city  = pickKey(p, CITY_KEYS);
+        const where = pickKey(p, WHERE_KEYS);
         const no    = pickKey(p, ['標準地番号','標準地番号（コード）','地点番号','番号', /標準地/]);
         const label = z2h([city,(where||no)].filter(Boolean).join(' ')) || z2h(no) || z2h(where) || '地価調査地点';
         const m=L.marker(latlng,{icon}); m.options.title=label; return m;
       },
       onEachFeature:(f,l)=>{
         const p=f.properties??{};
-
-        const city  = pickKey(p, ['市区町村名','市町村','市区町村','所在地市区町村', /市区町村/]);
-        const where = pickKey(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名', /所在地/]);
+        const city  = pickKey(p, CITY_KEYS);
+        const where = pickKey(p, WHERE_KEYS);
         const use   = pickKey(p, ['用途','用途区分','区分','用途地域', /用途/]);
-
         const price = (()=>{
           const v = pickKey(p, [
             '価格','価格（円/㎡）','価格（円/m2）','価格_円m2','価格_円／㎡','単価',
@@ -156,7 +168,6 @@ function init(){
           ]);
           return fmtYen(v);
         })();
-
         const yoy = (()=>{
           const v = pickKey(p, [
             '対前年変動率','対前年変動率（％）','対前年変動率%','対前年変動率％',
@@ -202,7 +213,7 @@ function init(){
     decorateSearch(sHazard,'⚠️ 土砂災害','#e53935');
   });
 
-  // ===== 遅延ロード：ONされた時に初めてfetch =====
+  // ===== 遅延ロード（ON時に初fetch） =====
   map.on('overlayadd', e=>{
     // 大字
     if (e.layer===daijiGroup && !daijiReady){
