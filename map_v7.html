@@ -18,9 +18,6 @@
   .bus-icon{font-size:22px;width:26px;height:26px;line-height:26px;text-align:center;transform:translate(-13px,-13px);text-shadow:0 0 2px rgba(255,255,255,.85)}
   #msg{position:absolute;left:0;right:0;top:8px;text-align:center;color:#666;font:14px/1.6 system-ui;z-index:9999}
   .search-tag{display:inline-block;margin:6px 6px 4px 6px;padding:2px 8px;border-radius:999px;font-size:12px;color:#fff;background:#607d8b;line-height:1.4;vertical-align:middle}
-  .leaflet-control-search .search-input{margin-left:6px}
-  .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:30px !important; }
-  @media (max-width:640px){ .leaflet-top.leaflet-left .leaflet-control-search{ margin-bottom:24px !important; } }
 </style>
 </head>
 <body>
@@ -52,22 +49,20 @@ function init(){
   // --- base layers ---
   const notoCS = L.tileLayer('https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© 林野庁'}).addTo(map);
   const gsiPale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',{maxZoom:18,opacity:.6,pane:'palePane',attribution:'© 国土地理院'});
-  const ctl = L.control.layers({'Noto CSMap':notoCS},{'淡色地図':gsiPale},{collapsed:false}).addTo(map);
+  const ctl = L.control.layers({'Noto CSMap':notoCS},{'国土地理院地図':gsiPale},{collapsed:false}).addTo(map);
   L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
-  // ---- helpers ----
-  const z2h = s => (s ?? '').toString()
-    .replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0))
-    .replace(/\s+/g,' ').trim();
+  // helpers
+  const z2h = s => (s ?? '').toString().replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\s+/g,' ').trim();
   const nf = new Intl.NumberFormat('ja-JP');
   const fmtYen = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,円¥\s]|\/?\s*m2/gi,'')); return Number.isFinite(n)? nf.format(n)+'円/㎡' : String(v); };
   const fmtPct = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,\s%％]/g,'')); return Number.isFinite(n)? n.toFixed(1)+'%' : String(v); };
   const decorateSearch=(control,label,color)=>{control.options.collapsed=false; const el=control._container||control.getContainer(); const tag=document.createElement('span'); tag.className='search-tag'; tag.textContent=label; if(color) tag.style.background=color; (el.querySelector('form')||el).insertBefore(tag,el.firstChild); return control;};
 
   // ====== Lazy overlays placeholders (初期OFF) ======
-  const daijiGroup   = L.layerGroup();  ctl.addOverlay(daijiGroup,'大字境界');                    // 初期OFF（未addTo）
-  const sheltersGroup= L.layerGroup();  ctl.addOverlay(sheltersGroup,'指定避難場所（更新2025-07-09）');
-  const pondsGroup   = L.layerGroup();  ctl.addOverlay(pondsGroup,'ため池（クラスタ）');
+  const daijiGroup    = L.layerGroup(); ctl.addOverlay(daijiGroup,'大字境界');                                   // 初期OFF
+  const sheltersGroup = L.layerGroup(); ctl.addOverlay(sheltersGroup,'指定避難場所（更新：令和7年7月9日）');     // 初期OFF
+  const pondsGroup    = L.layerGroup(); ctl.addOverlay(pondsGroup,'ため池');                                     // 初期OFF
 
   let daijiReady=false, sheltersReady=false, pondsReady=false;
   let daijiLayer=null, sheltersCluster=null, pondsCluster=null;
@@ -102,11 +97,9 @@ function init(){
         l.bindPopup(`<b>地価調査（令和7年）</b><br><b>所在地:</b> ${(p['市区町村名']||'')+' '+(p['所在地']||'')}<br><b>用途:</b> ${p['用途']??'-'}<br><b>価格:</b> ${price}<br><b>対前年変動率:</b> ${yoy}`); }
     });
     cluster.addLayer(land); map.addLayer(cluster); ctl.addOverlay(cluster,'地価調査（令和7年・石川）');
-    // ★検索UIは作成しない（ご要望）
   });
 
   // ===== 土砂災害（ポリゴン・初期ON） =====
-  let sHazard=null;
   fetch('./dosya.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const col=v=>(v==1||v==='1')?'#ffff00':(v==2||v==='2')?'#ff0000':'#888';
     const nm=v=>(v==1||v==='1')?'イエローゾーン':(v==2||v==='2')?'レッドゾーン':'その他';
@@ -123,7 +116,7 @@ function init(){
     }).addTo(map);
     ctl.addOverlay(danger,'土砂災害警戒区域');
 
-    sHazard = new L.Control.Search({layer: danger, propertyName:'title', textPlaceholder:'箇所番号 / 箇所名', marker:false, zoom:16, collapsed:false}).addTo(map);
+    const sHazard = new L.Control.Search({layer: danger, propertyName:'title', textPlaceholder:'箇所番号 / 箇所名', marker:false, zoom:16, collapsed:false}).addTo(map);
     decorateSearch(sHazard,'⚠️ 土砂災害','#e53935');
   });
 
@@ -141,7 +134,6 @@ function init(){
         daijiGroup.addLayer(daijiLayer);
         daijiReady=true;
 
-        // 任意：検索（大字名）
         const s1 = new L.Control.Search({layer: daijiLayer, propertyName:'大字', textPlaceholder:'大字名', marker:false, zoom:14, collapsed:false}).addTo(map);
         decorateSearch(s1,'📚 大字','#2e7d32');
       });
@@ -161,7 +153,6 @@ function init(){
         sheltersGroup.addLayer(sheltersCluster);
         sheltersReady=true;
 
-        // 任意：検索（施設・場所名）
         const s3 = new L.Control.Search({layer: shelters, propertyName:'_shelter_name', textPlaceholder:'施設・場所名', marker:false, zoom:17, collapsed:false}).addTo(map);
         decorateSearch(s3,'🏠 避難所','#388e3c');
       });
@@ -183,19 +174,11 @@ function init(){
         pondsGroup.addLayer(pondsCluster);
         pondsReady=true;
 
-        // 任意：検索（ため池名）
         const s4 = new L.Control.Search({layer: ponds, propertyName:'_pond_name', textPlaceholder:'ため池名', marker:false, zoom:18, collapsed:false}).addTo(map);
         decorateSearch(s4,'💧 ため池','#1976d2');
       });
     }
   });
-
-  // （必要ならOFF時のDOM負荷をさらに下げる：完全解放版）
-  // map.on('overlayremove', e=>{
-  //   if (e.layer===sheltersGroup && sheltersCluster){ sheltersGroup.removeLayer(sheltersCluster); sheltersCluster=null; sheltersReady=false; }
-  //   if (e.layer===pondsGroup    && pondsCluster   ){ pondsGroup.removeLayer(pondsCluster);    pondsCluster=null;    pondsReady=false; }
-  //   if (e.layer===daijiGroup    && daijiLayer     ){ daijiGroup.removeLayer(daijiLayer);     daijiLayer=null;     daijiReady=false; }
-  // });
 
   // 凡例
   const legend=L.control({position:'bottomright'}); legend.onAdd=()=>{const d=L.DomUtil.create('div','legend'); d.innerHTML =
