@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noto CSMap（ラベル検索・クラスタ・土砂災害・地価〈令和7年〉）</title>
+<title>Noto CSMap（検索ラベル・クラスタ・土砂災害・地価〈令和7年〉）</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
@@ -51,104 +51,119 @@ function init(){
   map.createPane('markersPane');   map.getPane('markersPane').style.zIndex = 430;
 
   // --- base layers ---
-  const notoCS = L.tileLayer('https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© 林野庁'}).addTo(map);
-  const gsiPale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',{maxZoom:18,opacity:.6,pane:'palePane',attribution:'© 国土地理院'});
-  const ctl = L.control.layers({'Noto CSMap':notoCS},{'国土地理院地図':gsiPale},{collapsed:false}).addTo(map);
+  const baseNoto = L.tileLayer('https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© 林野庁'}).addTo(map);
+  const gsiPale  = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',{maxZoom:18,opacity:.6,pane:'palePane',attribution:'© 国土地理院'});
+  const ctl = L.control.layers({'Noto CSMap':baseNoto},{'国土地理院地図':gsiPale},{collapsed:false}).addTo(map);
   L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
   // ---- helpers ----
-  const z2h = s => (s ?? '').toString().replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0)).replace(/\s+/g,' ').trim();
-  const normKey = k => z2h(k).replace(/[ \t\r\n]/g,'').replace(/[／\/]/g,'/').replace(/[％%]/g,'%').replace(/[㎡m2]/g,'m2').toLowerCase();
+  const z2h = s => (s ?? '').toString()
+    .replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0))
+    .replace(/\s+/g,' ').trim();
+  const normKey = k => z2h(k).replace(/[ \t\r\n]/g,'')
+    .replace(/[／\/]/g,'/').replace(/[％%]/g,'%').replace(/[㎡m2]/g,'m2').toLowerCase();
   const pickKey = (obj, keysOrRegs) => {
     if (!obj) return '';
-    const map = new Map(Object.keys(obj).map(k=>[normKey(k), k]));
-    for (const k of keysOrRegs) { if (typeof k === 'string') { const nk = normKey(k); if (map.has(nk)) return obj[map.get(nk)]; } }
-    const entries = Object.keys(obj).map(k=>[k, normKey(k)]);
-    for (const r of keysOrRegs) { if (r instanceof RegExp) { const hit = entries.find(([,nk]) => r.test(nk)); if (hit) return obj[hit[0]]; } }
+    const m = new Map(Object.keys(obj).map(k=>[normKey(k),k]));
+    for(const k of keysOrRegs){ if(typeof k==='string'){ const nk=normKey(k); if(m.has(nk)) return obj[m.get(nk)]; } }
+    const entries = Object.keys(obj).map(k=>[k,normKey(k)]);
+    for(const r of keysOrRegs){ if(r instanceof RegExp){ const hit=entries.find(([,nk])=>r.test(nk)); if(hit) return obj[hit[0]]; } }
     return '';
   };
   const nf = new Intl.NumberFormat('ja-JP');
-  const fmtYen = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,円¥\s]|\/?\s*m2/gi,'')); return Number.isFinite(n) ? nf.format(n)+'円/㎡' : String(v); };
-  const fmtPct = v=>{ if(v==null||v==='') return '-'; const n = Number(String(v).replace(/[,\s%％]/g,'')); return Number.isFinite(n) ? n.toFixed(1)+'%' : String(v); };
-  const decorateSearch=(control,label,color)=>{ control.options.collapsed=false; const el=control._container||control.getContainer(); const tag=document.createElement('span'); tag.className='search-tag'; tag.textContent=label; if(color) tag.style.background=color; (el.querySelector('form')||el).insertBefore(tag,el.firstChild); return control; };
+  const fmtYen = v=>{ if(v==null||v==='') return '-';
+    const n = Number(String(v).replace(/[,円¥\s]|\/?\s*m2/gi,'')); return Number.isFinite(n)?nf.format(n)+'円/㎡':String(v); };
+  const fmtPct = v=>{ if(v==null||v==='') return '-';
+    const n = Number(String(v).replace(/[,\s%％]/g,'')); return Number.isFinite(n)?n.toFixed(1)+'%':String(v); };
+  const decorateSearch=(control,label,color)=>{ control.options.collapsed=false;
+    const el=control._container||control.getContainer(); const tag=document.createElement('span');
+    tag.className='search-tag'; tag.textContent=label; if(color) tag.style.background=color;
+    (el.querySelector('form')||el).insertBefore(tag,el.firstChild); return control; };
 
   // --- keep hazard search at bottom ---
-  let s2 = null; const cornerTL = map._controlCorners['topleft'];
-  const pushHazardToBottom = ()=>{ if (s2 && s2._container && cornerTL) cornerTL.appendChild(s2._container); };
+  let s2=null; const cornerTL=map._controlCorners['topleft'];
+  const pushHazardToBottom=()=>{ if(s2&&s2._container&&cornerTL) cornerTL.appendChild(s2._container); };
 
-  // ===== 大字（初期OFF） =====
+  // ===== 大字（初期ON） =====
   fetch('./kyoukai.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const boundaryLayer = L.geoJSON(data,{
       pane:'boundaryPane',
       style:()=>({color:'green',dashArray:'4,4',weight:1.5,opacity:1}),
       onEachFeature:(f,l)=>{const p=f.properties??{}; l.options.title=z2h(`${p['大字']??''} ${p['市町村']??''}`);
         l.bindPopup(`<b>大字:</b> ${p['大字']??'-'}<br><b>市町村:</b> ${p['市町村']??'-'}`);}
-    }); // ← addTo(map) しない＝初期OFF
+    }).addTo(map);                                    // ← 初期ON
     ctl.addOverlay(boundaryLayer,'大字境界');
 
     const s1 = new L.Control.Search({layer: boundaryLayer, propertyName:'大字', textPlaceholder:'大字名', marker:false, zoom:14, collapsed:false}).addTo(map);
     decorateSearch(s1,'📚 大字','#2e7d32'); pushHazardToBottom();
-    s1.on('search:locationfound', e=>{ if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]}); });
+    s1.on('search:locationfound', e=>{ if(e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]}); });
   });
 
-  // ===== 指定避難場所（初期OFF） =====
+  // ===== 指定避難場所（初期ON） =====
   fetch('./17000_1.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
+    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',
+                         iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const shelters = L.geoJSON(data,{
       pane:'markersPane',
-      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? ''; const m=L.marker(latlng,{icon}); m.options.title=p._shelter_name; return m; },
+      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';
+        const m=L.marker(latlng,{icon}); m.options.title=p._shelter_name; return m; },
       onEachFeature:(f,l)=>l.bindPopup(`<b>指定避難場所</b><br>${Object.entries(f.properties??{}).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>')}`)
     });
-    cluster.addLayer(shelters);
-    // map.addLayer(cluster); ← 初期OFF
+    cluster.addLayer(shelters); map.addLayer(cluster);      // ← 初期ON
     ctl.addOverlay(cluster,'指定避難場所（更新：令和7年7月9日）');
 
-    const s3 = new L.Control.Search({layer: shelters, propertyName:'_shelter_name', textPlaceholder:'施設・場所名', marker:false, zoom:17, collapsed:false}).addTo(map);
+    const s3 = new L.Control.Search({layer:shelters, propertyName:'_shelter_name', textPlaceholder:'施設・場所名',
+                                     marker:false, zoom:17, collapsed:false}).addTo(map);
     decorateSearch(s3,'🏠 避難所','#388e3c'); pushHazardToBottom();
-    s3.on('search:locationfound', e=>{ if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17)); if (e.layer.openPopup) e.layer.openPopup(); });
+    s3.on('search:locationfound', e=>{ if(e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17)); if(e.layer.openPopup) e.layer.openPopup(); });
   });
 
-  // ===== ため池（初期OFF） =====
+  // ===== ため池（初期ON） =====
   fetch('./ため池.geojson',{cache:'no-store'}).then(r=>r.json()).then(data=>{
-    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
+    const icon = L.icon({iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',
+                         iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[0,-35]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
     const ponds = L.geoJSON(data,{
       pane:'markersPane',
-      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? ''; const m=L.marker(latlng,{icon}); m.options.title=p._pond_name; return m; },
+      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? '';
+        const m=L.marker(latlng,{icon}); m.options.title=p._pond_name; return m; },
       onEachFeature:(f,l)=>{ const p=f.properties??{}, nm=p._pond_name ?? ''; const skip=new Set(['name','名称','Name']);
         const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_pond_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
         l.bindPopup(`<b>ため池</b>${nm?`<br><b>name:</b> ${nm}`:''}${rest?`<br>${rest}`:''}`); }
     });
-    cluster.addLayer(ponds);
-    // map.addLayer(cluster); ← 初期OFF
+    cluster.addLayer(ponds); map.addLayer(cluster);         // ← 初期ON
     ctl.addOverlay(cluster,'ため池');
 
-    const s4 = new L.Control.Search({layer: ponds, propertyName:'_pond_name', textPlaceholder:'ため池名', marker:false, zoom:18, collapsed:false}).addTo(map);
+    const s4 = new L.Control.Search({layer:ponds, propertyName:'_pond_name', textPlaceholder:'ため池名',
+                                     marker:false, zoom:18, collapsed:false}).addTo(map);
     decorateSearch(s4,'💧 ため池','#1976d2'); pushHazardToBottom();
-    s4.on('search:locationfound', e=>{ if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18)); if (e.layer.openPopup) e.layer.openPopup(); });
+    s4.on('search:locationfound', e=>{ if(e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18)); if(e.layer.openPopup) e.layer.openPopup(); });
   });
 
   // ===== バス停（初期ON） =====
   fetch('./P11-22_17.geojson?_=now',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const ic = L.divIcon({html:'🚌',className:'bus-icon',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-12]});
     const cluster = L.markerClusterGroup({pane:'markersPane',disableClusteringAtZoom:16,spiderfyOnMaxZoom:true,showCoverageOnHover:false});
-    const pickName = (p)=>{const ks=['名称','停留所名','バス停名','name','Name','停名','停留所']; for(const k of ks){if(p&&p[k]) return z2h(p[k]);}
-      for(const [k,v] of Object.entries(p??{})){if(typeof v==='string'&&v.trim()) return z2h(v);} return '';};
+    const pickName = (p)=>{const ks=['名称','停留所名','バス停名','name','Name','停名','停留所'];
+      for(const k of ks){ if(p&&p[k]) return z2h(p[k]); } for(const [k,v] of Object.entries(p??{})){
+        if(typeof v==='string'&&v.trim()) return z2h(v);} return '';};
     const buses = L.geoJSON(data,{
       pane:'markersPane',
-      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._bus_name = pickName(p); const m=L.marker(latlng,{icon:ic}); m.options.title=p._bus_name; return m; },
+      pointToLayer:(f,latlng)=>{ const p=f.properties??{}; p._bus_name = pickName(p);
+        const m=L.marker(latlng,{icon:ic}); m.options.title=p._bus_name; return m; },
       onEachFeature:(f,l)=>{ const p=f.properties??{}, n=p._bus_name ?? ''; const skip=new Set(['名称','停留所名','バス停名','name','Name','停名','停留所']);
         const rest=Object.entries(p).filter(([k])=>!skip.has(k) && k!=='_bus_name').map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>');
         l.bindPopup(`<b>バス停（令和4年）</b>${n?`<br><b>名称:</b> ${n}`:''}${rest?`<br>${rest}`:''}`); }
     });
     cluster.addLayer(buses); map.addLayer(cluster); ctl.addOverlay(cluster,'バス停（令和4年）');
-    const s5 = new L.Control.Search({layer: buses, propertyName:'_bus_name', textPlaceholder:'バス停名', marker:false, zoom:18, collapsed:false}).addTo(map);
+    const s5 = new L.Control.Search({layer:buses, propertyName:'_bus_name', textPlaceholder:'バス停名',
+                                     marker:false, zoom:18, collapsed:false}).addTo(map);
     decorateSearch(s5,'🚌 バス停','#6a1b9a'); pushHazardToBottom();
-    s5.on('search:locationfound', e=>{ if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18)); if (e.layer.openPopup) e.layer.openPopup(); });
+    s5.on('search:locationfound', e=>{ if(e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18)); if(e.layer.openPopup) e.layer.openPopup(); });
   });
 
-  // ===== 地価調査（令和7年・石川）※検索UIなし（初期ON） =====
+  // ===== 地価（令和7年・石川）※検索UIなし（初期ON） =====
   fetch('./石川地価2025.geojson?_=r7',{cache:'no-store'}).then(r=>r.json()).then(data=>{
     const icon = L.icon({
       iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',
@@ -161,34 +176,34 @@ function init(){
       pane:'markersPane',
       pointToLayer:(f,latlng)=>{
         const p=f.properties??{};
-        const city  = pickKey(p, ['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村', /市区町村/]);
-        const where = pickKey(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名', /所在地/]);
-        const no    = pickKey(p, ['標準地番号','標準地番号（コード）','地点番号','番号', /標準地/]);
-        p._label = z2h([city, (where||no)].filter(Boolean).join(' ')) || z2h(no) || z2h(where) || '地価調査地点';
+        const city  = pickKey(p,['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村',/市区町村/]);
+        const where = pickKey(p,['所在地','所在地並びに地番','住居表示','地番','地点名','地区名',/所在地/]);
+        const no    = pickKey(p,['標準地番号','標準地番号（コード）','地点番号','番号',/標準地/]);
+        p._label = z2h([city,(where||no)].filter(Boolean).join(' ')) || z2h(no) || z2h(where) || '地価調査地点';
         const m=L.marker(latlng,{icon}); m.options.title=p._label; return m;
       },
       onEachFeature:(f,l)=>{
         const p=f.properties??{};
-        const price = fmtYen(pickKey(p, ['価格','価格（円/㎡）','価格_円m2','価格_円／㎡','単価','price','円/m2','円／m2','円/㎡','円／㎡','円m2', /円.?m2/]));
-        const yoy   = fmtPct(pickKey(p, ['対前年変動率','対前年変動率（％）','対前年変動率%','対前年変動率％','変動率','前年比','前年比％','yoy', /対前年.*変動率/, /前年比/]));
-        const use   = pickKey(p, ['用途','用途区分','区分','用途地域', /用途/]);
-        const city  = pickKey(p, ['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村', /市区町村/]);
-        const where = pickKey(p, ['所在地','所在地並びに地番','住居表示','地番','地点名','地区名', /所在地/]);
-        const no    = pickKey(p, ['標準地番号','標準地番号（コード）','地点番号','番号', /標準地/]);
-        const note  = pickKey(p, ['備考','注記','メモ']);
+        const price = fmtYen(pickKey(p,['価格','価格（円/㎡）','価格_円m2','価格_円／㎡','単価','price','円/m2','円／m2','円/㎡','円／㎡','円m2',/円.?m2/]));
+        const yoy   = fmtPct(pickKey(p,['対前年変動率','対前年変動率（％）','対前年変動率%','対前年変動率％','変動率','前年比','前年比％','yoy',/対前年.*変動率/,/前年比/]));
+        const use   = pickKey(p,['用途','用途区分','区分','用途地域',/用途/]);
+        const city  = pickKey(p,['市区町村名','市町村','市区町村','基準地の地名','所在地市区町村',/市区町村/]);
+        const where = pickKey(p,['所在地','所在地並びに地番','住居表示','地番','地点名','地区名',/所在地/]);
+        const no    = pickKey(p,['標準地番号','標準地番号（コード）','地点番号','番号',/標準地/]);
+        const note  = pickKey(p,['備考','注記','メモ']);
 
         let html =
-          `<b>地価調査（令和7年）</b><br>` +
-          `<b>標準地番号:</b> ${no||'-'}<br>` +
-          `<b>所在地:</b> ${[city,where].filter(Boolean).join(' ')||'-'}<br>` +
-          `<b>用途:</b> ${use||'-'}<br>` +
-          `<b>価格:</b> ${price}<br>` +
+          `<b>地価調査（令和7年）</b><br>`+
+          `<b>標準地番号:</b> ${no||'-'}<br>`+
+          `<b>所在地:</b> ${[city,where].filter(Boolean).join(' ')||'-'}<br>`+
+          `<b>用途:</b> ${use||'-'}<br>`+
+          `<b>価格:</b> ${price}<br>`+
           `<b>対前年変動率:</b> ${yoy}`;
-        if (price==='-' && yoy==='-' && !no && !city && !where){
-          const rows = Object.entries(p).map(([k,v])=>`<tr><th style="text-align:left;padding-right:6px;">${k}</th><td>${v}</td></tr>`).join('');
-          html += `<br><div style="max-height:240px;overflow:auto;"><table>${rows}</table></div>`;
+        if(price==='-' && yoy==='-' && !no && !city && !where){
+          const rows=Object.entries(p).map(([k,v])=>`<tr><th style="text-align:left;padding-right:6px;">${k}</th><td>${v}</td></tr>`).join('');
+          html+=`<br><div style="max-height:240px;overflow:auto;"><table>${rows}</table></div>`;
         }
-        if (note) html += `<br><b>備考:</b> ${note}`;
+        if(note) html += `<br><b>備考:</b> ${note}`;
         l.bindPopup(html);
       }
     });
@@ -206,33 +221,35 @@ function init(){
       style:f=>({color:col(f.properties.A33_002),weight:2,opacity:.9,fillOpacity:.25}),
       onEachFeature:(f,l)=>{
         const p=f.properties??{};
-        const num = (p.A33_004??'').toString().split(/[-－―‐]/)[0].replace(/\D/g,'');
-        const name = (p.A33_005??'').toString();
-        l.options.title = `${num} ${name}`.trim();
+        const num=(p.A33_004??'').toString().split(/[-－―‐]/)[0].replace(/\D/g,'');
+        const name=(p.A33_005??'').toString();
+        l.options.title=`${num} ${name}`.trim();
         l.bindPopup(`<b>${nm(p.A33_002)}</b><br><b>箇所番号:</b> ${p.A33_004??'-'}<br><b>箇所名:</b> ${p.A33_005??'-'}`+(p.A33_009?`<br><b>市町村:</b> ${p.A33_009}`:''));
       }
     }).addTo(map);
     ctl.addOverlay(danger,'土砂災害警戒区域');
 
-    s2 = new L.Control.Search({layer: danger, propertyName:'title', textPlaceholder:'箇所番号 / 箇所名', marker:false, zoom:16, collapsed:false}).addTo(map);
+    s2=new L.Control.Search({layer:danger, propertyName:'title', textPlaceholder:'箇所番号 / 箇所名', marker:false, zoom:16, collapsed:false}).addTo(map);
     decorateSearch(s2,'⚠️ 土砂災害','#e53935');
-    const push = ()=>{ const cornerTL = map._controlCorners['topleft']; if (s2 && s2._container && cornerTL) cornerTL.appendChild(s2._container); };
+    const push=()=>{ const c=map._controlCorners['topleft']; if(s2&&s2._container&&c) c.appendChild(s2._container); };
     push(); setTimeout(push,200); setTimeout(push,600); setTimeout(push,1200);
-    s2.on('search:locationfound', e => { if (e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]}); if (e.layer.openPopup) e.layer.openPopup(); });
+    s2.on('search:locationfound', e=>{ if(e.layer.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:18,padding:[24,24]}); if(e.layer.openPopup) e.layer.openPopup(); });
   });
 
   // 凡例
-  const legend=L.control({position:'bottomright'}); legend.onAdd=()=>{const d=L.DomUtil.create('div','legend'); d.innerHTML =
+  const legend=L.control({position:'bottomright'});
+  legend.onAdd=()=>{const d=L.DomUtil.create('div','legend'); d.innerHTML =
     '<i style="background:#ffff00;"></i> イエローゾーン<br>'+
     '<i style="background:#ff0000;"></i> レッドゾーン<br>'+
     '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 指定避難場所（令和7年7月9日）<br>'+
     '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png" style="height:18px;vertical-align:middle;margin-right:6px;"> ため池<br>'+
     '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🚌</span> バス停（令和4年）<br>'+
-    '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 地価調査（令和7年）'; return d; };
+    '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 地価調査（令和7年）';
+    return d;};
   legend.addTo(map);
 
   // 現在地
-  if (L.control.locate){ L.control.locate({position:'topleft',flyTo:true,strings:{title:'現在地を表示'},locateOptions:{enableHighAccuracy:true}}).addTo(map); }
+  if(L.control.locate){ L.control.locate({position:'topleft',flyTo:true,strings:{title:'現在地を表示'},locateOptions:{enableHighAccuracy:true}}).addTo(map); }
 }
 </script>
 </body>
