@@ -75,6 +75,12 @@ function init(){
   map.createPane('backgroundPane');
   map.getPane('backgroundPane').style.zIndex = 200;
 
+  // 国土地理院の淡色地図は、古地図・CS立体図・航空写真の上に
+  // 半透明で重ねるため、専用の上層ペインに配置する
+  map.createPane('gsiOverlayPane');
+  map.getPane('gsiOverlayPane').style.zIndex = 210;
+  map.getPane('gsiOverlayPane').style.pointerEvents = 'none';
+
   map.createPane('boundaryPane');
   map.getPane('boundaryPane').style.zIndex = 421;
 
@@ -87,9 +93,10 @@ function init(){
   // ============================================================
   // 背景地図
   //
-  // ・初期状態では「能登半島CS立体図」と「国土地理院 淡色地図」を表示
-  // ・背景地図はすべてチェックボックス式で、個別に表示／非表示を切り替え可能
-  // ・CS立体図もチェックを外して非表示にできる
+  // ・初期状態では「能登半島CS立体図」と「国土地理院 淡色地図（透過）」を表示
+  // ・国土地理院淡色地図は重ね合わせ用として単独でも表示可能
+  // ・それ以外の背景地図は同時に1種類だけ表示
+  // ・すべてチェックを外して背景なしにもできる
   // ============================================================
 
   const notoCS = L.tileLayer(
@@ -117,7 +124,8 @@ function init(){
     {
       minZoom:2,
       maxZoom:18,
-      pane:'backgroundPane',
+      opacity:0.6,
+      pane:'gsiOverlayPane',
       attribution:'© 国土地理院'
     }
   );
@@ -144,9 +152,9 @@ function init(){
   const kj1994 = kjMapLayer('03');
 
   const backgroundMaps = {
+    '<b style="color:#c62828;">★【重ね合わせ】国土地理院 淡色地図（透過）</b>': gsiPale,
     '【背景】能登半島CS立体図': notoCS,
     '【背景】地理院 航空写真': gsiPhoto,
-    '【背景】国土地理院 淡色地図': gsiPale,
     '【古地図】金沢・富山 1909–1910年': kj1909,
     '【古地図】金沢・富山 1930年': kj1930,
     '【古地図】金沢・富山 1968–1969年': kj1968,
@@ -155,7 +163,7 @@ function init(){
   };
 
   // ベースレイヤではなくオーバーレイとして登録することで、
-  // 能登半島CS立体図を含め、各背景地図のチェックを外せるようにする
+  // 各背景地図をチェック解除でき、国土地理院淡色地図だけ重ね合わせ可能にする
   const ctl = L.control.layers(
     null,
     backgroundMaps,
@@ -166,6 +174,68 @@ function init(){
   // どちらもオーバーレイ扱いのため、チェックを外して非表示にできる
   notoCS.addTo(map);
   gsiPale.addTo(map);
+
+  // 国土地理院淡色地図は、透過した重ね合わせ用として独立してON/OFF可能。
+  // 能登半島CS立体図・航空写真・各年代の古地図は、同時に1種類だけ表示する。
+  // したがって、表示できる組み合わせは次のいずれかになる。
+  //   1. 国土地理院淡色地図 + CS立体図／航空写真／古地図のうち1種類
+  //   2. 国土地理院淡色地図だけ
+  //   3. CS立体図／航空写真／古地図のうち1種類だけ
+  //   4. 背景地図なし
+  const exclusiveBackgroundLayers = new Set([
+    notoCS,
+    gsiPhoto,
+    kj1909,
+    kj1930,
+    kj1968,
+    kj1981,
+    kj1994
+  ]);
+
+  let changingBackground = false;
+
+  // Leafletのチェック操作中に別レイヤを削除すると、地図上の表示と
+  // チェック欄が一時的にずれるため、操作終了後に一覧を再描画する。
+  function syncLayerControl(){
+    window.setTimeout(()=>{
+      if (ctl && typeof ctl._update === 'function') ctl._update();
+    },0);
+  }
+
+  map.on('overlayadd', e=>{
+    if (changingBackground || !exclusiveBackgroundLayers.has(e.layer)) return;
+
+    changingBackground = true;
+
+    for(const layer of exclusiveBackgroundLayers){
+      if(layer !== e.layer && map.hasLayer(layer)){
+        map.removeLayer(layer);
+      }
+    }
+
+    changingBackground = false;
+
+    // 国土地理院淡色地図が表示中なら、常に古地図等の上に保つ
+    if(map.hasLayer(gsiPale) && typeof gsiPale.bringToFront === 'function'){
+      gsiPale.bringToFront();
+    }
+
+    syncLayerControl();
+  });
+
+  // 手動でチェックを外した場合も、現在表示中のレイヤだけにチェックを合わせる。
+  map.on('overlayremove', e=>{
+    if(e.layer === gsiPale || exclusiveBackgroundLayers.has(e.layer)){
+      syncLayerControl();
+    }
+  });
+
+  map.on('overlayadd', e=>{
+    if(e.layer === gsiPale && typeof gsiPale.bringToFront === 'function'){
+      gsiPale.bringToFront();
+      syncLayerControl();
+    }
+  });
 
   L.control.scale({
     position:'bottomleft',
