@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+"<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Noto CSMap（今昔マップ・属性検索・クラスタ・土砂災害検索）</title>
+<title>Noto CSMap（今昔マップ・土砂災害・地価2025・くま目撃情報2025・洪水浸水想定区域）</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
@@ -13,8 +13,10 @@
 <style>
   html,body{height:100%;margin:0}
   #map{height:100%;background:#f3f3f3}
-  .legend{background:#fff;padding:6px 10px;line-height:18px;box-shadow:0 0 15px rgba(0,0,0,.2)}
+  .legend{background:#fff;padding:6px 10px;line-height:18px;box-shadow:0 0 15px rgba(0,0,0,.2);font-size:12px;max-height:55vh;overflow-y:auto}
   .legend i{width:18px;height:18px;float:left;margin-right:8px;opacity:.9}
+  .legend-title{font-weight:bold;margin:2px 0 4px}
+  .legend hr{margin:5px 0;border:none;border-top:1px solid #ccc}
   .bus-icon{font-size:22px;width:26px;height:26px;line-height:26px;text-align:center;transform:translate(-13px,-13px);text-shadow:0 0 2px rgba(255,255,255,.85)}
   #msg{position:absolute;left:0;right:0;top:8px;text-align:center;color:#666;font:14px/1.6 system-ui;z-index:9999}
 
@@ -81,6 +83,11 @@ function init(){
   map.getPane('gsiOverlayPane').style.zIndex = 210;
   map.getPane('gsiOverlayPane').style.pointerEvents = 'none';
 
+  // 洪水浸水想定区域は背景地図より上、大字境界より下に表示
+  map.createPane('floodPane');
+  map.getPane('floodPane').style.zIndex = 418;
+  map.getPane('floodPane').style.pointerEvents = 'none';
+
   map.createPane('boundaryPane');
   map.getPane('boundaryPane').style.zIndex = 421;
 
@@ -130,6 +137,18 @@ function init(){
     }
   );
 
+  // 洪水浸水想定区域（想定最大規模・石川県）
+  const floodHazard = L.tileLayer(
+    'https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_pref_data/17/{z}/{x}/{y}.png',
+    {
+      minZoom:2,
+      maxZoom:18,
+      opacity:0.6,
+      pane:'floodPane',
+      attribution:'洪水浸水想定区域（想定最大規模） © 国土交通省・都道府県等'
+    }
+  );
+
   // 今昔マップ「金沢・富山」
   // 今昔マップはTMS方式のため、Y座標に {-y} を使用
   function kjMapLayer(ageFolder){
@@ -169,6 +188,9 @@ function init(){
     backgroundMaps,
     {collapsed:false}
   ).addTo(map);
+
+  // 洪水浸水想定区域は初期OFF。チェック時だけ表示する
+  ctl.addOverlay(floodHazard,'洪水浸水想定区域（想定最大規模）');
 
   // 初期表示
   // どちらもオーバーレイ扱いのため、チェックを外して非表示にできる
@@ -248,6 +270,48 @@ function init(){
     .replace(/[！-～]/g,ch=>String.fromCharCode(ch.charCodeAt(0)-0xFEE0))
     .replace(/\s+/g,' ')
     .trim();
+
+  const normKey = k => z2h(k)
+    .replace(/[ \t\r\n]/g,'')
+    .replace(/[／\/]/g,'/')
+    .replace(/[％%]/g,'%')
+    .replace(/㎡/g,'m2')
+    .toLowerCase();
+
+  const pickKey = (obj, keysOrRegs) => {
+    if (!obj) return '';
+    const keyMap = new Map(Object.keys(obj).map(k=>[normKey(k),k]));
+
+    for(const key of keysOrRegs){
+      if(typeof key === 'string'){
+        const normalized = normKey(key);
+        if(keyMap.has(normalized)) return obj[keyMap.get(normalized)];
+      }
+    }
+
+    const entries = Object.keys(obj).map(k=>[k,normKey(k)]);
+    for(const pattern of keysOrRegs){
+      if(pattern instanceof RegExp){
+        const hit = entries.find(([,normalized])=>pattern.test(normalized));
+        if(hit) return obj[hit[0]];
+      }
+    }
+    return '';
+  };
+
+  const numberFormat = new Intl.NumberFormat('ja-JP');
+
+  const fmtYen = value => {
+    if(value==null || value==='') return '-';
+    const n = Number(String(value).replace(/[,円¥\s]|\/?\s*m2/gi,''));
+    return Number.isFinite(n) ? `${numberFormat.format(n)}円/㎡` : String(value);
+  };
+
+  const fmtPct = value => {
+    if(value==null || value==='') return '-';
+    const n = Number(String(value).replace(/[,\s%％]/g,''));
+    return Number.isFinite(n) ? `${n.toFixed(1)}%` : String(value);
+  };
 
   const setTitle = (layerOrFeat, title) => {
     const t = z2h(title);
@@ -532,6 +596,150 @@ function init(){
     })
     .catch(err=>console.error(err));
 
+  // ===== 地価調査（2025年・石川／初期ON） =====
+  fetch('./石川地価2025.geojson?_=2025',{cache:'no-store'})
+    .then(r=>{
+      if(!r.ok) throw new Error(`石川地価2025.geojson: HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(data=>{
+      const icon = L.icon({
+        iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',
+        shadowUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-shadow.png',
+        iconSize:[25,41],
+        iconAnchor:[12,41],
+        popupAnchor:[0,-35]
+      });
+
+      const land = L.geoJSON(data,{
+        pane:'markersPane',
+        pointToLayer:(f,latlng)=>{
+          const p=f.properties??{};
+          const site = pickKey(p,[
+            '基準地の地名','標準地番号','標準地番号（コード）',
+            '地点番号','番号',/標準地/,/基準地/
+          ]);
+          const where = pickKey(p,[
+            '所在並びに地番','所在地並びに地番','所在地',
+            '住居表示','地番','地点名','地区名',/所在/
+          ]);
+          p._land_label = z2h([site,where].filter(Boolean).join(' ')) || '地価調査地点';
+
+          const m=L.marker(latlng,{icon});
+          setTitle(m,p._land_label);
+          return m;
+        },
+        onEachFeature:(f,l)=>{
+          const p=f.properties??{};
+          const site = pickKey(p,[
+            '基準地の地名','標準地番号','標準地番号（コード）',
+            '地点番号','番号',/標準地/,/基準地/
+          ]);
+          const where = pickKey(p,[
+            '所在並びに地番','所在地並びに地番','所在地',
+            '住居表示','地番','地点名','地区名',/所在/
+          ]);
+          const use = pickKey(p,[
+            '都市計画の用途地域','用途','用途区分','区分','用途地域',/用途/
+          ]);
+          const price = fmtYen(pickKey(p,[
+            '円/ｍ2','円/m2','円/㎡','価格','価格（円/㎡）',
+            '価格_円m2','単価','price',/円.?m2/
+          ]));
+          const yoy = fmtPct(pickKey(p,[
+            '対前年変動率%','対前年変動率','対前年変動率（％）',
+            '変動率','前年比','前年比％','yoy',/対前年.*変動率/,/前年比/
+          ]));
+          const note = pickKey(p,['備考','注記','メモ']);
+
+          let html =
+            `<b>地価調査（2025年・石川）</b><br>`+
+            `<b>基準地:</b> ${site||'-'}<br>`+
+            `<b>所在地:</b> ${where||'-'}<br>`+
+            `<b>用途地域:</b> ${use||'-'}<br>`+
+            `<b>価格:</b> ${price}<br>`+
+            `<b>対前年変動率:</b> ${yoy}`;
+
+          if(note) html += `<br><b>備考:</b> ${note}`;
+          l.bindPopup(html);
+        }
+      });
+
+      const cluster = L.markerClusterGroup({
+        pane:'markersPane',
+        disableClusteringAtZoom:16,
+        spiderfyOnMaxZoom:true,
+        showCoverageOnHover:false
+      });
+
+      cluster.addLayer(land);
+      map.addLayer(cluster);
+      ctl.addOverlay(cluster,'地価調査（2025年・石川）');
+    })
+    .catch(err=>console.error('地価2025の読込に失敗:',err));
+
+  // ===== くま目撃情報（2025年／初期ON） =====
+  fetch('./R7石川熊.geojson?_=2025',{cache:'no-store'})
+    .then(r=>{
+      if(!r.ok) throw new Error(`R7石川熊.geojson: HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(data=>{
+      const bearIcon = L.divIcon({
+        html:'🐻',
+        className:'bus-icon',
+        iconSize:[26,26],
+        iconAnchor:[13,13],
+        popupAnchor:[0,-12]
+      });
+
+      const parseDescriptionToTable = description => {
+        const parts = (description??'')
+          .toString()
+          .split(/<br\s*\/?>/i)
+          .map(s=>s.trim())
+          .filter(Boolean);
+
+        const rows = parts.map(line=>{
+          const idx = line.search(/[:：]/);
+          if(idx>-1){
+            const key=line.slice(0,idx).trim();
+            const value=line.slice(idx+1).trim();
+            return `<tr><th style="text-align:left;padding-right:6px;white-space:nowrap;">${key}</th><td>${value}</td></tr>`;
+          }
+          return `<tr><td colspan="2">${line}</td></tr>`;
+        }).join('');
+
+        return `<b>くま目撃情報（2025年）</b>`+
+          `<div style="max-height:260px;overflow:auto;"><table>${rows}</table></div>`;
+      };
+
+      const bears = L.geoJSON(data,{
+        pane:'markersPane',
+        pointToLayer:(f,latlng)=>{
+          const p=f.properties??{};
+          const title = p.Name || p.name || p['市町名'] || p['場所'] || p['出没日'] || 'くま目撃情報';
+          return L.marker(latlng,{icon:bearIcon,title:z2h(title)});
+        },
+        onEachFeature:(f,l)=>{
+          const p=f.properties??{};
+          l.bindPopup(parseDescriptionToTable(p.description??p.DESCRIPTION??''));
+        }
+      });
+
+      const cluster = L.markerClusterGroup({
+        pane:'markersPane',
+        disableClusteringAtZoom:17,
+        spiderfyOnMaxZoom:true,
+        showCoverageOnHover:false
+      });
+
+      cluster.addLayer(bears);
+      map.addLayer(cluster);
+      ctl.addOverlay(cluster,'くま目撃情報（2025年）');
+    })
+    .catch(err=>console.error('くま目撃情報2025の読込に失敗:',err));
+
   // ===== 土砂災害（番号も名称も検索／「0344」OK）※最後に追加＝一番下 =====
   fetch('./dosya.geojson',{cache:'no-store'})
     .then(r=>{
@@ -612,11 +820,22 @@ function init(){
   legend.onAdd=()=>{
     const d=L.DomUtil.create('div','legend');
     d.innerHTML =
+      '<div class="legend-title">凡例</div>'+
       '<i style="background:#ffff00;"></i> イエローゾーン<br>'+
       '<i style="background:#ff0000;"></i> レッドゾーン<br>'+
       '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 指定避難場所<br>'+
       '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png" style="height:18px;vertical-align:middle;margin-right:6px;"> ため池<br>'+
-      '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🚌</span> バス停（令和4年）';
+      '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🚌</span> バス停（令和4年）<br>'+
+      '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 地価調査（2025年）<br>'+
+      '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🐻</span> くま目撃情報（2025年）'+
+      '<hr>'+
+      '<div class="legend-title">洪水浸水想定区域（想定最大規模）</div>'+
+      '<i style="background:#d400ff;"></i> 20m以上<br>'+
+      '<i style="background:#ff66cc;"></i> 10m～20m<br>'+
+      '<i style="background:#ff9966;"></i> 5m～10m<br>'+
+      '<i style="background:#ffcc66;"></i> 3m～5m<br>'+
+      '<i style="background:#ffe699;"></i> 0.5m～3m<br>'+
+      '<i style="background:#ffffcc;"></i> 0.5m未満';
     return d;
   };
 
