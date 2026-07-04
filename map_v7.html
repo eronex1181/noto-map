@@ -20,14 +20,12 @@
   .bus-icon{font-size:22px;width:26px;height:26px;line-height:26px;text-align:center;transform:translate(-13px,-13px);text-shadow:0 0 2px rgba(255,255,255,.85)}
   #msg{position:absolute;left:0;right:0;top:8px;text-align:center;color:#666;font:14px/1.6 system-ui;z-index:9999}
 
-  /* 検索ラベル */
   .search-tag{
     display:inline-block;margin:6px 6px 4px 6px;padding:2px 8px;border-radius:999px;
     font-size:12px;color:#fff;background:#607d8b;line-height:1.4;vertical-align:middle
   }
   .leaflet-control-search .search-input{margin-left:6px}
 
-  /* レイヤ一覧を少し見やすくする */
   .leaflet-control-layers{
     max-height:72vh;
     overflow-y:auto;
@@ -73,17 +71,13 @@ function init(){
   const map = L.map('map').setView([37.3,136.9],11);
 
   // panes
-  // 背景地図はすべてベクタやマーカーより下に表示
   map.createPane('backgroundPane');
   map.getPane('backgroundPane').style.zIndex = 200;
 
-  // 国土地理院の淡色地図は、古地図・CS立体図・航空写真の上に
-  // 半透明で重ねるため、専用の上層ペインに配置する
   map.createPane('gsiOverlayPane');
   map.getPane('gsiOverlayPane').style.zIndex = 210;
   map.getPane('gsiOverlayPane').style.pointerEvents = 'none';
 
-  // 洪水浸水想定区域は背景地図より上、大字境界より下に表示
   map.createPane('floodPane');
   map.getPane('floodPane').style.zIndex = 418;
   map.getPane('floodPane').style.pointerEvents = 'none';
@@ -99,13 +93,7 @@ function init(){
 
   // ============================================================
   // 背景地図
-  //
-  // ・初期状態では「能登半島CS立体図」と「国土地理院 淡色地図（透過）」を表示
-  // ・国土地理院淡色地図は重ね合わせ用として単独でも表示可能
-  // ・それ以外の背景地図は同時に1種類だけ表示
-  // ・すべてチェックを外して背景なしにもできる
   // ============================================================
-
   const notoCS = L.tileLayer(
     'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
     {
@@ -137,7 +125,6 @@ function init(){
     }
   );
 
-  // 洪水浸水想定区域（想定最大規模・石川県）
   const floodHazard = L.tileLayer(
     'https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_pref_data/17/{z}/{x}/{y}.png',
     {
@@ -149,8 +136,6 @@ function init(){
     }
   );
 
-  // 今昔マップ「金沢・富山」
-  // 今昔マップはTMS方式のため、Y座標に {-y} を使用
   function kjMapLayer(ageFolder){
     return L.tileLayer(
       `https://ktgis.net/kjmapw/kjtilemap/kanazawa/${ageFolder}/{z}/{x}/{-y}.png`,
@@ -181,29 +166,50 @@ function init(){
     '【古地図】金沢・富山 1994–2001年': kj1994
   };
 
-  // ベースレイヤではなくオーバーレイとして登録することで、
-  // 各背景地図をチェック解除でき、国土地理院淡色地図だけ重ね合わせ可能にする
   const ctl = L.control.layers(
     null,
     backgroundMaps,
     {collapsed:false}
   ).addTo(map);
 
-  // 洪水浸水想定区域は初期OFF。チェック時だけ表示する
   ctl.addOverlay(floodHazard,'洪水浸水想定区域（想定最大規模）');
 
-  // 初期表示
-  // どちらもオーバーレイ扱いのため、チェックを外して非表示にできる
+  // 大規模盛土造成地は既存レイヤ一覧に1項目だけ追加（初期OFF）
+  const moridoGroup = L.layerGroup();
+  let moridoLayer = null;
+  let moridoAutoZoomDone = false;
+
+  function zoomToMoridoOnce(){
+    if(
+      moridoAutoZoomDone ||
+      !moridoLayer ||
+      !moridoLayer.getBounds ||
+      !moridoLayer.getBounds().isValid()
+    ){
+      return;
+    }
+
+    map.fitBounds(moridoLayer.getBounds(),{
+      maxZoom:13,
+      padding:[24,24]
+    });
+    moridoAutoZoomDone = true;
+  }
+
+  ctl.addOverlay(moridoGroup,'大規模盛土造成地（2023年）');
+
+  // 初期ON
+  map.addLayer(moridoGroup);
+
+  map.on('overlayadd',e=>{
+    if(e.layer === moridoGroup){
+      zoomToMoridoOnce();
+    }
+  });
+
   notoCS.addTo(map);
   gsiPale.addTo(map);
 
-  // 国土地理院淡色地図は、透過した重ね合わせ用として独立してON/OFF可能。
-  // 能登半島CS立体図・航空写真・各年代の古地図は、同時に1種類だけ表示する。
-  // したがって、表示できる組み合わせは次のいずれかになる。
-  //   1. 国土地理院淡色地図 + CS立体図／航空写真／古地図のうち1種類
-  //   2. 国土地理院淡色地図だけ
-  //   3. CS立体図／航空写真／古地図のうち1種類だけ
-  //   4. 背景地図なし
   const exclusiveBackgroundLayers = new Set([
     notoCS,
     gsiPhoto,
@@ -216,8 +222,6 @@ function init(){
 
   let changingBackground = false;
 
-  // Leafletのチェック操作中に別レイヤを削除すると、地図上の表示と
-  // チェック欄が一時的にずれるため、操作終了後に一覧を再描画する。
   function syncLayerControl(){
     window.setTimeout(()=>{
       if (ctl && typeof ctl._update === 'function') ctl._update();
@@ -237,7 +241,6 @@ function init(){
 
     changingBackground = false;
 
-    // 国土地理院淡色地図が表示中なら、常に古地図等の上に保つ
     if(map.hasLayer(gsiPale) && typeof gsiPale.bringToFront === 'function'){
       gsiPale.bringToFront();
     }
@@ -245,7 +248,6 @@ function init(){
     syncLayerControl();
   });
 
-  // 手動でチェックを外した場合も、現在表示中のレイヤだけにチェックを合わせる。
   map.on('overlayremove', e=>{
     if(e.layer === gsiPale || exclusiveBackgroundLayers.has(e.layer)){
       syncLayerControl();
@@ -321,7 +323,6 @@ function init(){
     return t;
   };
 
-  // 緯度経度からGoogleマップ／ストリートビューへのリンクを作成
   function googleMapLinks(latlng){
     if(!latlng) return '';
 
@@ -346,7 +347,6 @@ function init(){
     );
   }
 
-  // 検索UIのラベル付け＋常時展開
   function decorateSearch(control, label, color){
     control.options.collapsed = false;
     const el = control._container || control.getContainer();
@@ -359,8 +359,19 @@ function init(){
     return control;
   }
 
+  // GeoJSONはGitHubリポジトリ直下から取得する。
+  // Blogger内、ローカルHTML、GitHub Pagesのいずれでも同じように動作する。
+  const DATA_BASE =
+    'https://raw.githubusercontent.com/eronex1181/noto-map/main/';
+
+  const dataFile = filename =>
+    DATA_BASE + filename
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/');
+
   // ===== 大字 =====
-  fetch('./kyoukai.geojson',{cache:'no-store'})
+  fetch(dataFile('kyoukai.geojson'),{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`kyoukai.geojson: HTTP ${r.status}`);
       return r.json();
@@ -383,8 +394,9 @@ function init(){
             `<b>市町村:</b> ${p['市町村']??'-'}`
           );
         }
-      }).addTo(map);
+      });
 
+      // 初期OFF
       ctl.addOverlay(boundaryLayer,'大字境界');
 
       const s1 = new L.Control.Search({
@@ -409,8 +421,8 @@ function init(){
     })
     .catch(err=>console.error(err));
 
-  // ===== 指定避難場所（クラスタ／施設・場所名で検索） =====
-  fetch('./17000_1.geojson',{cache:'no-store'})
+  // ===== 指定避難場所 =====
+  fetch(dataFile('17000_1.geojson'),{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`17000_1.geojson: HTTP ${r.status}`);
       return r.json();
@@ -452,7 +464,7 @@ function init(){
       });
 
       cluster.addLayer(shelters);
-      map.addLayer(cluster);
+      // 初期OFF
       ctl.addOverlay(cluster,'指定避難場所（更新2025-07-09）');
 
       const s3 = new L.Control.Search({
@@ -473,8 +485,8 @@ function init(){
     })
     .catch(err=>console.error(err));
 
-  // ===== ため池（クラスタ／名称検索） =====
-  fetch('./ため池.geojson',{cache:'no-store'})
+  // ===== ため池 =====
+  fetch(dataFile('ため池.geojson'),{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`ため池.geojson: HTTP ${r.status}`);
       return r.json();
@@ -521,7 +533,7 @@ function init(){
       });
 
       cluster.addLayer(ponds);
-      map.addLayer(cluster);
+      // 初期OFF
       ctl.addOverlay(cluster,'ため池（クラスタ）');
 
       const s4 = new L.Control.Search({
@@ -542,8 +554,8 @@ function init(){
     })
     .catch(err=>console.error(err));
 
-  // ===== バス停（クラスタ／名称検索） =====
-  fetch('./P11-22_17.geojson?_=now',{cache:'no-store'})
+  // ===== バス停 =====
+  fetch(dataFile('P11-22_17.geojson')+'?_=now',{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`P11-22_17.geojson: HTTP ${r.status}`);
       return r.json();
@@ -604,7 +616,7 @@ function init(){
       });
 
       cluster.addLayer(buses);
-      map.addLayer(cluster);
+      // 初期OFF
       ctl.addOverlay(cluster,'バス停（令和4年）');
 
       const s5 = new L.Control.Search({
@@ -626,7 +638,7 @@ function init(){
     .catch(err=>console.error(err));
 
   // ===== 地価調査（2025年・石川／初期ON） =====
-  fetch('./石川地価2025.geojson?_=2025',{cache:'no-store'})
+  fetch(dataFile('石川地価2025.geojson')+'?_=2025',{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`石川地価2025.geojson: HTTP ${r.status}`);
       return r.json();
@@ -702,13 +714,13 @@ function init(){
       });
 
       cluster.addLayer(land);
-      map.addLayer(cluster);
+      // 初期OFF
       ctl.addOverlay(cluster,'地価調査（2025年・石川）');
     })
     .catch(err=>console.error('地価2025の読込に失敗:',err));
 
   // ===== くま目撃情報（2025年／初期ON） =====
-  fetch('./R7石川熊.geojson?_=2025',{cache:'no-store'})
+  fetch(dataFile('R7石川熊.geojson')+'?_=2025',{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`R7石川熊.geojson: HTTP ${r.status}`);
       return r.json();
@@ -773,8 +785,72 @@ function init(){
     })
     .catch(err=>console.error('くま目撃情報2025の読込に失敗:',err));
 
+  // ===== 大規模盛土造成地（国土数値情報A54・2023年／初期OFF） =====
+  fetch(dataFile('A54-23_17.geojson')+'?_=2023',{cache:'no-store'})
+    .then(r=>{
+      if(!r.ok) throw new Error(`A54-23_17.geojson: HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(data=>{
+      const moridoType = value=>{
+        const v=String(value??'');
+        if(v==='1') return '谷埋め型';
+        if(v==='2') return '腹付け型';
+        if(v==='9') return '区分をしていない';
+        return '区分不明';
+      };
+
+      const moridoColor = value=>{
+        const v=String(value??'');
+        if(v==='1') return '#43a047';
+        if(v==='2') return '#fb8c00';
+        if(v==='9') return '#8e24aa';
+        return '#757575';
+      };
+
+      moridoLayer = L.geoJSON(data,{
+        pane:'zonesPane',
+        style:f=>{
+          const color=moridoColor(f.properties?.A54_001);
+          return {
+            color,
+            weight:2,
+            opacity:0.95,
+            fillColor:color,
+            fillOpacity:0.35
+          };
+        },
+        onEachFeature:(f,l)=>{
+          const p=f.properties??{};
+          const type=moridoType(p.A54_001);
+          const prefecture=p.A54_003??'石川県';
+          const municipality=p.A54_005??'-';
+          const number=p.A54_006??'-';
+
+          setTitle(l,[number,municipality,type].filter(Boolean).join(' '));
+          const center=l.getBounds ? l.getBounds().getCenter() : null;
+
+          l.bindPopup(
+            `<b>大規模盛土造成地</b><br>`+
+            `<b>盛土区分:</b> ${type}<br>`+
+            `<b>盛土番号:</b> ${number}<br>`+
+            `<b>都道府県:</b> ${prefecture}<br>`+
+            `<b>市区町村:</b> ${municipality}`+
+            googleMapLinks(center)
+          );
+        }
+      });
+
+      // チェック欄は先に作成済み。読込完了後にデータだけ格納する。
+      moridoGroup.addLayer(moridoLayer);
+
+      // 初期表示では現在の能登の表示範囲を維持する。
+      // 一度OFFにして再びONにした場合のみ、盛土範囲へ移動する。
+    })
+    .catch(err=>console.error('大規模盛土造成地の読込に失敗:',err));
+
   // ===== 土砂災害（番号も名称も検索／「0344」OK）※最後に追加＝一番下 =====
-  fetch('./dosya.geojson',{cache:'no-store'})
+  fetch(dataFile('dosya.geojson'),{cache:'no-store'})
     .then(r=>{
       if(!r.ok) throw new Error(`dosya.geojson: HTTP ${r.status}`);
       return r.json();
@@ -831,7 +907,6 @@ function init(){
 
       decorateSearch(s2,'⚠️ 土砂災害','#e53935');
 
-      // 念のため「最下段」に固定
       const corner = map._controlCorners['topleft'];
       corner.appendChild(s2._container);
 
@@ -874,7 +949,6 @@ function init(){
 
   legend.addTo(map);
 
-  // 現在地
   if (L.control.locate){
     L.control.locate({
       position:'topleft',
