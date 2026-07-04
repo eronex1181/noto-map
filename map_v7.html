@@ -18,6 +18,39 @@
   .legend-title{font-weight:bold;margin:2px 0 4px}
   .legend hr{margin:5px 0;border:none;border-top:1px solid #ccc}
   .bus-icon{font-size:22px;width:26px;height:26px;line-height:26px;text-align:center;transform:translate(-13px,-13px);text-shadow:0 0 2px rgba(255,255,255,.85)}
+  .map-symbol-wrapper{
+    background:transparent;
+    border:none;
+  }
+  .map-symbol{
+    width:32px;
+    height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    box-sizing:border-box;
+    border:2px solid #fff;
+    box-shadow:0 1px 6px rgba(0,0,0,.55);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-weight:bold;
+    line-height:1;
+  }
+  .shelter-symbol{
+    background:#2e7d32;
+    color:#fff;
+    font-size:18px;
+  }
+  .pond-symbol{
+    background:#1976d2;
+    color:#fff;
+    font-size:19px;
+  }
+  .landprice-symbol{
+    background:#ef6c00;
+    color:#fff;
+    font-size:19px;
+  }
   #msg{position:absolute;left:0;right:0;top:8px;text-align:center;color:#666;font:14px/1.6 system-ui;z-index:9999}
 
   .search-tag{
@@ -428,11 +461,12 @@ function init(){
       return r.json();
     })
     .then(data=>{
-      const icon = L.icon({
-        iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',
-        iconSize:[25,41],
-        iconAnchor:[12,41],
-        popupAnchor:[0,-35]
+      const icon = L.divIcon({
+        html:'<div class="map-symbol shelter-symbol">避</div>',
+        className:'map-symbol-wrapper',
+        iconSize:[32,32],
+        iconAnchor:[16,16],
+        popupAnchor:[0,-18]
       });
 
       const cluster = L.markerClusterGroup({
@@ -492,11 +526,12 @@ function init(){
       return r.json();
     })
     .then(data=>{
-      const icon = L.icon({
-        iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',
-        iconSize:[25,41],
-        iconAnchor:[12,41],
-        popupAnchor:[0,-35]
+      const icon = L.divIcon({
+        html:'<div class="map-symbol pond-symbol">💧</div>',
+        className:'map-symbol-wrapper',
+        iconSize:[32,32],
+        iconAnchor:[16,16],
+        popupAnchor:[0,-18]
       });
 
       const cluster = L.markerClusterGroup({
@@ -644,12 +679,12 @@ function init(){
       return r.json();
     })
     .then(data=>{
-      const icon = L.icon({
-        iconUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png',
-        shadowUrl:'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-shadow.png',
-        iconSize:[25,41],
-        iconAnchor:[12,41],
-        popupAnchor:[0,-35]
+      const icon = L.divIcon({
+        html:'<div class="map-symbol landprice-symbol">¥</div>',
+        className:'map-symbol-wrapper',
+        iconSize:[32,32],
+        iconAnchor:[16,16],
+        popupAnchor:[0,-18]
       });
 
       const land = L.geoJSON(data,{
@@ -931,10 +966,10 @@ function init(){
       '<div class="legend-title">凡例</div>'+
       '<i style="background:#ffff00;"></i> イエローゾーン<br>'+
       '<i style="background:#ff0000;"></i> レッドゾーン<br>'+
-      '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 指定避難場所<br>'+
-      '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png" style="height:18px;vertical-align:middle;margin-right:6px;"> ため池<br>'+
+      '<span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:#2e7d32;color:#fff;align-items:center;justify-content:center;font-size:11px;font-weight:bold;margin-right:6px;vertical-align:middle;">避</span> 指定避難場所<br>'+
+      '<span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:#1976d2;color:#fff;align-items:center;justify-content:center;font-size:12px;margin-right:6px;vertical-align:middle;">💧</span> ため池<br>'+
       '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🚌</span> バス停（令和4年）<br>'+
-      '<img src="https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-orange.png" style="height:18px;vertical-align:middle;margin-right:6px;"> 地価調査（2025年）<br>'+
+      '<span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:#ef6c00;color:#fff;align-items:center;justify-content:center;font-size:12px;font-weight:bold;margin-right:6px;vertical-align:middle;">¥</span> 地価調査（2025年）<br>'+
       '<span style="font-size:18px;vertical-align:middle;margin-right:6px;">🐻</span> くま目撃情報（2025年）'+
       '<hr>'+
       '<div class="legend-title">洪水浸水想定区域（想定最大規模）</div>'+
