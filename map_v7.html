@@ -454,140 +454,174 @@ function init(){
     })
     .catch(err=>console.error(err));
 
-  // ===== 指定避難場所 =====
-  fetch(dataFile('17000_1.geojson'),{cache:'no-store'})
-    .then(r=>{
-      if(!r.ok) throw new Error(`17000_1.geojson: HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(data=>{
-      const icon = L.divIcon({
-        html:'<div class="map-symbol shelter-symbol">避</div>',
-        className:'map-symbol-wrapper',
-        iconSize:[32,32],
-        iconAnchor:[16,16],
-        popupAnchor:[0,-18]
-      });
+  // ===== 指定避難場所（初期OFF・チェック時に初回読込） =====
+  const shelterGroup = L.layerGroup();
+  ctl.addOverlay(shelterGroup,'指定避難場所（更新2025-07-09）');
 
-      const cluster = L.markerClusterGroup({
-        pane:'markersPane',
-        disableClusteringAtZoom:16,
-        spiderfyOnMaxZoom:true,
-        showCoverageOnHover:false
-      });
+  let shelterLoaded = false;
+  let shelterLoading = false;
 
-      const shelters = L.geoJSON(data,{
-        pane:'markersPane',
-        pointToLayer:(f,latlng)=>{
-          const p=f.properties??{};
-          p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';
-          const m=L.marker(latlng,{icon});
-          setTitle(m,p._shelter_name);
-          return m;
-        },
-        onEachFeature:(f,l)=>{
-          const latlng = l.getLatLng ? l.getLatLng() : null;
-          l.bindPopup(
-            `<b>指定避難場所</b><br>`+
-            Object.entries(f.properties??{})
+  function loadShelters(){
+    if(shelterLoaded || shelterLoading) return;
+    shelterLoading = true;
+
+    fetch(dataFile('17000_1.geojson'),{cache:'no-store'})
+      .then(r=>{
+        if(!r.ok) throw new Error(`17000_1.geojson: HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data=>{
+        const icon = L.divIcon({
+          html:'<div class="map-symbol shelter-symbol">避</div>',
+          className:'map-symbol-wrapper',
+          iconSize:[32,32],
+          iconAnchor:[16,16],
+          popupAnchor:[0,-18]
+        });
+
+        const shelters = L.geoJSON(data,{
+          pane:'markersPane',
+          pointToLayer:(f,latlng)=>{
+            const p=f.properties??{};
+            p._shelter_name = p['施設・場所名'] ?? p['名称'] ?? '';
+            const m=L.marker(latlng,{icon});
+            setTitle(m,p._shelter_name);
+            return m;
+          },
+          onEachFeature:(f,l)=>{
+            const latlng = l.getLatLng ? l.getLatLng() : null;
+            l.bindPopup(
+              `<b>指定避難場所</b><br>`+
+              Object.entries(f.properties??{})
+                .map(([k,v])=>`<b>${k}:</b> ${v}`)
+                .join('<br>')+
+              googleMapLinks(latlng)
+            );
+          }
+        });
+
+        const cluster = L.markerClusterGroup({
+          pane:'markersPane',
+          disableClusteringAtZoom:16,
+          spiderfyOnMaxZoom:true,
+          showCoverageOnHover:false
+        });
+
+        cluster.addLayer(shelters);
+        shelterGroup.addLayer(cluster);
+
+        const s3 = new L.Control.Search({
+          layer: shelters,
+          propertyName:'_shelter_name',
+          textPlaceholder:'施設・場所名',
+          marker:false,
+          zoom:17,
+          collapsed:false
+        }).addTo(map);
+
+        decorateSearch(s3,'🏫 避難所','#388e3c');
+
+        s3.on('search:locationfound', e=>{
+          if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17));
+          if (e.layer.openPopup) e.layer.openPopup();
+        });
+
+        shelterLoaded = true;
+      })
+      .catch(err=>console.error('指定避難場所の読込に失敗:',err))
+      .finally(()=>{ shelterLoading = false; });
+  }
+
+  map.on('overlayadd',e=>{
+    if(e.layer === shelterGroup) loadShelters();
+  });
+
+  // ===== ため池（初期OFF・チェック時に初回読込） =====
+  const pondGroup = L.layerGroup();
+  ctl.addOverlay(pondGroup,'ため池（クラスタ）');
+
+  let pondLoaded = false;
+  let pondLoading = false;
+
+  function loadPonds(){
+    if(pondLoaded || pondLoading) return;
+    pondLoading = true;
+
+    fetch(dataFile('ため池.geojson'),{cache:'no-store'})
+      .then(r=>{
+        if(!r.ok) throw new Error(`ため池.geojson: HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data=>{
+        const icon = L.divIcon({
+          html:'<div class="map-symbol pond-symbol">💧</div>',
+          className:'map-symbol-wrapper',
+          iconSize:[32,32],
+          iconAnchor:[16,16],
+          popupAnchor:[0,-18]
+        });
+
+        const ponds = L.geoJSON(data,{
+          pane:'markersPane',
+          pointToLayer:(f,latlng)=>{
+            const p=f.properties??{};
+            p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? '';
+            const m=L.marker(latlng,{icon});
+            setTitle(m,p._pond_name);
+            return m;
+          },
+          onEachFeature:(f,l)=>{
+            const p=f.properties??{};
+            const nm=p._pond_name ?? '';
+            const skip=new Set(['name','名称','Name']);
+            const rest=Object.entries(p)
+              .filter(([k])=>!skip.has(k) && k!=='_pond_name')
               .map(([k,v])=>`<b>${k}:</b> ${v}`)
-              .join('<br>')+
-            googleMapLinks(latlng)
-          );
-        }
-      });
+              .join('<br>');
 
-      cluster.addLayer(shelters);
-      // 初期OFF
-      ctl.addOverlay(cluster,'指定避難場所（更新2025-07-09）');
+            l.bindPopup(
+              `<b>ため池</b>`+
+              `${nm?`<br><b>name:</b> ${nm}`:''}`+
+              `${rest?`<br>${rest}`:''}`
+            );
+          }
+        });
 
-      const s3 = new L.Control.Search({
-        layer: shelters,
-        propertyName:'_shelter_name',
-        textPlaceholder:'施設・場所名',
-        marker:false,
-        zoom:17,
-        collapsed:false
-      }).addTo(map);
+        const cluster = L.markerClusterGroup({
+          pane:'markersPane',
+          disableClusteringAtZoom:16,
+          spiderfyOnMaxZoom:true,
+          showCoverageOnHover:false
+        });
 
-      decorateSearch(s3,'🏫 避難所','#388e3c');
+        cluster.addLayer(ponds);
+        pondGroup.addLayer(cluster);
 
-      s3.on('search:locationfound', e=>{
-        if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),17));
-        if (e.layer.openPopup) e.layer.openPopup();
-      });
-    })
-    .catch(err=>console.error(err));
+        const s4 = new L.Control.Search({
+          layer: ponds,
+          propertyName:'_pond_name',
+          textPlaceholder:'ため池名',
+          marker:false,
+          zoom:18,
+          collapsed:false
+        }).addTo(map);
 
-  // ===== ため池 =====
-  fetch(dataFile('ため池.geojson'),{cache:'no-store'})
-    .then(r=>{
-      if(!r.ok) throw new Error(`ため池.geojson: HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(data=>{
-      const icon = L.divIcon({
-        html:'<div class="map-symbol pond-symbol">💧</div>',
-        className:'map-symbol-wrapper',
-        iconSize:[32,32],
-        iconAnchor:[16,16],
-        popupAnchor:[0,-18]
-      });
+        decorateSearch(s4,'💧 ため池','#1976d2');
 
-      const cluster = L.markerClusterGroup({
-        pane:'markersPane',
-        disableClusteringAtZoom:16,
-        spiderfyOnMaxZoom:true,
-        showCoverageOnHover:false
-      });
+        s4.on('search:locationfound', e=>{
+          if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18));
+          if (e.layer.openPopup) e.layer.openPopup();
+        });
 
-      const ponds = L.geoJSON(data,{
-        pane:'markersPane',
-        pointToLayer:(f,latlng)=>{
-          const p=f.properties??{};
-          p._pond_name = p.name ?? p['名称'] ?? p['Name'] ?? '';
-          const m=L.marker(latlng,{icon});
-          setTitle(m,p._pond_name);
-          return m;
-        },
-        onEachFeature:(f,l)=>{
-          const p=f.properties??{};
-          const nm=p._pond_name ?? '';
-          const skip=new Set(['name','名称','Name']);
-          const rest=Object.entries(p)
-            .filter(([k])=>!skip.has(k) && k!=='_pond_name')
-            .map(([k,v])=>`<b>${k}:</b> ${v}`)
-            .join('<br>');
+        pondLoaded = true;
+      })
+      .catch(err=>console.error('ため池の読込に失敗:',err))
+      .finally(()=>{ pondLoading = false; });
+  }
 
-          l.bindPopup(
-            `<b>ため池</b>`+
-            `${nm?`<br><b>name:</b> ${nm}`:''}`+
-            `${rest?`<br>${rest}`:''}`
-          );
-        }
-      });
-
-      cluster.addLayer(ponds);
-      // 初期OFF
-      ctl.addOverlay(cluster,'ため池（クラスタ）');
-
-      const s4 = new L.Control.Search({
-        layer: ponds,
-        propertyName:'_pond_name',
-        textPlaceholder:'ため池名',
-        marker:false,
-        zoom:18,
-        collapsed:false
-      }).addTo(map);
-
-      decorateSearch(s4,'💧 ため池','#1976d2');
-
-      s4.on('search:locationfound', e=>{
-        if (e.latlng) map.setView(e.latlng, Math.max(map.getZoom(),18));
-        if (e.layer.openPopup) e.layer.openPopup();
-      });
-    })
-    .catch(err=>console.error(err));
+  map.on('overlayadd',e=>{
+    if(e.layer === pondGroup) loadPonds();
+  });
 
   // ===== バス停 =====
   fetch(dataFile('P11-22_17.geojson')+'?_=now',{cache:'no-store'})
@@ -672,87 +706,103 @@ function init(){
     })
     .catch(err=>console.error(err));
 
-  // ===== 地価調査（2025年・石川／初期ON） =====
-  fetch(dataFile('石川地価2025.geojson')+'?_=2025',{cache:'no-store'})
-    .then(r=>{
-      if(!r.ok) throw new Error(`石川地価2025.geojson: HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(data=>{
-      const icon = L.divIcon({
-        html:'<div class="map-symbol landprice-symbol">¥</div>',
-        className:'map-symbol-wrapper',
-        iconSize:[32,32],
-        iconAnchor:[16,16],
-        popupAnchor:[0,-18]
-      });
+  // ===== 地価調査（初期OFF・チェック時に初回読込） =====
+  const landPriceGroup = L.layerGroup();
+  ctl.addOverlay(landPriceGroup,'地価調査（2025年・石川）');
 
-      const land = L.geoJSON(data,{
-        pane:'markersPane',
-        pointToLayer:(f,latlng)=>{
-          const p=f.properties??{};
-          const site = pickKey(p,[
-            '基準地の地名','標準地番号','標準地番号（コード）',
-            '地点番号','番号',/標準地/,/基準地/
-          ]);
-          const where = pickKey(p,[
-            '所在並びに地番','所在地並びに地番','所在地',
-            '住居表示','地番','地点名','地区名',/所在/
-          ]);
-          p._land_label = z2h([site,where].filter(Boolean).join(' ')) || '地価調査地点';
+  let landPriceLoaded = false;
+  let landPriceLoading = false;
 
-          const m=L.marker(latlng,{icon});
-          setTitle(m,p._land_label);
-          return m;
-        },
-        onEachFeature:(f,l)=>{
-          const p=f.properties??{};
-          const site = pickKey(p,[
-            '基準地の地名','標準地番号','標準地番号（コード）',
-            '地点番号','番号',/標準地/,/基準地/
-          ]);
-          const where = pickKey(p,[
-            '所在並びに地番','所在地並びに地番','所在地',
-            '住居表示','地番','地点名','地区名',/所在/
-          ]);
-          const use = pickKey(p,[
-            '都市計画の用途地域','用途','用途区分','区分','用途地域',/用途/
-          ]);
-          const price = fmtYen(pickKey(p,[
-            '円/ｍ2','円/m2','円/㎡','価格','価格（円/㎡）',
-            '価格_円m2','単価','price',/円.?m2/
-          ]));
-          const yoy = fmtPct(pickKey(p,[
-            '対前年変動率%','対前年変動率','対前年変動率（％）',
-            '変動率','前年比','前年比％','yoy',/対前年.*変動率/,/前年比/
-          ]));
-          const note = pickKey(p,['備考','注記','メモ']);
+  function loadLandPrices(){
+    if(landPriceLoaded || landPriceLoading) return;
+    landPriceLoading = true;
 
-          let html =
-            `<b>地価調査（2025年・石川）</b><br>`+
-            `<b>基準地:</b> ${site||'-'}<br>`+
-            `<b>所在地:</b> ${where||'-'}<br>`+
-            `<b>用途地域:</b> ${use||'-'}<br>`+
-            `<b>価格:</b> ${price}<br>`+
-            `<b>対前年変動率:</b> ${yoy}`;
+    fetch(dataFile('石川地価2025.geojson')+'?_=2025',{cache:'no-store'})
+      .then(r=>{
+        if(!r.ok) throw new Error(`石川地価2025.geojson: HTTP ${r.status}`);
+        return r.json();
+      })
+      .then(data=>{
+        const icon = L.divIcon({
+          html:'<div class="map-symbol landprice-symbol">¥</div>',
+          className:'map-symbol-wrapper',
+          iconSize:[32,32],
+          iconAnchor:[16,16],
+          popupAnchor:[0,-18]
+        });
 
-          if(note) html += `<br><b>備考:</b> ${note}`;
-          l.bindPopup(html);
-        }
-      });
+        const land = L.geoJSON(data,{
+          pane:'markersPane',
+          pointToLayer:(f,latlng)=>{
+            const p=f.properties??{};
+            const site = pickKey(p,[
+              '基準地の地名','標準地番号','標準地番号（コード）',
+              '地点番号','番号',/標準地/,/基準地/
+            ]);
+            const where = pickKey(p,[
+              '所在並びに地番','所在地並びに地番','所在地',
+              '住居表示','地番','地点名','地区名',/所在/
+            ]);
+            p._land_label = z2h([site,where].filter(Boolean).join(' ')) || '地価調査地点';
 
-      const cluster = L.markerClusterGroup({
-        pane:'markersPane',
-        disableClusteringAtZoom:16,
-        spiderfyOnMaxZoom:true,
-        showCoverageOnHover:false
-      });
+            const m=L.marker(latlng,{icon});
+            setTitle(m,p._land_label);
+            return m;
+          },
+          onEachFeature:(f,l)=>{
+            const p=f.properties??{};
+            const site = pickKey(p,[
+              '基準地の地名','標準地番号','標準地番号（コード）',
+              '地点番号','番号',/標準地/,/基準地/
+            ]);
+            const where = pickKey(p,[
+              '所在並びに地番','所在地並びに地番','所在地',
+              '住居表示','地番','地点名','地区名',/所在/
+            ]);
+            const use = pickKey(p,[
+              '都市計画の用途地域','用途','用途区分','区分','用途地域',/用途/
+            ]);
+            const price = fmtYen(pickKey(p,[
+              '円/ｍ2','円/m2','円/㎡','価格','価格（円/㎡）',
+              '価格_円m2','単価','price',/円.?m2/
+            ]));
+            const yoy = fmtPct(pickKey(p,[
+              '対前年変動率%','対前年変動率','対前年変動率（％）',
+              '変動率','前年比','前年比％','yoy',/対前年.*変動率/,/前年比/
+            ]));
+            const note = pickKey(p,['備考','注記','メモ']);
 
-      cluster.addLayer(land);
-      // 初期OFF
-      ctl.addOverlay(cluster,'地価調査（2025年・石川）');
-    })
-    .catch(err=>console.error('地価2025の読込に失敗:',err));
+            let html =
+              `<b>地価調査（2025年・石川）</b><br>`+
+              `<b>基準地:</b> ${site||'-'}<br>`+
+              `<b>所在地:</b> ${where||'-'}<br>`+
+              `<b>用途地域:</b> ${use||'-'}<br>`+
+              `<b>価格:</b> ${price}<br>`+
+              `<b>対前年変動率:</b> ${yoy}`;
+
+            if(note) html += `<br><b>備考:</b> ${note}`;
+            l.bindPopup(html);
+          }
+        });
+
+        const cluster = L.markerClusterGroup({
+          pane:'markersPane',
+          disableClusteringAtZoom:16,
+          spiderfyOnMaxZoom:true,
+          showCoverageOnHover:false
+        });
+
+        cluster.addLayer(land);
+        landPriceGroup.addLayer(cluster);
+        landPriceLoaded = true;
+      })
+      .catch(err=>console.error('地価2025の読込に失敗:',err))
+      .finally(()=>{ landPriceLoading = false; });
+  }
+
+  map.on('overlayadd',e=>{
+    if(e.layer === landPriceGroup) loadLandPrices();
+  });
 
   // ===== くま目撃情報（2025年／初期ON） =====
   fetch(dataFile('R7石川熊.geojson')+'?_=2025',{cache:'no-store'})
