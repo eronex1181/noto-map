@@ -205,10 +205,54 @@ function init(){
     {collapsed:false}
   ).addTo(map);
 
+  // 表示用レイヤーとチェックボックス用レイヤーを分離して管理する。
+  // 非同期読込の完了時期にかかわらず、チェックOFFなら表示用レイヤーを
+  // 必ず地図から取り除く。再度ONにすると同じ内容をそのまま復元する。
+  function createManagedOverlay(label,{defaultOn=false}={}){
+    const toggleLayer = L.layerGroup();
+    const contentLayer = L.layerGroup();
+
+    ctl.addOverlay(toggleLayer,label);
+
+    const show = ()=>{
+      if(!map.hasLayer(contentLayer)) map.addLayer(contentLayer);
+    };
+
+    const hide = ()=>{
+      if(map.hasLayer(contentLayer)) map.removeLayer(contentLayer);
+    };
+
+    map.on('overlayadd',e=>{
+      if(e.layer === toggleLayer) show();
+    });
+
+    map.on('overlayremove',e=>{
+      if(e.layer === toggleLayer) hide();
+    });
+
+    if(defaultOn){
+      map.addLayer(toggleLayer);
+      show();
+    }
+
+    return {
+      toggleLayer,
+      contentLayer,
+      add(layer){
+        contentLayer.addLayer(layer);
+        if(map.hasLayer(toggleLayer)) show();
+      }
+    };
+  }
+
   ctl.addOverlay(floodHazard,'洪水浸水想定区域（想定最大規模）');
 
   // 大規模盛土造成地は既存レイヤ一覧に1項目だけ追加（初期OFF）
-  const moridoGroup = L.layerGroup();
+  const moridoOverlay = createManagedOverlay(
+    '大規模盛土造成地（2023年）',
+    {defaultOn:true}
+  );
+  const moridoGroup = moridoOverlay.toggleLayer;
   let moridoLayer = null;
   let moridoAutoZoomDone = false;
 
@@ -228,11 +272,6 @@ function init(){
     });
     moridoAutoZoomDone = true;
   }
-
-  ctl.addOverlay(moridoGroup,'大規模盛土造成地（2023年）');
-
-  // 初期ON
-  map.addLayer(moridoGroup);
 
   map.on('overlayadd',e=>{
     if(e.layer === moridoGroup){
@@ -392,6 +431,13 @@ function init(){
     return control;
   }
 
+  // Leaflet Search は検索対象レイヤーを地図へ直接追加するため、
+  // レイヤー一覧のチェックとは別に点・境界が残ってしまう。
+  // 検索用の参照は保持したまま、直接追加された表示だけを外す。
+  function detachSearchLayer(layer){
+    if(map.hasLayer(layer)) map.removeLayer(layer);
+  }
+
   // GeoJSONはGitHubリポジトリ直下から取得する。
   // Blogger内、ローカルHTML、GitHub Pagesのいずれでも同じように動作する。
   const DATA_BASE =
@@ -430,7 +476,8 @@ function init(){
       });
 
       // 初期OFF
-      ctl.addOverlay(boundaryLayer,'大字境界');
+      const boundaryOverlay = createManagedOverlay('大字境界');
+      boundaryOverlay.add(boundaryLayer);
 
       const s1 = new L.Control.Search({
         layer: boundaryLayer,
@@ -440,6 +487,8 @@ function init(){
         zoom:14,
         collapsed:false
       }).addTo(map);
+
+      detachSearchLayer(boundaryLayer);
 
       decorateSearch(s1,'🗺️ 大字','#2e7d32');
 
@@ -455,8 +504,10 @@ function init(){
     .catch(err=>console.error(err));
 
   // ===== 指定避難場所（初期OFF・チェック時に初回読込） =====
-  const shelterGroup = L.layerGroup();
-  ctl.addOverlay(shelterGroup,'指定避難場所（更新2025-07-09）');
+  const shelterOverlay = createManagedOverlay(
+    '指定避難場所（更新2025-07-09）'
+  );
+  const shelterGroup = shelterOverlay.toggleLayer;
 
   let shelterLoaded = false;
   let shelterLoading = false;
@@ -508,7 +559,7 @@ function init(){
         });
 
         cluster.addLayer(shelters);
-        shelterGroup.addLayer(cluster);
+        shelterOverlay.add(cluster);
 
         const s3 = new L.Control.Search({
           layer: shelters,
@@ -518,6 +569,8 @@ function init(){
           zoom:17,
           collapsed:false
         }).addTo(map);
+
+        detachSearchLayer(shelters);
 
         decorateSearch(s3,'🏫 避難所','#388e3c');
 
@@ -537,8 +590,8 @@ function init(){
   });
 
   // ===== ため池（初期OFF・チェック時に初回読込） =====
-  const pondGroup = L.layerGroup();
-  ctl.addOverlay(pondGroup,'ため池（クラスタ）');
+  const pondOverlay = createManagedOverlay('ため池（クラスタ）');
+  const pondGroup = pondOverlay.toggleLayer;
 
   let pondLoaded = false;
   let pondLoading = false;
@@ -595,7 +648,7 @@ function init(){
         });
 
         cluster.addLayer(ponds);
-        pondGroup.addLayer(cluster);
+        pondOverlay.add(cluster);
 
         const s4 = new L.Control.Search({
           layer: ponds,
@@ -605,6 +658,8 @@ function init(){
           zoom:18,
           collapsed:false
         }).addTo(map);
+
+        detachSearchLayer(ponds);
 
         decorateSearch(s4,'💧 ため池','#1976d2');
 
@@ -685,8 +740,9 @@ function init(){
       });
 
       cluster.addLayer(buses);
-      // 初期OFF
-      ctl.addOverlay(cluster,'バス停（令和4年）');
+      // 初期OFF。チェックOFF時はクラスタ本体も確実に地図から外す。
+      const busOverlay = createManagedOverlay('バス停（令和4年）');
+      busOverlay.add(cluster);
 
       const s5 = new L.Control.Search({
         layer: buses,
@@ -696,6 +752,8 @@ function init(){
         zoom:18,
         collapsed:false
       }).addTo(map);
+
+      detachSearchLayer(buses);
 
       decorateSearch(s5,'🚌 バス停','#6a1b9a');
 
@@ -707,8 +765,10 @@ function init(){
     .catch(err=>console.error(err));
 
   // ===== 地価調査（初期OFF・チェック時に初回読込） =====
-  const landPriceGroup = L.layerGroup();
-  ctl.addOverlay(landPriceGroup,'地価調査（2025年・石川）');
+  const landPriceOverlay = createManagedOverlay(
+    '地価調査（2025年・石川）'
+  );
+  const landPriceGroup = landPriceOverlay.toggleLayer;
 
   let landPriceLoaded = false;
   let landPriceLoading = false;
@@ -793,7 +853,7 @@ function init(){
         });
 
         cluster.addLayer(land);
-        landPriceGroup.addLayer(cluster);
+        landPriceOverlay.add(cluster);
         landPriceLoaded = true;
       })
       .catch(err=>console.error('地価2025の読込に失敗:',err))
@@ -865,8 +925,11 @@ function init(){
       });
 
       cluster.addLayer(bears);
-      map.addLayer(cluster);
-      ctl.addOverlay(cluster,'くま目撃情報（2025年）');
+      const bearOverlay = createManagedOverlay(
+        'くま目撃情報（2025年）',
+        {defaultOn:true}
+      );
+      bearOverlay.add(cluster);
     })
     .catch(err=>console.error('くま目撃情報2025の読込に失敗:',err));
 
@@ -927,7 +990,7 @@ function init(){
       });
 
       // チェック欄は先に作成済み。読込完了後にデータだけ格納する。
-      moridoGroup.addLayer(moridoLayer);
+      moridoOverlay.add(moridoLayer);
 
       // 初期表示では現在の能登の表示範囲を維持する。
       // 一度OFFにして再びONにした場合のみ、盛土範囲へ移動する。
