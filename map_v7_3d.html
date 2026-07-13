@@ -291,8 +291,8 @@
       </label>
 
       <div style="margin-top:8px;font-size:13px;line-height:1.7;">
-        <div><span style="display:inline-block;width:18px;height:12px;background:#ffff00;border:1px solid #999;margin-right:6px;vertical-align:middle;"></span>イエローゾーン</div>
-        <div><span style="display:inline-block;width:18px;height:12px;background:#ff0000;border:1px solid #999;margin-right:6px;vertical-align:middle;"></span>レッドゾーン</div>
+        <div><span style="display:inline-block;width:18px;height:0;border-top:3px solid #8f7b00;margin-right:6px;vertical-align:middle;"></span>イエローゾーン境界</div>
+        <div><span style="display:inline-block;width:18px;height:0;border-top:3px solid #9e0000;margin-right:6px;vertical-align:middle;"></span>レッドゾーン境界</div>
       </div>
     </div>
 
@@ -306,7 +306,7 @@
 
       <div class="hint">
         マウスの右ドラッグ、または<strong>Ctrl＋左ドラッグ</strong>で傾き・向きを変更できます。
-        区域データの読込件数が下部に表示されます。区域をクリックすると箇所番号・箇所名が開きます。
+        区域は塗りつぶさず、黄色・赤色の境界線だけ表示します。区域内をクリックすると箇所番号・箇所名が開きます。
       </div>
 
       <div id="status">3D地図を読み込み中です…</div>
@@ -581,14 +581,10 @@
         type: 'fill',
         source: 'hazard',
         paint: {
-          'fill-color': [
-            'match',
-            ['get', 'A33_002'],
-            1, '#ffff00',
-            2, '#ff0000',
-            '#888888'
-          ],
-          'fill-opacity': 0.50
+          // 3D地形を見やすくするため、区域内部は塗りつぶさない
+          // 透明な面はクリック判定用として残す
+          'fill-color': '#ffffff',
+          'fill-opacity': 0
         }
       });
 
@@ -608,11 +604,11 @@
             'interpolate',
             ['linear'],
             ['zoom'],
-            8, 1,
-            13, 2,
-            17, 3
+            8, 1.5,
+            13, 2.5,
+            17, 4
           ],
-          'line-opacity': 0.95
+          'line-opacity': 1
         }
       });
 
