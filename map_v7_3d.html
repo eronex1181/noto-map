@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>能登半島CS立体図 3D版</title>
+<title>能登半島CS立体図 3D版（土砂災害警戒区域）</title>
 
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
 
@@ -286,9 +286,14 @@
       </div>
 
       <label class="layer-row">
-        <input id="bearToggle" type="checkbox" checked>
-        <span>🐻 熊目撃情報（2025年）</span>
+        <input id="hazardToggle" type="checkbox" checked>
+        <span>土砂災害警戒区域</span>
       </label>
+
+      <div style="margin-top:8px;font-size:13px;line-height:1.7;">
+        <div><span style="display:inline-block;width:18px;height:12px;background:#ffff00;border:1px solid #999;margin-right:6px;vertical-align:middle;"></span>イエローゾーン</div>
+        <div><span style="display:inline-block;width:18px;height:12px;background:#ff0000;border:1px solid #999;margin-right:6px;vertical-align:middle;"></span>レッドゾーン</div>
+      </div>
     </div>
 
     <div class="section">
@@ -301,7 +306,7 @@
 
       <div class="hint">
         マウスの右ドラッグ、または<strong>Ctrl＋左ドラッグ</strong>で傾き・向きを変更できます。
-        熊の点をクリックすると詳細とGoogleマップへのリンクが開きます。
+        土砂災害警戒区域をクリックすると、箇所番号・箇所名とGoogleマップへのリンクが開きます。
       </div>
 
       <div id="status">3D地図を読み込み中です…</div>
@@ -423,9 +428,9 @@
           attribution: '地理院タイル © 国土地理院'
         },
 
-        bears: {
+        hazard: {
           type: 'geojson',
-          data: './R7石川熊.geojson?_=20260711'
+          data: './dosya.geojson?_=20260711'
         }
       },
 
@@ -457,37 +462,46 @@
         },
 
         {
-          id: 'bear-halo',
-          type: 'circle',
-          source: 'bears',
+          id: 'hazard-yellow-fill',
+          type: 'fill',
+          source: 'hazard',
+          filter: ['==', ['to-string', ['get', 'A33_002']], '1'],
           paint: {
-            'circle-radius': [
-              'interpolate', ['linear'], ['zoom'],
-              7, 4,
-              12, 7,
-              16, 10
-            ],
-            'circle-color': '#ffffff',
-            'circle-stroke-color': '#4e342e',
-            'circle-stroke-width': 2,
-            'circle-opacity': 0.92
+            'fill-color': '#ffff00',
+            'fill-opacity': 0.35
           }
         },
 
         {
-          id: 'bear-points',
-          type: 'circle',
-          source: 'bears',
+          id: 'hazard-yellow-line',
+          type: 'line',
+          source: 'hazard',
+          filter: ['==', ['to-string', ['get', 'A33_002']], '1'],
           paint: {
-            'circle-radius': [
-              'interpolate', ['linear'], ['zoom'],
-              7, 2.5,
-              12, 5,
-              16, 8
-            ],
-            'circle-color': '#8d4f2d',
-            'circle-stroke-color': '#ffcc80',
-            'circle-stroke-width': 1.5
+            'line-color': '#b59b00',
+            'line-width': 2
+          }
+        },
+
+        {
+          id: 'hazard-red-fill',
+          type: 'fill',
+          source: 'hazard',
+          filter: ['==', ['to-string', ['get', 'A33_002']], '2'],
+          paint: {
+            'fill-color': '#ff0000',
+            'fill-opacity': 0.36
+          }
+        },
+
+        {
+          id: 'hazard-red-line',
+          type: 'line',
+          source: 'hazard',
+          filter: ['==', ['to-string', ['get', 'A33_002']], '2'],
+          paint: {
+            'line-color': '#b00000',
+            'line-width': 2
           }
         }
       ],
@@ -532,54 +546,52 @@
   map.on('load', () => {
     setStatus('読み込み完了。地図を傾けて地形を確認できます。');
 
-    map.on('mouseenter', 'bear-points', () => {
-      map.getCanvas().style.cursor = 'pointer';
-    });
+    const hazardFillLayers = ['hazard-yellow-fill', 'hazard-red-fill'];
 
-    map.on('mouseleave', 'bear-points', () => {
-      map.getCanvas().style.cursor = '';
-    });
+    for (const layerId of hazardFillLayers) {
+      map.on('mouseenter', layerId, () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
 
-    map.on('click', 'bear-points', event => {
-      const feature = event.features?.[0];
-      if (!feature) return;
+      map.on('mouseleave', layerId, () => {
+        map.getCanvas().style.cursor = '';
+      });
 
-      const coordinates = feature.geometry.coordinates.slice(0, 2);
-      const properties = feature.properties ?? {};
-      const title =
-        properties.name ||
-        properties.Name ||
-        properties['市町名'] ||
-        '熊目撃情報';
+      map.on('click', layerId, event => {
+        const feature = event.features?.[0];
+        if (!feature) return;
 
-      const description =
-        properties.description ||
-        properties.DESCRIPTION ||
-        '';
+        const p = feature.properties ?? {};
+        const type = String(p.A33_002) === '2'
+          ? 'レッドゾーン（特別警戒区域）'
+          : 'イエローゾーン（警戒区域）';
 
-      const html = `
-        <div class="popup-title">🐻 ${escapeHtml(title)}</div>
-        ${descriptionTable(description)}
-        ${googleLinks(coordinates[0], coordinates[1])}
-      `;
+        const html = `
+          <div class="popup-title">${escapeHtml(type)}</div>
+          <b>箇所番号:</b> ${escapeHtml(p.A33_004 ?? '-')}<br>
+          <b>箇所名:</b> ${escapeHtml(p.A33_005 ?? '-')}<br>
+          ${p.A33_009 ? `<b>市町村:</b> ${escapeHtml(p.A33_009)}<br>` : ''}
+          ${googleLinks(event.lngLat.lng, event.lngLat.lat)}
+        `;
 
-      new maplibregl.Popup({
-        closeButton: true,
-        closeOnClick: true,
-        maxWidth: '380px'
-      })
-        .setLngLat(coordinates)
-        .setHTML(html)
-        .addTo(map);
-    });
+        new maplibregl.Popup({
+          closeButton: true,
+          closeOnClick: true,
+          maxWidth: '380px'
+        })
+          .setLngLat(event.lngLat)
+          .setHTML(html)
+          .addTo(map);
+      });
+    }
   });
 
   map.on('error', event => {
     const message = event?.error?.message || '';
 
-    if (/R7石川熊|geojson/i.test(message)) {
+    if (/dosya|geojson/i.test(message)) {
       setStatus(
-        '熊データを読み込めません。HTMLをGitHub Pages上で開き、R7石川熊.geojsonを同じフォルダに置いてください。',
+        '土砂災害警戒区域を読み込めません。dosya.geojsonを同じフォルダに置いてください。',
         true
       );
     } else if (/terrain|mapterhorn|dem/i.test(message)) {
@@ -608,8 +620,11 @@
     setLayerVisibility(['gsi-layer'], event.target.checked);
   });
 
-  document.getElementById('bearToggle').addEventListener('change', event => {
-    setLayerVisibility(['bear-halo', 'bear-points'], event.target.checked);
+  document.getElementById('hazardToggle').addEventListener('change', event => {
+    setLayerVisibility(
+      ['hazard-yellow-fill','hazard-yellow-line','hazard-red-fill','hazard-red-line'],
+      event.target.checked
+    );
   });
 
   const terrainToggle = document.getElementById('terrainToggle');
