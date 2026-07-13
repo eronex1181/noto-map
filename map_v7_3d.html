@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>能登半島CS立体図 3D版（土砂災害警戒区域）</title>
+<title>能登半島CS立体図 3D版（土砂災害警戒区域・読込修正版）</title>
 
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
 
@@ -246,7 +246,7 @@
 
 <div id="panel">
   <div class="panel-title">
-    <span class="panel-title-text">能登半島CS立体図・3D試験版</span>
+    <span class="panel-title-text">能登半島CS立体図・3D</span>
     <button id="collapseButton" type="button" title="パネルを折りたたむ">−</button>
   </div>
 
@@ -286,7 +286,7 @@
       </div>
 
       <label class="layer-row">
-        <input id="hazardToggle" type="checkbox" checked>
+        <input id="hazardToggle" type="checkbox" checked disabled>
         <span>土砂災害警戒区域</span>
       </label>
 
@@ -306,7 +306,7 @@
 
       <div class="hint">
         マウスの右ドラッグ、または<strong>Ctrl＋左ドラッグ</strong>で傾き・向きを変更できます。
-        土砂災害警戒区域をクリックすると、箇所番号・箇所名とGoogleマップへのリンクが開きます。
+        区域データの読込件数が下部に表示されます。区域をクリックすると箇所番号・箇所名が開きます。
       </div>
 
       <div id="status">3D地図を読み込み中です…</div>
@@ -426,11 +426,6 @@
           minzoom: 2,
           maxzoom: 18,
           attribution: '地理院タイル © 国土地理院'
-        },
-
-        hazard: {
-          type: 'geojson',
-          data: './dosya.geojson?_=20260711'
         }
       },
 
@@ -458,50 +453,6 @@
           source: 'gsiPale',
           paint: {
             'raster-opacity': 0.55
-          }
-        },
-
-        {
-          id: 'hazard-yellow-fill',
-          type: 'fill',
-          source: 'hazard',
-          filter: ['==', ['to-string', ['get', 'A33_002']], '1'],
-          paint: {
-            'fill-color': '#ffff00',
-            'fill-opacity': 0.35
-          }
-        },
-
-        {
-          id: 'hazard-yellow-line',
-          type: 'line',
-          source: 'hazard',
-          filter: ['==', ['to-string', ['get', 'A33_002']], '1'],
-          paint: {
-            'line-color': '#b59b00',
-            'line-width': 2
-          }
-        },
-
-        {
-          id: 'hazard-red-fill',
-          type: 'fill',
-          source: 'hazard',
-          filter: ['==', ['to-string', ['get', 'A33_002']], '2'],
-          paint: {
-            'fill-color': '#ff0000',
-            'fill-opacity': 0.36
-          }
-        },
-
-        {
-          id: 'hazard-red-line',
-          type: 'line',
-          source: 'hazard',
-          filter: ['==', ['to-string', ['get', 'A33_002']], '2'],
-          paint: {
-            'line-color': '#b00000',
-            'line-width': 2
           }
         }
       ],
@@ -543,58 +494,167 @@
     'bottom-left'
   );
 
-  map.on('load', () => {
-    setStatus('読み込み完了。地図を傾けて地形を確認できます。');
+  const hazardLayerIds = ['hazard-fill', 'hazard-line'];
+  const hazardToggle = document.getElementById('hazardToggle');
 
-    const hazardFillLayers = ['hazard-yellow-fill', 'hazard-red-fill'];
+  function bindHazardPopup() {
+    map.on('mouseenter', 'hazard-fill', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
 
-    for (const layerId of hazardFillLayers) {
-      map.on('mouseenter', layerId, () => {
-        map.getCanvas().style.cursor = 'pointer';
+    map.on('mouseleave', 'hazard-fill', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    map.on('click', 'hazard-fill', event => {
+      const feature = event.features?.[0];
+      if (!feature) return;
+
+      const p = feature.properties ?? {};
+      const zoneCode = Number(p.A33_002);
+      const type = zoneCode === 2
+        ? 'レッドゾーン（特別警戒区域）'
+        : zoneCode === 1
+          ? 'イエローゾーン（警戒区域）'
+          : '土砂災害警戒区域';
+
+      const municipality = p.A33_009 ?? p.A33_006 ?? '';
+
+      const html = `
+        <div class="popup-title">${escapeHtml(type)}</div>
+        <b>箇所番号:</b> ${escapeHtml(p.A33_004 ?? '-')}<br>
+        <b>箇所名:</b> ${escapeHtml(p.A33_005 ?? '-')}<br>
+        ${municipality ? `<b>所在地:</b> ${escapeHtml(municipality)}<br>` : ''}
+        ${googleLinks(event.lngLat.lng, event.lngLat.lat)}
+      `;
+
+      new maplibregl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        maxWidth: '380px'
+      })
+        .setLngLat(event.lngLat)
+        .setHTML(html)
+        .addTo(map);
+    });
+  }
+
+  async function loadHazardData() {
+    const dataUrl =
+      'https://eronex1181.github.io/noto-map/dosya.geojson?v=20260713-3';
+
+    setStatus('土砂災害警戒区域を読み込み中です…');
+
+    try {
+      const response = await fetch(dataUrl, {
+        cache: 'no-store'
       });
 
-      map.on('mouseleave', layerId, () => {
-        map.getCanvas().style.cursor = '';
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data || data.type !== 'FeatureCollection' || !Array.isArray(data.features)) {
+        throw new Error('GeoJSONの形式がFeatureCollectionではありません。');
+      }
+
+      // MapLibreで確実に判定できるよう、区分コードを数値へ統一
+      for (const feature of data.features) {
+        feature.properties = feature.properties ?? {};
+        feature.properties.A33_002 = Number(feature.properties.A33_002);
+      }
+
+      // 古いGeoJSONのcrs要素はMapLibreでは不要
+      delete data.crs;
+
+      map.addSource('hazard', {
+        type: 'geojson',
+        data,
+        generateId: true
       });
 
-      map.on('click', layerId, event => {
-        const feature = event.features?.[0];
-        if (!feature) return;
-
-        const p = feature.properties ?? {};
-        const type = String(p.A33_002) === '2'
-          ? 'レッドゾーン（特別警戒区域）'
-          : 'イエローゾーン（警戒区域）';
-
-        const html = `
-          <div class="popup-title">${escapeHtml(type)}</div>
-          <b>箇所番号:</b> ${escapeHtml(p.A33_004 ?? '-')}<br>
-          <b>箇所名:</b> ${escapeHtml(p.A33_005 ?? '-')}<br>
-          ${p.A33_009 ? `<b>市町村:</b> ${escapeHtml(p.A33_009)}<br>` : ''}
-          ${googleLinks(event.lngLat.lng, event.lngLat.lat)}
-        `;
-
-        new maplibregl.Popup({
-          closeButton: true,
-          closeOnClick: true,
-          maxWidth: '380px'
-        })
-          .setLngLat(event.lngLat)
-          .setHTML(html)
-          .addTo(map);
+      // フィルターで分割せず、全ポリゴンを必ず描画して色だけを切り替える
+      map.addLayer({
+        id: 'hazard-fill',
+        type: 'fill',
+        source: 'hazard',
+        paint: {
+          'fill-color': [
+            'match',
+            ['get', 'A33_002'],
+            1, '#ffff00',
+            2, '#ff0000',
+            '#888888'
+          ],
+          'fill-opacity': 0.50
+        }
       });
+
+      map.addLayer({
+        id: 'hazard-line',
+        type: 'line',
+        source: 'hazard',
+        paint: {
+          'line-color': [
+            'match',
+            ['get', 'A33_002'],
+            1, '#8f7b00',
+            2, '#9e0000',
+            '#555555'
+          ],
+          'line-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            8, 1,
+            13, 2,
+            17, 3
+          ],
+          'line-opacity': 0.95
+        }
+      });
+
+      bindHazardPopup();
+
+      hazardToggle.disabled = false;
+      hazardToggle.checked = true;
+
+      const yellowCount = data.features.filter(
+        feature => Number(feature.properties?.A33_002) === 1
+      ).length;
+
+      const redCount = data.features.filter(
+        feature => Number(feature.properties?.A33_002) === 2
+      ).length;
+
+      setStatus(
+        `土砂災害警戒区域を${data.features.length.toLocaleString()}件読み込みました` +
+        `（黄${yellowCount.toLocaleString()}件・赤${redCount.toLocaleString()}件）。`
+      );
+
+    } catch (error) {
+      console.error('dosya.geojsonの読み込みに失敗:', error);
+      hazardToggle.checked = false;
+      hazardToggle.disabled = true;
+
+      setStatus(
+        `土砂災害警戒区域を読み込めませんでした：${error.message}`,
+        true
+      );
     }
+  }
+
+  map.on('load', () => {
+    loadHazardData();
   });
 
   map.on('error', event => {
     const message = event?.error?.message || '';
+    console.error('MapLibre error:', event?.error ?? event);
 
-    if (/dosya|geojson/i.test(message)) {
-      setStatus(
-        '土砂災害警戒区域を読み込めません。dosya.geojsonを同じフォルダに置いてください。',
-        true
-      );
-    } else if (/terrain|mapterhorn|dem/i.test(message)) {
+    if (/terrain|mapterhorn|dem/i.test(message)) {
       setStatus(
         '地形データの読み込みに失敗しました。通信状況を確認してください。',
         true
@@ -620,11 +680,8 @@
     setLayerVisibility(['gsi-layer'], event.target.checked);
   });
 
-  document.getElementById('hazardToggle').addEventListener('change', event => {
-    setLayerVisibility(
-      ['hazard-yellow-fill','hazard-yellow-line','hazard-red-fill','hazard-red-line'],
-      event.target.checked
-    );
+  hazardToggle.addEventListener('change', event => {
+    setLayerVisibility(hazardLayerIds, event.target.checked);
   });
 
   const terrainToggle = document.getElementById('terrainToggle');
