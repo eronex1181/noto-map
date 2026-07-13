@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>能登半島CS立体図 3D版</title>
+
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+
+<style>
+  html, body, #map {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Noto Sans JP", sans-serif;
+    overflow: hidden;
+    background: #dfe9ef;
+  }
+
+  #map {
+    position: absolute;
+    inset: 0;
+  }
+
+  #panel {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    width: min(340px, calc(100vw - 76px));
+    max-height: calc(100vh - 24px);
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 3px 14px rgba(0,0,0,.28);
+    color: #222;
+    font-size: 14px;
+  }
+
+  #panel.collapsed {
+    width: auto;
+    padding: 8px;
+  }
+
+  #panel.collapsed .panel-body,
+  #panel.collapsed .panel-title-text {
+    display: none;
+  }
+
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .panel-title-text {
+    flex: 1;
+  }
+
+  #collapseButton {
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 8px;
+    background: #eceff1;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .section {
+    margin-top: 11px;
+    padding-top: 9px;
+    border-top: 1px solid #ddd;
+  }
+
+  .section:first-child {
+    border-top: 0;
+  }
+
+  .layer-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 8px 0;
+    line-height: 1.35;
+  }
+
+  .layer-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .slider-row {
+    margin-top: 8px;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 5px 0 0;
+  }
+
+  .button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .panel-button {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: #1976d2;
+    color: #fff;
+    text-decoration: none;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .panel-button.secondary {
+    background: #455a64;
+  }
+
+  .panel-button.green {
+    background: #2e7d32;
+  }
+
+  .hint {
+    margin-top: 9px;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  #status {
+    margin-top: 8px;
+    padding: 6px 8px;
+    border-radius: 5px;
+    background: #f3f5f6;
+    color: #555;
+    font-size: 12px;
+  }
+
+  #status.error {
+    background: #ffebee;
+    color: #b71c1c;
+  }
+
+  .maplibregl-popup-content {
+    max-height: 340px;
+    overflow: auto;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .popup-title {
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .popup-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .popup-table th {
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+    padding: 2px 8px 2px 0;
+    color: #444;
+  }
+
+  .popup-table td {
+    padding: 2px 0;
+  }
+
+  .popup-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
+  }
+
+  .popup-link {
+    display: inline-block;
+    padding: 6px 9px;
+    border-radius: 5px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .popup-link.map {
+    background: #1976d2;
+  }
+
+  .popup-link.street {
+    background: #2e7d32;
+  }
+
+  .maplibregl-ctrl-attrib {
+    max-width: min(70vw, 700px);
+  }
+
+  @media (max-width: 600px) {
+    #panel {
+      top: 8px;
+      left: 8px;
+      max-height: 56vh;
+      font-size: 13px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<div id="panel">
+  <div class="panel-title">
+    <span class="panel-title-text">能登半島CS立体図・3D試験版</span>
+    <button id="collapseButton" type="button" title="パネルを折りたたむ">−</button>
+  </div>
+
+  <div class="panel-body">
+    <div class="section">
+      <label class="layer-row">
+        <input id="terrainToggle" type="checkbox" checked>
+        <span><b>3D地形</b></span>
+      </label>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span>地形の強調</span>
+          <b id="terrainValue">1.5倍</b>
+        </div>
+        <input id="terrainSlider" type="range" min="0.5" max="3" step="0.1" value="1.5">
+      </div>
+    </div>
+
+    <div class="section">
+      <label class="layer-row">
+        <input id="csToggle" type="checkbox" checked>
+        <span>能登半島CS立体図</span>
+      </label>
+
+      <label class="layer-row">
+        <input id="gsiToggle" type="checkbox" checked>
+        <span>国土地理院 淡色地図（透過）</span>
+      </label>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <span>淡色地図の透過度</span>
+          <b id="gsiValue">55%</b>
+        </div>
+        <input id="gsiSlider" type="range" min="0" max="100" step="5" value="55">
+      </div>
+
+      <label class="layer-row">
+        <input id="bearToggle" type="checkbox" checked>
+        <span>🐻 熊目撃情報（2025年）</span>
+      </label>
+    </div>
+
+    <div class="section">
+      <div class="button-row">
+        <button id="resetView" class="panel-button" type="button">初期視点</button>
+        <button id="topView" class="panel-button secondary" type="button">真上から見る</button>
+        <button id="fullscreenButton" class="panel-button green" type="button">全画面</button>
+        <a class="panel-button secondary" href="./map_v7.html" target="_self">2D地図へ</a>
+      </div>
+
+      <div class="hint">
+        マウスの右ドラッグ、または<strong>Ctrl＋左ドラッグ</strong>で傾き・向きを変更できます。
+        熊の点をクリックすると詳細とGoogleマップへのリンクが開きます。
+      </div>
+
+      <div id="status">3D地図を読み込み中です…</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const INITIAL_VIEW = {
+    center: [136.90, 37.30],
+    zoom: 10.3,
+    pitch: 64,
+    bearing: -22
+  };
+
+  const statusEl = document.getElementById('status');
+
+  function setStatus(message, isError = false) {
+    statusEl.textContent = message;
+    statusEl.classList.toggle('error', isError);
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  function descriptionTable(description) {
+    const lines = String(description ?? '')
+      .split(/<br\s*\/?>|\r?\n/i)
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    if (!lines.length) return '';
+
+    const rows = lines.map(line => {
+      const index = line.search(/[:：]/);
+
+      if (index > -1) {
+        const key = escapeHtml(line.slice(0, index).trim());
+        const value = escapeHtml(line.slice(index + 1).trim());
+        return `<tr><th>${key}</th><td>${value}</td></tr>`;
+      }
+
+      return `<tr><td colspan="2">${escapeHtml(line)}</td></tr>`;
+    }).join('');
+
+    return `<table class="popup-table">${rows}</table>`;
+  }
+
+  function googleLinks(lng, lat) {
+    const lngText = Number(lng).toFixed(7);
+    const latText = Number(lat).toFixed(7);
+
+    const mapUrl =
+      `https://www.google.com/maps/search/?api=1&query=${latText},${lngText}`;
+
+    const streetUrl =
+      `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latText},${lngText}`;
+
+    return `
+      <div class="popup-links">
+        <a class="popup-link map" href="${mapUrl}" target="_blank" rel="noopener noreferrer">
+          📍 Googleマップ
+        </a>
+        <a class="popup-link street" href="${streetUrl}" target="_blank" rel="noopener noreferrer">
+          👁 ストリートビュー
+        </a>
+      </div>`;
+  }
+
+  const map = new maplibregl.Map({
+    container: 'map',
+    center: INITIAL_VIEW.center,
+    zoom: INITIAL_VIEW.zoom,
+    pitch: INITIAL_VIEW.pitch,
+    bearing: INITIAL_VIEW.bearing,
+    maxPitch: 85,
+    maxZoom: 18,
+    hash: true,
+    attributionControl: true,
+
+    style: {
+      version: 8,
+
+      sources: {
+        terrainSource: {
+          type: 'raster-dem',
+          url: 'https://tiles.mapterhorn.com/tilejson.json'
+        },
+
+        csMap: {
+          type: 'raster',
+          tiles: [
+            'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png'
+          ],
+          tileSize: 256,
+          minzoom: 2,
+          maxzoom: 18,
+          attribution: '能登半島CS立体図 © 林野庁'
+        },
+
+        gsiPale: {
+          type: 'raster',
+          tiles: [
+            'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'
+          ],
+          tileSize: 256,
+          minzoom: 2,
+          maxzoom: 18,
+          attribution: '地理院タイル © 国土地理院'
+        },
+
+        bears: {
+          type: 'geojson',
+          data: './R7石川熊.geojson?_=20260711'
+        }
+      },
+
+      layers: [
+        {
+          id: 'background',
+          type: 'background',
+          paint: {
+            'background-color': '#d9e4e9'
+          }
+        },
+
+        {
+          id: 'cs-layer',
+          type: 'raster',
+          source: 'csMap',
+          paint: {
+            'raster-opacity': 1
+          }
+        },
+
+        {
+          id: 'gsi-layer',
+          type: 'raster',
+          source: 'gsiPale',
+          paint: {
+            'raster-opacity': 0.55
+          }
+        },
+
+        {
+          id: 'bear-halo',
+          type: 'circle',
+          source: 'bears',
+          paint: {
+            'circle-radius': [
+              'interpolate', ['linear'], ['zoom'],
+              7, 4,
+              12, 7,
+              16, 10
+            ],
+            'circle-color': '#ffffff',
+            'circle-stroke-color': '#4e342e',
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.92
+          }
+        },
+
+        {
+          id: 'bear-points',
+          type: 'circle',
+          source: 'bears',
+          paint: {
+            'circle-radius': [
+              'interpolate', ['linear'], ['zoom'],
+              7, 2.5,
+              12, 5,
+              16, 8
+            ],
+            'circle-color': '#8d4f2d',
+            'circle-stroke-color': '#ffcc80',
+            'circle-stroke-width': 1.5
+          }
+        }
+      ],
+
+      terrain: {
+        source: 'terrainSource',
+        exaggeration: 1.5
+      },
+
+      sky: {}
+    }
+  });
+
+  map.addControl(
+    new maplibregl.NavigationControl({
+      visualizePitch: true,
+      showZoom: true,
+      showCompass: true
+    }),
+    'top-right'
+  );
+
+  map.addControl(
+    new maplibregl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true,
+      showUserHeading: true
+    }),
+    'top-right'
+  );
+
+  map.addControl(
+    new maplibregl.ScaleControl({
+      maxWidth: 150,
+      unit: 'metric'
+    }),
+    'bottom-left'
+  );
+
+  map.on('load', () => {
+    setStatus('読み込み完了。地図を傾けて地形を確認できます。');
+
+    map.on('mouseenter', 'bear-points', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'bear-points', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    map.on('click', 'bear-points', event => {
+      const feature = event.features?.[0];
+      if (!feature) return;
+
+      const coordinates = feature.geometry.coordinates.slice(0, 2);
+      const properties = feature.properties ?? {};
+      const title =
+        properties.name ||
+        properties.Name ||
+        properties['市町名'] ||
+        '熊目撃情報';
+
+      const description =
+        properties.description ||
+        properties.DESCRIPTION ||
+        '';
+
+      const html = `
+        <div class="popup-title">🐻 ${escapeHtml(title)}</div>
+        ${descriptionTable(description)}
+        ${googleLinks(coordinates[0], coordinates[1])}
+      `;
+
+      new maplibregl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        maxWidth: '380px'
+      })
+        .setLngLat(coordinates)
+        .setHTML(html)
+        .addTo(map);
+    });
+  });
+
+  map.on('error', event => {
+    const message = event?.error?.message || '';
+
+    if (/R7石川熊|geojson/i.test(message)) {
+      setStatus(
+        '熊データを読み込めません。HTMLをGitHub Pages上で開き、R7石川熊.geojsonを同じフォルダに置いてください。',
+        true
+      );
+    } else if (/terrain|mapterhorn|dem/i.test(message)) {
+      setStatus(
+        '地形データの読み込みに失敗しました。通信状況を確認してください。',
+        true
+      );
+    }
+  });
+
+  function setLayerVisibility(layerIds, visible) {
+    const visibility = visible ? 'visible' : 'none';
+
+    for (const id of layerIds) {
+      if (map.getLayer(id)) {
+        map.setLayoutProperty(id, 'visibility', visibility);
+      }
+    }
+  }
+
+  document.getElementById('csToggle').addEventListener('change', event => {
+    setLayerVisibility(['cs-layer'], event.target.checked);
+  });
+
+  document.getElementById('gsiToggle').addEventListener('change', event => {
+    setLayerVisibility(['gsi-layer'], event.target.checked);
+  });
+
+  document.getElementById('bearToggle').addEventListener('change', event => {
+    setLayerVisibility(['bear-halo', 'bear-points'], event.target.checked);
+  });
+
+  const terrainToggle = document.getElementById('terrainToggle');
+  const terrainSlider = document.getElementById('terrainSlider');
+  const terrainValue = document.getElementById('terrainValue');
+
+  function applyTerrain() {
+    const exaggeration = Number(terrainSlider.value);
+    terrainValue.textContent = `${exaggeration.toFixed(1)}倍`;
+
+    if (terrainToggle.checked) {
+      map.setTerrain({
+        source: 'terrainSource',
+        exaggeration
+      });
+    } else {
+      map.setTerrain(null);
+    }
+  }
+
+  terrainToggle.addEventListener('change', applyTerrain);
+  terrainSlider.addEventListener('input', applyTerrain);
+
+  const gsiSlider = document.getElementById('gsiSlider');
+  const gsiValue = document.getElementById('gsiValue');
+
+  gsiSlider.addEventListener('input', () => {
+    const percent = Number(gsiSlider.value);
+    gsiValue.textContent = `${percent}%`;
+
+    if (map.getLayer('gsi-layer')) {
+      map.setPaintProperty('gsi-layer', 'raster-opacity', percent / 100);
+    }
+  });
+
+  document.getElementById('resetView').addEventListener('click', () => {
+    map.easeTo({
+      ...INITIAL_VIEW,
+      duration: 1200
+    });
+  });
+
+  document.getElementById('topView').addEventListener('click', () => {
+    map.easeTo({
+      pitch: 0,
+      bearing: 0,
+      duration: 900
+    });
+  });
+
+  document.getElementById('fullscreenButton').addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (error) {
+      setStatus('ブラウザで全画面表示を許可できませんでした。', true);
+    }
+  });
+
+  const panel = document.getElementById('panel');
+  const collapseButton = document.getElementById('collapseButton');
+
+  collapseButton.addEventListener('click', () => {
+    const collapsed = panel.classList.toggle('collapsed');
+    collapseButton.textContent = collapsed ? '☰' : '−';
+    collapseButton.title = collapsed ? 'パネルを開く' : 'パネルを折りたたむ';
+
+    window.setTimeout(() => map.resize(), 100);
+  });
+})();
+</script>
+</body>
+</html>
