@@ -1,0 +1,3720 @@
+<!DOCTYPE html>
+
+<html lang="ja"><head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>石川県19市町の人口・税収・外国人住民まとめ</title>
+<meta content="石川県19市町の人口ピーク、現在人口、2050年人口、年齢構成、市町村税収、外国人住民数を動画とグラフでまとめたページ。" name="description"/>
+<style>
+:root{--ink:#14212b;--muted:#66747f;--paper:#f4f2eb;--card:#fff;--line:#ddd8cd;--accent:#0f6b67;--soft:#edf5f2;--shadow:0 16px 40px rgba(20,33,43,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;line-height:1.85}
+a{color:var(--accent)}
+.wrap{width:min(1180px,100%);margin:auto;padding:0 22px}
+.hero{background:linear-gradient(145deg,#102f35,#19615d 60%,#4c8079);color:#fff;padding:72px 0 58px}
+.eyebrow{font-size:.76rem;letter-spacing:.16em;font-weight:800;color:var(--accent);margin:0 0 6px}
+.hero .eyebrow{color:#bfe6de}
+h1{font-size:clamp(2.3rem,5vw,4rem);line-height:1.18;letter-spacing:-.03em;margin:.3em 0}
+h2{font-size:clamp(1.6rem,3vw,2.35rem);line-height:1.3;margin:0 0 .6em}
+h3{font-size:1.35rem;margin:.2em 0}
+h4{margin:.2em 0}
+p{margin:0 0 1em}
+.lead{max-width:900px;font-size:1.08rem;opacity:.95}
+.hero-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px}
+.metric{background:rgba(255,255,255,.12);backdrop-filter:blur(2px);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:18px}
+.metric span{display:block;font-size:.8rem;opacity:.88}
+.metric strong{display:block;font-size:1.6rem;margin:.18em 0}
+.main{padding:48px 22px 90px}
+.section{margin-top:56px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow)}
+.note{margin:16px 0;padding:16px 18px;background:#fff7eb;border-left:5px solid #b46a32;border-radius:0 14px 14px 0}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.wide-chart{margin-top:18px}
+figure{margin:0}
+figure img{display:block;width:100%;border:1px solid var(--line);border-radius:18px;background:#fff}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:8px}
+.playlist{display:grid;grid-template-columns:1.65fr 1fr;gap:18px}
+.player video{width:100%;border-radius:16px;background:#000}
+.controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.controls button{border:none;background:var(--accent);color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer}
+.playlist-box{background:#faf8f3;border:1px solid var(--line);border-radius:18px;padding:18px}
+.playlist-box .now{font-size:1.2rem;font-weight:800;margin:0 0 10px}
+.playlist-box ol{margin:0;padding-left:20px;max-height:360px;overflow:auto}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:#fff}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:10px 12px;border-bottom:1px solid #ece8e1;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{background:#eef5f3}
+.region{margin-top:56px}
+.region-title{margin-bottom:16px}
+.city-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.city-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+.city-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.badge{display:inline-block;padding:8px 10px;border-radius:999px;background:var(--soft);font-size:.82rem;font-weight:700;color:var(--accent)}
+.video-wrap video{display:block;width:100%;border-radius:16px;background:#111;margin:14px 0 10px}
+.open-drive{display:inline-block;margin-bottom:8px;font-size:.88rem}
+.population-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:center;background:#faf8f3;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:6px}
+.population-flow span,.tax-row span{display:block;color:var(--muted);font-size:.82rem}
+.population-flow strong,.tax-row strong{display:block;font-size:1.2rem;margin:.12em 0}
+.flow-arrow,.age-arrow{font-size:1.3rem;color:var(--muted);text-align:center}
+.subhead{font-size:1rem;margin:16px 0 10px}
+.age-compare-box{background:#faf8f3;border:1px solid var(--line);border-radius:16px;padding:14px}
+.decline-pill{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:.88rem;font-weight:700;margin-bottom:10px}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;font-size:.83rem;color:var(--muted);margin-bottom:8px}
+.legend-row span{display:flex;align-items:center;gap:6px}
+.legend-row i{display:inline-block;width:12px;height:12px;border-radius:50%}
+.compare-plot{display:grid;grid-template-columns:1fr 34px 1fr;gap:10px;align-items:end;position:relative}
+.compare-plot .baseline{position:absolute;left:8px;right:8px;bottom:142px;border-top:2px solid #c7c7c7;z-index:0}
+.bar-col{position:relative;z-index:1}
+.total-cap{text-align:center;font-size:.88rem;margin-bottom:8px}
+.total-cap strong{font-size:1.2rem}
+.plot-area{height:230px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px}
+.bar-stack{width:92px;height:200px;display:flex;flex-direction:column-reverse;border:1px solid #d6d6d6;border-bottom:none;border-radius:10px 10px 0 0;overflow:hidden;background:linear-gradient(to top,#f0f0f0 0 0)}
+.seg{display:flex;align-items:center;justify-content:center;text-align:center;padding:4px 2px}
+.seg-label{font-size:.74rem;line-height:1.2;color:#111;font-weight:700}
+.seg-label small{font-size:.7rem;font-weight:500}
+.year-cap{text-align:center;font-weight:800;margin:4px 0 8px}
+.bar-legend{list-style:none;margin:0;padding:0;font-size:.8rem}
+.bar-legend li{display:flex;align-items:center;gap:6px;margin:3px 0}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 10px}
+.age-note,.mini-note{font-size:.84rem;color:var(--muted);margin-top:10px}
+.tax-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.tax-row > div{background:#faf8f3;border:1px solid var(--line);border-radius:16px;padding:14px}
+.special-note{margin-top:12px;padding:14px 16px;background:#fff4e8;border-left:5px solid #b46a32;border-radius:0 12px 12px 0;font-size:.88rem}
+.special-note p{margin-bottom:.8em}
+.sources{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+footer{margin-top:28px;font-size:.8rem;color:var(--muted)}
+@media(max-width:980px){
+  .hero-metrics,.city-grid,.chart-grid,.playlist,.tax-row{grid-template-columns:1fr}
+  .population-flow{grid-template-columns:1fr}
+  .flow-arrow,.age-arrow{transform:rotate(90deg)}
+  .compare-plot{grid-template-columns:1fr}
+  .compare-plot .baseline{display:none}
+}
+
+/* 年齢3区分グラフ：横並び・基準線・縮尺を統一 */
+.age-side-chart{
+  margin-top:10px;
+  padding:16px;
+  background:#faf8f3;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.age-side-summary{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.age-side-summary strong{
+  padding:7px 11px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  font-size:.9rem;
+}
+.age-side-summary span{
+  color:var(--muted);
+  font-size:.82rem;
+}
+.age-shared-frame{
+  display:grid;
+  grid-template-columns:56px minmax(0,1fr);
+  gap:8px;
+  align-items:start;
+}
+.age-y-axis{
+  height:270px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding:0 4px 0 0;
+  color:var(--muted);
+  font-size:.7rem;
+}
+.age-columns{
+  height:auto;
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:26px;
+  position:relative;
+}
+.age-columns::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:270px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(25% - 1px),
+      rgba(80,90,95,.14) calc(25% - 1px),
+      rgba(80,90,95,.14) 25%
+    );
+  border-bottom:2px solid #747d82;
+  pointer-events:none;
+}
+.aligned-year-column{
+  min-width:0;
+  position:relative;
+  z-index:1;
+}
+.aligned-total{
+  height:32px;
+  text-align:center;
+  font-size:.78rem;
+  white-space:nowrap;
+}
+.aligned-total strong{
+  font-size:1rem;
+}
+.aligned-plot{
+  height:238px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.aligned-bar{
+  width:min(96px,68%);
+  min-width:60px;
+  display:flex;
+  flex-direction:column-reverse;
+  overflow:hidden;
+  border:1px solid rgba(40,50,55,.35);
+  border-bottom:0;
+  border-radius:8px 8px 0 0;
+  box-shadow:0 2px 5px rgba(0,0,0,.08);
+}
+.age-segment{
+  width:100%;
+  min-height:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  line-height:1.12;
+  color:#111;
+  font-weight:700;
+  font-size:.68rem;
+}
+.age-segment small{
+  font-size:.64rem;
+  font-weight:500;
+}
+.age-young{background:#6aa7d9}
+.age-working{background:#78b36a}
+.age-old{background:#d9a06a}
+.age-unknown{background:#c94a4a;color:#fff}
+.aligned-year{
+  text-align:center;
+  font-weight:800;
+  margin-top:7px;
+}
+.aligned-breakdown{
+  list-style:none;
+  margin:9px 0 0;
+  padding:0;
+  font-size:.72rem;
+}
+.aligned-breakdown li{
+  display:grid;
+  grid-template-columns:10px 1fr auto;
+  gap:4px 6px;
+  align-items:center;
+  margin:3px 0;
+}
+.aligned-breakdown i{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  grid-row:1 / span 2;
+}
+.aligned-breakdown strong{
+  font-size:.72rem;
+}
+.aligned-breakdown small{
+  grid-column:2 / 4;
+  color:var(--muted);
+}
+.age-chart-note{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+/* 狭い画面でも横並びを維持 */
+@media(max-width:980px){
+  .age-columns{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    gap:14px;
+  }
+  .age-shared-frame{
+    grid-template-columns:44px minmax(0,1fr);
+  }
+  .age-y-axis{
+    font-size:.64rem;
+  }
+  .aligned-bar{
+    min-width:48px;
+    width:min(82px,72%);
+  }
+}
+
+/* 市町の特徴 */
+.municipality-feature{
+  margin-top:14px;
+  padding:15px;
+  background:#f4f8f7;
+  border:1px solid #d6e4e1;
+  border-radius:16px;
+}
+.feature-title-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.feature-title-row h4{
+  margin:0;
+  font-size:1rem;
+}
+.feature-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.feature-tag{
+  padding:4px 8px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid #cbded9;
+  color:#0f6b67;
+  font-size:.7rem;
+  font-weight:700;
+}
+.feature-stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:11px;
+}
+.feature-stats>div{
+  padding:9px 10px;
+  background:#fff;
+  border:1px solid #dce9e6;
+  border-radius:12px;
+}
+.feature-stats span,
+.feature-stats small{
+  display:block;
+  color:var(--muted);
+  font-size:.68rem;
+}
+.feature-stats strong{
+  display:block;
+  margin:1px 0;
+  font-size:.92rem;
+}
+.feature-copy{
+  margin-top:10px;
+  font-size:.82rem;
+  line-height:1.7;
+}
+.feature-copy p{
+  margin:.35em 0;
+}
+@media(max-width:620px){
+  .feature-stats{grid-template-columns:1fr}
+}
+
+/* イベント・学校・合併・防災指定 */
+.local-context{
+  margin-top:14px;
+  padding:16px;
+  background:#fbfaf7;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.local-context h4{
+  margin:0 0 12px;
+  font-size:1rem;
+}
+.local-info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.local-info-item{
+  padding:12px;
+  background:#fff;
+  border:1px solid #e5dfd5;
+  border-radius:13px;
+}
+.local-label{
+  display:block;
+  color:var(--muted);
+  font-size:.73rem;
+  font-weight:700;
+  margin-bottom:7px;
+}
+.local-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.local-chip{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:.72rem;
+  font-weight:700;
+}
+.event-chip{
+  background:#fff2df;
+  color:#8a4b13;
+  border:1px solid #ead1ae;
+}
+.school-chip{
+  background:#eaf2fb;
+  color:#285b87;
+  border:1px solid #cbdced;
+}
+.local-info-item small{
+  display:block;
+  color:var(--muted);
+  font-size:.67rem;
+  margin-top:7px;
+}
+.merger-line{
+  display:grid;
+  grid-template-columns:90px 1fr;
+  gap:10px;
+  align-items:start;
+  margin-top:10px;
+  padding:11px 12px;
+  background:#fff;
+  border:1px solid #e5dfd5;
+  border-radius:13px;
+}
+.merger-line span{
+  color:var(--muted);
+  font-size:.73rem;
+  font-weight:700;
+}
+.merger-line strong{
+  font-size:.82rem;
+}
+.hazard-panels{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.hazard-panel{
+  padding:12px;
+  background:#fff;
+  border:1px solid #ded8ce;
+  border-radius:13px;
+}
+.hazard-heading{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:baseline;
+}
+.hazard-heading span{
+  color:var(--muted);
+  font-size:.73rem;
+  font-weight:700;
+}
+.hazard-heading strong{
+  color:#9a3e24;
+  font-size:1.05rem;
+}
+.hazard-breakdown{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  margin-top:8px;
+}
+.hazard-breakdown span{
+  padding:6px 4px;
+  text-align:center;
+  background:#f5f2ec;
+  border-radius:9px;
+  font-size:.64rem;
+}
+.hazard-breakdown b{
+  display:block;
+  font-size:.88rem;
+}
+.hazard-panel small,
+.hazard-caution{
+  color:var(--muted);
+  font-size:.67rem;
+}
+.hazard-panel small{
+  display:block;
+  margin-top:7px;
+}
+.hazard-caution{
+  margin:9px 0 0;
+}
+@media(max-width:720px){
+  .local-info-grid,
+  .hazard-panels{grid-template-columns:1fr}
+  .merger-line{grid-template-columns:1fr}
+}
+
+/* 出身・ゆかりの著名人 */
+.famous-people{
+  margin-top:10px;
+  padding:14px;
+  background:#fff;
+  border:1px solid #e5dfd5;
+  border-radius:13px;
+}
+.famous-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.famous-heading h4{
+  margin:0;
+  font-size:.92rem;
+}
+.famous-heading > span{
+  color:var(--muted);
+  font-size:.68rem;
+  border:1px solid #ddd5c8;
+  border-radius:999px;
+  padding:3px 8px;
+}
+.people-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.person-card{
+  position:relative;
+  min-height:74px;
+  padding:10px 10px 9px;
+  background:#fbfaf7;
+  border:1px solid #e8e2d8;
+  border-radius:11px;
+}
+.person-card strong{
+  display:block;
+  margin-top:7px;
+  font-size:.84rem;
+}
+.person-card small{
+  display:block;
+  color:var(--muted);
+  font-size:.68rem;
+  line-height:1.45;
+  margin-top:3px;
+}
+.person-category{
+  display:inline-block;
+  padding:2px 7px;
+  border-radius:999px;
+  font-size:.61rem;
+  font-weight:700;
+}
+.person-politics{background:#f4e7df;color:#8b3a24}
+.person-entertainment{background:#f8e8f0;color:#8b315c}
+.person-sports{background:#e6f2ea;color:#2e6940}
+.person-culture{background:#fff1d8;color:#8a5b17}
+.person-academic{background:#e8eef9;color:#365d91}
+.person-business{background:#ece8f6;color:#5e4787}
+.people-note{
+  color:var(--muted);
+  font-size:.66rem;
+  line-height:1.55;
+  margin:9px 0 0;
+}
+@media(max-width:720px){
+  .people-grid{grid-template-columns:1fr}
+}
+</style></head>
+<body>
+<header class="hero"><div class="wrap">
+<p class="eyebrow">ISHIKAWA POPULATION, TAX AND FOREIGN RESIDENTS</p>
+<h1>石川県19市町の<br/>人口・税収・外国人住民まとめ</h1>
+<p class="lead">人口の最大時・現在・2050年、年齢構成の変化、市町村税収、そして外国人住民の状況を1ページで確認できるように整理した。人口ピラミッド動画は市町ごとに連続再生できる。年齢3区分グラフは、2025年と2050年を同じ基準線・同じ縮尺で表示し、総人数の減少も分かる形に修正した。</p>
+<div class="hero-metrics">
+<div class="metric"><span>県人口の最大時</span><strong>1,180,977人</strong><small>2000年国勢調査</small></div>
+<div class="metric"><span>現在人口</span><strong>1,089,858人</strong><small>2025年10月</small></div>
+<div class="metric"><span>2050年人口</span><strong>896,801人</strong><small>最大時の 75.9%</small></div>
+<div class="metric"><span>外国人住民</span><strong>22,892人</strong><small>2025年12月末・概算 2.1%</small></div>
+</div></div></header>
+<main class="main wrap">
+<section class="section card">
+<p>石川県の人口は、国勢調査で確認できる範囲では<strong>2000年の 1,180,977人</strong>が最大で、<strong>2025年10月現在 1,089,858人</strong>、<strong>2050年 896,801人</strong>になる見込みである。</p>
+<p>同時に年代構成も変わる。県全体の65歳以上人口の割合は、現在の <strong>31.1%</strong> から2050年には <strong>38.3%</strong> へ上昇し、生産年齢人口の割合は <strong>57.6%</strong> から <strong>51.5%</strong> へ低下する。</p>
+<p>2024年度の県内19市町の市町村税は合計 <strong>1843.7億円</strong>。人口だけを連動させた単純試算では、2050年は <strong>1529.2億円</strong> となる。</p>
+<p>外国人住民は2025年12月末で <strong>22,892人</strong>、概算で総人口の <strong>2.1%</strong> に当たる。石川県の人口減少を下支えする存在としても重要になっている。</p>
+<div class="note"><strong>人口ピークの扱い：</strong>市町別の最大人口は、現在の市町境界にそろえた1995～2020年の国勢調査と、2025年10月人口を比較したもの。1995年より前から減少している市町では、実際のピークがさらに以前の可能性がある。</div>
+<div class="note"><strong>税収試算の扱い：</strong>2050年税収は公式予測ではない。2024年度の市町村税を2025年人口で割った1人当たり税収が続くと仮定し、2050年人口を掛けた単純試算である。</div>
+<div class="note"><strong>外国人住民割合の扱い：</strong>外国人住民数は2025年12月末、総人口は2025年10月1日のため、割合は概算値。</div>
+</section>
+<section class="section">
+<h2>人口ピラミッド動画を連続ループ再生</h2>
+<div class="playlist card">
+<div class="player">
+<video autoplay="" controls="" id="mainPlayer" muted="" playsinline="" preload="metadata" src="videos/17201_金沢市_人口ピラミッド_2020-2050.mp4"></video>
+<div class="controls"><button id="prevBtn">前へ</button><button id="nextBtn">次へ</button><button id="muteBtn">ミュート切替</button></div>
+</div>
+<div class="playlist-box">
+<p class="eyebrow">NOW PLAYING</p><p class="now" id="nowLabel">金沢市</p>
+<ol id="playlistList"></ol>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>人口のピーク・現在・2050年</h2>
+<div class="chart-grid">
+<figure><img alt="" src="charts/市町別_最大人口に対する現在と2050年人口.png"/><figcaption>人口の縮小段階を比較。</figcaption></figure>
+<figure><img alt="" src="charts/市町別_現在と2050年の高齢人口割合.png"/><figcaption>65歳以上の割合。2025年実績推計と2050年将来推計。</figcaption></figure>
+</div>
+</section>
+<section class="section">
+<h2>税収の現在と2050年単純試算</h2>
+<div class="chart-grid">
+<figure><img alt="" src="charts/市町別_2024年度市町村税収.png"/><figcaption>現在の市町村税収。</figcaption></figure>
+<figure><img alt="" src="charts/市町別_1人当たり市町村税収.png"/><figcaption>2024年度市町村税を2025年人口で除した概算。</figcaption></figure>
+</div>
+<div class="wide-chart"><figure><img alt="" src="charts/地域別_税収と2050単純試算.png"/><figcaption>2050年税収は人口だけを連動させた参考値。</figcaption></figure></div>
+</section>
+<section class="section">
+<h2>外国人住民の動向</h2>
+<p>石川県の外国人住民は2025年12月末で 22,892人。人数では金沢市が最も多いが、総人口に占める割合では能美市、小松市、加賀市などが高い。製造業、留学、観光、介護など、地域ごとに役割が異なる。</p>
+<div class="chart-grid">
+<figure><img alt="" src="charts/市町別_外国人住民数_2025.png"/><figcaption>2025年12月末の外国人住民数。</figcaption></figure>
+<figure><img alt="" src="charts/市町別_外国人住民割合_2025.png"/><figcaption>総人口に占める割合（概算）。</figcaption></figure>
+</div>
+<div class="chart-grid" style="margin-top:18px">
+<figure><img alt="" src="charts/地域別_外国人住民数_2025.png"/><figcaption>地域別の外国人住民数。</figcaption></figure>
+<figure><img alt="" src="charts/石川県_主な国籍別外国人住民数.png"/><figcaption>ベトナム、中国、インドネシアなどが多い。</figcaption></figure>
+</div>
+<div class="chart-grid" style="margin-top:18px">
+<div class="table-wrap"><table><thead><tr><th>市町</th><th>外国人住民数</th><th>総人口比</th><th>2024→2025増減（把握分）</th></tr></thead><tbody><tr><td>金沢市</td><td>9,094</td><td>2.0%</td><td>+1,096</td></tr><tr><td>小松市</td><td>3,436</td><td>3.3%</td><td>+196</td></tr><tr><td>白山市</td><td>2,203</td><td>2.0%</td><td>+193</td></tr><tr><td>能美市</td><td>1,746</td><td>3.6%</td><td>+171</td></tr><tr><td>加賀市</td><td>1,735</td><td>3.0%</td><td>+162</td></tr><tr><td>七尾市</td><td>913</td><td>2.0%</td><td>+98</td></tr><tr><td>野々市市</td><td>808</td><td>1.4%</td><td>+100</td></tr><tr><td>津幡町</td><td>502</td><td>1.4%</td><td>+102</td></tr></tbody></table></div>
+<div>
+<div class="table-wrap" style="margin-bottom:14px"><table><thead><tr><th>主な国籍</th><th>2025年</th><th>前年差</th></tr></thead><tbody><tr><td>ベトナム</td><td>5,839</td><td>+435</td></tr><tr><td>中国</td><td>3,931</td><td>+59</td></tr><tr><td>インドネシア</td><td>2,824</td><td>+800</td></tr><tr><td>フィリピン</td><td>1,770</td><td>+134</td></tr><tr><td>ミャンマー</td><td>1,768</td><td>+534</td></tr><tr><td>ブラジル</td><td>1,440</td><td>-147</td></tr><tr><td>韓国</td><td>1,133</td><td>-4</td></tr><tr><td>ネパール</td><td>962</td><td>+240</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>主な在留資格</th><th>人数</th></tr></thead><tbody><tr><td>技能実習</td><td>5,880</td></tr><tr><td>特定技能</td><td>3,701</td></tr><tr><td>永住者</td><td>3,458</td></tr><tr><td>留学</td><td>2,833</td></tr><tr><td>技術・人文知識・国際業務</td><td>1,610</td></tr></tbody></table></div>
+</div>
+</div>
+</section>
+<section class="section">
+<h2>19市町一覧</h2>
+<div class="table-wrap"><table><thead><tr><th>市町</th><th>最大年</th><th>最大人口</th><th>2025人口</th><th>2050人口</th><th>現在65歳以上</th><th>2050年65歳以上</th><th>2024税収</th><th>外国人住民</th><th>外国人割合</th></tr></thead><tbody><tr><td>金沢市</td><td>2015</td><td>465,699</td><td>454,163</td><td>404,449</td><td>28.2%</td><td>36.3%</td><td>858.8億円</td><td>9,094</td><td>2.0%</td></tr><tr><td>七尾市</td><td>1995</td><td>67,368</td><td>44,555</td><td>27,443</td><td>41.8%</td><td>49.7%</td><td>77.2億円</td><td>913</td><td>2.0%</td></tr><tr><td>小松市</td><td>2005</td><td>109,084</td><td>103,332</td><td>86,175</td><td>29.7%</td><td>36.6%</td><td>166.5億円</td><td>3,436</td><td>3.3%</td></tr><tr><td>輪島市</td><td>1995</td><td>37,133</td><td>18,708</td><td>10,754</td><td>52.4%</td><td>55.3%</td><td>20.5億円</td><td>124</td><td>0.7%</td></tr><tr><td>珠洲市</td><td>1995</td><td>21,580</td><td>9,812</td><td>5,083</td><td>55.3%</td><td>61.8%</td><td>11.4億円</td><td>88</td><td>0.9%</td></tr><tr><td>加賀市</td><td>1995</td><td>80,333</td><td>58,747</td><td>36,571</td><td>37.4%</td><td>48.8%</td><td>92.8億円</td><td>1,735</td><td>3.0%</td></tr><tr><td>羽咋市</td><td>1995</td><td>26,502</td><td>18,759</td><td>11,063</td><td>41.9%</td><td>53.4%</td><td>26.1億円</td><td>267</td><td>1.4%</td></tr><tr><td>かほく市</td><td>現在</td><td>35,517</td><td>35,517</td><td>30,439</td><td>29.0%</td><td>35.6%</td><td>43.0億円</td><td>483</td><td>1.4%</td></tr><tr><td>白山市</td><td>2010</td><td>110,459</td><td>109,024</td><td>94,293</td><td>29.5%</td><td>36.5%</td><td>189.9億円</td><td>2,203</td><td>2.0%</td></tr><tr><td>能美市</td><td>2015</td><td>48,881</td><td>48,260</td><td>42,084</td><td>26.8%</td><td>36.4%</td><td>90.5億円</td><td>1,746</td><td>3.6%</td></tr><tr><td>野々市市</td><td>現在</td><td>58,560</td><td>58,560</td><td>55,360</td><td>20.9%</td><td>30.5%</td><td>86.8億円</td><td>808</td><td>1.4%</td></tr><tr><td>川北町</td><td>2015</td><td>6,347</td><td>6,023</td><td>5,418</td><td>25.0%</td><td>35.2%</td><td>13.1億円</td><td>69</td><td>1.1%</td></tr><tr><td>津幡町</td><td>2015</td><td>36,968</td><td>36,880</td><td>32,050</td><td>26.7%</td><td>38.9%</td><td>43.8億円</td><td>502</td><td>1.4%</td></tr><tr><td>内灘町</td><td>2015</td><td>26,987</td><td>25,507</td><td>20,566</td><td>29.7%</td><td>39.7%</td><td>25.6億円</td><td>420</td><td>1.6%</td></tr><tr><td>志賀町</td><td>1995</td><td>26,965</td><td>16,219</td><td>8,740</td><td>48.4%</td><td>56.6%</td><td>39.4億円</td><td>244</td><td>1.5%</td></tr><tr><td>宝達志水町</td><td>1995</td><td>16,409</td><td>10,986</td><td>6,245</td><td>42.1%</td><td>54.1%</td><td>16.6億円</td><td>256</td><td>2.3%</td></tr><tr><td>中能登町</td><td>1995</td><td>19,716</td><td>15,164</td><td>10,166</td><td>38.9%</td><td>46.3%</td><td>16.6億円</td><td>208</td><td>1.4%</td></tr><tr><td>穴水町</td><td>1995</td><td>12,053</td><td>6,655</td><td>3,729</td><td>52.4%</td><td>56.3%</td><td>10.2億円</td><td>143</td><td>2.1%</td></tr><tr><td>能登町</td><td>1995</td><td>25,590</td><td>12,987</td><td>6,173</td><td>54.7%</td><td>62.9%</td><td>14.9億円</td><td>153</td><td>1.2%</td></tr></tbody></table></div>
+</section>
+<section class="region"><div class="region-title"><p class="eyebrow">REGION</p><h2>石川中央</h2><p>2025年人口 719,651人 → 2050年 637,157人。外国人住民は 13,510人。</p></div><div class="city-grid">
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>金沢市</h3></div>
+<span class="badge">2050年は最大時の 86.8</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17201_金沢市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>465,699人</strong><small>2015年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>454,163人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>404,449人</strong><small>現在比 -10.9%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">県都・商業</span><span class="feature-tag">観光・文化</span><span class="feature-tag">機械・IT</span><span class="feature-tag">加賀野菜</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>41.7%</strong><small>2025年・県内1位</small></div>
+<div><span>2050年シェア</span><strong>45.1%</strong><small>県内人口の集中度は今後高まる見込み</small></div>
+<div><span>65歳以上</span><strong>28.2% → 36.3%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>県庁所在地で、商業、医療・福祉、教育、観光などのサービス業が集積する。機械・IT分野では澁谷工業、アイオーデータなどの本社が立地し、伝統工芸も地域経済の柱。</p>
+<p><strong>農林水産・観光：</strong>五郎島金時、加賀れんこん、すいかなどの都市近郊農業が特徴。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">金沢百万石まつり</span><span class="local-chip event-chip">金沢マラソン</span><span class="local-chip event-chip">金沢JAZZ STREET</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">金沢大学</span><span class="local-chip school-chip">金沢美術工芸大学</span><span class="local-chip school-chip">金沢泉丘高等学校</span><span class="local-chip school-chip">金沢二水高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>泉鏡花</strong>
+<small>小説家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>鹿賀丈史</strong>
+<small>俳優</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>井上あずみ</strong>
+<small>歌手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>松本薫</strong>
+<small>柔道家</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>559区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>230</b></span>
+<span>地すべり <b>82</b></span>
+<span>急傾斜地 <b>247</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>158箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>106</b></span>
+<span>地すべり防止 <b>13</b></span>
+<span>急傾斜危険区域 <b>39</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に10.9%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>454,163人</span>
+<span>340,622人</span>
+<span>227,082人</span>
+<span>113,541人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>454,163人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:11.274552%;" title="0～14歳：49,606人（11.3%）"></div><div class="age-segment age-working" style="height:60.512021%;" title="15～64歳：266,242人（60.5%）"><span>266,242人<br/><small>60.5%</small></span></div><div class="age-segment age-old" style="height:28.213427%;" title="65歳以上：124,134人（28.2%）"><span>124,134人<br/><small>28.2%</small></span></div><div class="age-segment age-unknown" style="height:3.122447%;" title="年齢不詳：14,181人（3.1%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>49,606人</strong><small>11.3%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>266,242人</strong><small>60.5%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>124,134人</strong><small>28.2%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>14,181人</strong><small>3.1%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>404,449人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:89.053710%;">
+<div class="age-segment age-young" style="height:10.187193%;" title="0～14歳：41,202人（10.2%）"></div><div class="age-segment age-working" style="height:53.554836%;" title="15～64歳：216,602人（53.6%）"><span>216,602人<br/><small>53.6%</small></span></div><div class="age-segment age-old" style="height:36.257971%;" title="65歳以上：146,645人（36.3%）"><span>146,645人<br/><small>36.3%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>41,202人</strong><small>10.2%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>216,602人</strong><small>53.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>146,645人</strong><small>36.3%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳14,181人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>858.8億円</strong><small>1人当たり 18.9万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>764.8億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 9,094人（概算 2.0%）／2024→2025年 +1,096人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>かほく市</h3></div>
+<span class="badge">2050年は最大時の 85.7</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17209_かほく市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>35,517人</strong><small>現在</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>35,517人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>30,439人</strong><small>現在比 -14.3%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">IT・電子</span><span class="feature-tag">繊維</span><span class="feature-tag">金沢通勤圏</span><span class="feature-tag">ぶどう</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>3.3%</strong><small>2025年・県内9位</small></div>
+<div><span>2050年シェア</span><strong>3.4%</strong><small>県人口に占める比重はおおむね横ばい</small></div>
+<div><span>65歳以上</span><strong>29.0% → 35.6%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>金沢通勤圏として人口が比較的安定し、IT・電子と繊維産業が特徴。PFUの石川本社・開発生産拠点が立地する。</p>
+<p><strong>農林水産・観光：</strong>高松ぶどう、米、砂丘地を利用した野菜などの農業が行われる。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">かほく四季まつり</span><span class="local-chip event-chip">サマーフェスタinかほく</span><span class="local-chip event-chip">かほく市制記念イベント</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">石川県立看護大学</span><span class="local-chip school-chip">宇ノ気中学校</span><span class="local-chip school-chip">河北台中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2004年：高松町＋七塚町＋宇ノ気町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-academic">学術</span>
+<strong>西田幾多郎</strong>
+<small>哲学者</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>奥川恭伸</strong>
+<small>プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>宮崎由加</strong>
+<small>歌手・タレント</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>山瀬慎之助</strong>
+<small>プロ野球選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>44区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>12</b></span>
+<span>地すべり <b>2</b></span>
+<span>急傾斜地 <b>30</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>14箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>7</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>7</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に14.3%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>35,517人</span>
+<span>26,638人</span>
+<span>17,758人</span>
+<span>8,879人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>35,517人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:14.245644%;" title="0～14歳：5,028人（14.2%）"><span>5,028人<br/><small>14.2%</small></span></div><div class="age-segment age-working" style="height:56.724749%;" title="15～64歳：20,021人（56.7%）"><span>20,021人<br/><small>56.7%</small></span></div><div class="age-segment age-old" style="height:29.029608%;" title="65歳以上：10,246人（29.0%）"><span>10,246人<br/><small>29.0%</small></span></div><div class="age-segment age-unknown" style="height:0.625053%;" title="年齢不詳：222人（0.6%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>5,028人</strong><small>14.2%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>20,021人</strong><small>56.7%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>10,246人</strong><small>29.0%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>222人</strong><small>0.6%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>30,439人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:85.702621%;">
+<div class="age-segment age-young" style="height:12.411709%;" title="0～14歳：3,778人（12.4%）"><span>3,778人<br/><small>12.4%</small></span></div><div class="age-segment age-working" style="height:52.002365%;" title="15～64歳：15,829人（52.0%）"><span>15,829人<br/><small>52.0%</small></span></div><div class="age-segment age-old" style="height:35.585926%;" title="65歳以上：10,832人（35.6%）"><span>10,832人<br/><small>35.6%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>3,778人</strong><small>12.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>15,829人</strong><small>52.0%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>10,832人</strong><small>35.6%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳222人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>43.0億円</strong><small>1人当たり 12.1万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>36.9億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 483人（概算 1.4%）</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>白山市</h3></div>
+<span class="badge">2050年は最大時の 85.4</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17210_白山市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>110,459人</strong><small>2010年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>109,024人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>94,293人</strong><small>現在比 -13.5%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">大規模製造業</span><span class="feature-tag">物流</span><span class="feature-tag">金沢都市圏</span><span class="feature-tag">園芸農業</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>10.0%</strong><small>2025年・県内2位</small></div>
+<div><span>2050年シェア</span><strong>10.5%</strong><small>県内人口の集中度は今後高まる見込み</small></div>
+<div><span>65歳以上</span><strong>29.5% → 36.5%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>県内第2位の人口規模を持ち、国道8号沿線や工業団地に製造・物流企業が集積する。EIZO本社など、研究開発と生産機能を持つ企業が立地。</p>
+<p><strong>農林水産・観光：</strong>米、なし、トマト、ブロッコリー、白ねぎなど、手取川扇状地を生かした農業が盛ん。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">ほうらい祭り</span><span class="local-chip event-chip">白峰若葉まつり</span><span class="local-chip event-chip">白山白川郷ウルトラマラソン</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">金城大学</span><span class="local-chip school-chip">金城大学短期大学部</span><span class="local-chip school-chip">松任高等学校</span><span class="local-chip school-chip">翠星高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：松任市＋美川町＋鶴来町＋河内村＋吉野谷村＋鳥越村＋尾口村＋白峰村</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>本谷有希子</strong>
+<small>劇作家・小説家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>浅川マキ</strong>
+<small>歌手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>西垣匠</strong>
+<small>俳優</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>奥田敬和</strong>
+<small>政治家</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>250区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>139</b></span>
+<span>地すべり <b>20</b></span>
+<span>急傾斜地 <b>91</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>214箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>185</b></span>
+<span>地すべり防止 <b>6</b></span>
+<span>急傾斜危険区域 <b>23</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に13.5%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>109,024人</span>
+<span>81,768人</span>
+<span>54,512人</span>
+<span>27,256人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>109,024人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:13.044442%;" title="0～14歳：14,127人（13.0%）"><span>14,127人<br/><small>13.0%</small></span></div><div class="age-segment age-working" style="height:57.475138%;" title="15～64歳：62,245人（57.5%）"><span>62,245人<br/><small>57.5%</small></span></div><div class="age-segment age-old" style="height:29.480420%;" title="65歳以上：31,927人（29.5%）"><span>31,927人<br/><small>29.5%</small></span></div><div class="age-segment age-unknown" style="height:0.664991%;" title="年齢不詳：725人（0.7%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>14,127人</strong><small>13.0%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>62,245人</strong><small>57.5%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>31,927人</strong><small>29.5%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>725人</strong><small>0.7%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>94,293人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:86.488296%;">
+<div class="age-segment age-young" style="height:12.087854%;" title="0～14歳：11,398人（12.1%）"><span>11,398人<br/><small>12.1%</small></span></div><div class="age-segment age-working" style="height:51.436480%;" title="15～64歳：48,501人（51.4%）"><span>48,501人<br/><small>51.4%</small></span></div><div class="age-segment age-old" style="height:36.475666%;" title="65歳以上：34,394人（36.5%）"><span>34,394人<br/><small>36.5%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>11,398人</strong><small>12.1%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>48,501人</strong><small>51.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>34,394人</strong><small>36.5%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳725人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>189.9億円</strong><small>1人当たり 17.4万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>164.3億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 2,203人（概算 2.0%）／2024→2025年 +193人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>野々市市</h3></div>
+<span class="badge">2050年は最大時の 94.5</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17212_野々市市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>58,560人</strong><small>現在</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>58,560人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>55,360人</strong><small>現在比 -5.5%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">若い人口構成</span><span class="feature-tag">商業・サービス</span><span class="feature-tag">大学</span><span class="feature-tag">金沢通勤圏</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>5.4%</strong><small>2025年・県内5位</small></div>
+<div><span>2050年シェア</span><strong>6.2%</strong><small>県内人口の集中度は今後高まる見込み</small></div>
+<div><span>65歳以上</span><strong>20.9% → 30.5%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>人口が比較的若く、金沢市に隣接する住宅・商業都市。金沢工業大学が立地し、教育、研究、サービス、小売の比重が高い。</p>
+<p><strong>農林水産・観光：</strong>市街化が進む一方、米、野菜、花きなどの都市近郊農業も残る。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">野々市じょんからまつり</span><span class="local-chip event-chip">北国街道野々市の市</span><span class="local-chip event-chip">野々市市文化祭</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">金沢工業大学</span><span class="local-chip school-chip">石川県立大学</span><span class="local-chip school-chip">野々市明倫高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>合併なし。2011年に野々市町が単独市制</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>米林宏昌</strong>
+<small>アニメーション監督</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>吉田メタル</strong>
+<small>俳優</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>大倉颯太</strong>
+<small>バスケットボール選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>村浜武洋</strong>
+<small>プロレスラー</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>0区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>0</b></span>
+<span>地すべり <b>0</b></span>
+<span>急傾斜地 <b>0</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>0箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>0</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>0</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に5.5%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>58,560人</span>
+<span>43,920人</span>
+<span>29,280人</span>
+<span>14,640人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>58,560人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:13.414634%;" title="0～14歳：7,623人（13.4%）"><span>7,623人<br/><small>13.4%</small></span></div><div class="age-segment age-working" style="height:65.646007%;" title="15～64歳：37,304人（65.6%）"><span>37,304人<br/><small>65.6%</small></span></div><div class="age-segment age-old" style="height:20.939359%;" title="65歳以上：11,899人（20.9%）"><span>11,899人<br/><small>20.9%</small></span></div><div class="age-segment age-unknown" style="height:2.961066%;" title="年齢不詳：1,734人（3.0%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>7,623人</strong><small>13.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>37,304人</strong><small>65.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>11,899人</strong><small>20.9%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>1,734人</strong><small>3.0%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>55,360人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:94.535519%;">
+<div class="age-segment age-young" style="height:11.940029%;" title="0～14歳：6,610人（11.9%）"></div><div class="age-segment age-working" style="height:57.599350%;" title="15～64歳：31,887人（57.6%）"><span>31,887人<br/><small>57.6%</small></span></div><div class="age-segment age-old" style="height:30.460621%;" title="65歳以上：16,863人（30.5%）"><span>16,863人<br/><small>30.5%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>6,610人</strong><small>11.9%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>31,887人</strong><small>57.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>16,863人</strong><small>30.5%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳1,734人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>86.8億円</strong><small>1人当たり 14.8万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>82.0億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 808人（概算 1.4%）／2024→2025年 +100人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>津幡町</h3></div>
+<span class="badge">2050年は最大時の 86.7</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17361_津幡町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>36,968人</strong><small>2015年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>36,880人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>32,050人</strong><small>現在比 -13.1%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">金沢通勤圏</span><span class="feature-tag">住宅都市</span><span class="feature-tag">物流・製造</span><span class="feature-tag">まこも</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>3.4%</strong><small>2025年・県内8位</small></div>
+<div><span>2050年シェア</span><strong>3.6%</strong><small>県内人口の集中度は今後高まる見込み</small></div>
+<div><span>65歳以上</span><strong>26.7% → 38.9%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>金沢市に隣接し、鉄道・道路交通を生かした住宅都市。小売・サービス、物流、製造業が混在し、県北部への結節点でもある。</p>
+<p><strong>農林水産・観光：</strong>米、まこも、豆類、野菜などの農業が行われる。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">津幡ふるさとまつり</span><span class="local-chip event-chip">八朔まつり</span><span class="local-chip event-chip">倶利迦羅不動寺八重桜まつり</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">津幡高等学校</span><span class="local-chip school-chip">津幡中学校</span><span class="local-chip school-chip">津幡南中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>大の里泰輝</strong>
+<small>大相撲力士</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>川井梨紗子</strong>
+<small>レスリング選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>川井友香子</strong>
+<small>レスリング選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>野際陽子</strong>
+<small>俳優</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>183区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>78</b></span>
+<span>地すべり <b>48</b></span>
+<span>急傾斜地 <b>57</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>77箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>34</b></span>
+<span>地すべり防止 <b>10</b></span>
+<span>急傾斜危険区域 <b>33</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に13.1%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>36,880人</span>
+<span>27,660人</span>
+<span>18,440人</span>
+<span>9,220人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>36,880人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:12.898215%;" title="0～14歳：4,733人（12.9%）"><span>4,733人<br/><small>12.9%</small></span></div><div class="age-segment age-working" style="height:60.411500%;" title="15～64歳：22,168人（60.4%）"><span>22,168人<br/><small>60.4%</small></span></div><div class="age-segment age-old" style="height:26.690285%;" title="65歳以上：9,794人（26.7%）"><span>9,794人<br/><small>26.7%</small></span></div><div class="age-segment age-unknown" style="height:0.501627%;" title="年齢不詳：185人（0.5%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>4,733人</strong><small>12.9%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>22,168人</strong><small>60.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>9,794人</strong><small>26.7%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>185人</strong><small>0.5%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>32,050人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:86.903471%;">
+<div class="age-segment age-young" style="height:10.496100%;" title="0～14歳：3,364人（10.5%）"></div><div class="age-segment age-working" style="height:50.602184%;" title="15～64歳：16,218人（50.6%）"><span>16,218人<br/><small>50.6%</small></span></div><div class="age-segment age-old" style="height:38.901716%;" title="65歳以上：12,468人（38.9%）"><span>12,468人<br/><small>38.9%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>3,364人</strong><small>10.5%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>16,218人</strong><small>50.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>12,468人</strong><small>38.9%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳185人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>43.8億円</strong><small>1人当たり 11.9万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>38.1億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 502人（概算 1.4%）／2024→2025年 +102人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">石川中央</p><h3>内灘町</h3></div>
+<span class="badge">2050年は最大時の 76.2</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17365_内灘町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>26,987人</strong><small>2015年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>25,507人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>20,566人</strong><small>現在比 -19.4%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">住宅都市</span><span class="feature-tag">医療・教育</span><span class="feature-tag">砂丘地農業</span><span class="feature-tag">酪農</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>2.3%</strong><small>2025年・県内10位</small></div>
+<div><span>2050年シェア</span><strong>2.3%</strong><small>県人口に占める比重はおおむね横ばい</small></div>
+<div><span>65歳以上</span><strong>29.7% → 39.7%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>金沢通勤圏の住宅都市で、金沢医科大学・大学病院が医療、教育、雇用の大きな核となっている。</p>
+<p><strong>農林水産・観光：</strong>河北潟周辺の酪農や、砂丘地を利用した野菜・園芸農業が特徴。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">世界の凧の祭典</span><span class="local-chip event-chip">内灘町民夏まつり</span><span class="local-chip event-chip">サンセットブリッジ関連イベント</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">金沢医科大学</span><span class="local-chip school-chip">内灘高等学校</span><span class="local-chip school-chip">内灘中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>松村玲郎</strong>
+<small>キャスター</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>喜多形寛丈</strong>
+<small>ピアニスト・作編曲家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>上田樹</strong>
+<small>サッカー選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>坂上樹大</strong>
+<small>競輪選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>5区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>0</b></span>
+<span>地すべり <b>0</b></span>
+<span>急傾斜地 <b>5</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>1箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>0</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>1</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に19.4%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>25,507人</span>
+<span>19,130人</span>
+<span>12,754人</span>
+<span>6,377人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>25,507人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:11.623045%;" title="0～14歳：2,891人（11.6%）"></div><div class="age-segment age-working" style="height:58.690146%;" title="15～64歳：14,598人（58.7%）"><span>14,598人<br/><small>58.7%</small></span></div><div class="age-segment age-old" style="height:29.686809%;" title="65歳以上：7,384人（29.7%）"><span>7,384人<br/><small>29.7%</small></span></div><div class="age-segment age-unknown" style="height:2.485592%;" title="年齢不詳：634人（2.5%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>2,891人</strong><small>11.6%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>14,598人</strong><small>58.7%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>7,384人</strong><small>29.7%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>634人</strong><small>2.5%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>20,566人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:80.628847%;">
+<div class="age-segment age-young" style="height:9.262861%;" title="0～14歳：1,905人（9.3%）"></div><div class="age-segment age-working" style="height:51.011378%;" title="15～64歳：10,491人（51.0%）"><span>10,491人<br/><small>51.0%</small></span></div><div class="age-segment age-old" style="height:39.725761%;" title="65歳以上：8,170人（39.7%）"><span>8,170人<br/><small>39.7%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,905人</strong><small>9.3%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>10,491人</strong><small>51.0%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>8,170人</strong><small>39.7%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳634人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>25.6億円</strong><small>1人当たり 10.0万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>20.7億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 420人（概算 1.6%）</p>
+</article>
+</div></section><section class="region"><div class="region-title"><p class="eyebrow">REGION</p><h2>南加賀</h2><p>2025年人口 216,362人 → 2050年 170,248人。外国人住民は 6,986人。</p></div><div class="city-grid">
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">南加賀</p><h3>小松市</h3></div>
+<span class="badge">2050年は最大時の 79.0</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17203_小松市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>109,084人</strong><small>2005年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>103,332人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>86,175人</strong><small>現在比 -16.6%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">建設機械</span><span class="feature-tag">製造業</span><span class="feature-tag">空港・物流</span><span class="feature-tag">農業</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>9.5%</strong><small>2025年・県内3位</small></div>
+<div><span>2050年シェア</span><strong>9.6%</strong><small>県人口に占める比重はおおむね横ばい</small></div>
+<div><span>65歳以上</span><strong>29.7% → 36.6%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>県内有数の製造業都市。コマツ粟津工場、小松ウオール工業などの大規模事業所があり、建設機械、機械部品、繊維関連の裾野が広い。</p>
+<p><strong>農林水産・観光：</strong>米、トマト、たけのこなどの農業に加え、小松空港を生かした交流・物流機能を持つ。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">お旅まつり</span><span class="local-chip event-chip">小松市どんどんまつり</span><span class="local-chip event-chip">航空祭 in KOMATSU</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">公立小松大学</span><span class="local-chip school-chip">小松高等学校</span><span class="local-chip school-chip">小松工業高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>宮本三郎</strong>
+<small>洋画家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>一川保夫</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-business">経済</span>
+<strong>元谷外志雄</strong>
+<small>実業家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>島内宏明</strong>
+<small>プロ野球選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>260区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>181</b></span>
+<span>地すべり <b>13</b></span>
+<span>急傾斜地 <b>66</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>40箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>27</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>13</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に16.6%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>103,332人</span>
+<span>77,499人</span>
+<span>51,666人</span>
+<span>25,833人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>103,332人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:12.259627%;" title="0～14歳：12,502人（12.3%）"><span>12,502人<br/><small>12.3%</small></span></div><div class="age-segment age-working" style="height:58.082705%;" title="15～64歳：59,231人（58.1%）"><span>59,231人<br/><small>58.1%</small></span></div><div class="age-segment age-old" style="height:29.657668%;" title="65歳以上：30,244人（29.7%）"><span>30,244人<br/><small>29.7%</small></span></div><div class="age-segment age-unknown" style="height:1.311307%;" title="年齢不詳：1,355人（1.3%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>12,502人</strong><small>12.3%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>59,231人</strong><small>58.1%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>30,244人</strong><small>29.7%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>1,355人</strong><small>1.3%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>86,175人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:83.396237%;">
+<div class="age-segment age-young" style="height:10.977662%;" title="0～14歳：9,460人（11.0%）"></div><div class="age-segment age-working" style="height:52.414273%;" title="15～64歳：45,168人（52.4%）"><span>45,168人<br/><small>52.4%</small></span></div><div class="age-segment age-old" style="height:36.608065%;" title="65歳以上：31,547人（36.6%）"><span>31,547人<br/><small>36.6%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>9,460人</strong><small>11.0%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>45,168人</strong><small>52.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>31,547人</strong><small>36.6%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳1,355人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>166.5億円</strong><small>1人当たり 16.1万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>138.8億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 3,436人（概算 3.3%）／2024→2025年 +196人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">南加賀</p><h3>加賀市</h3></div>
+<span class="badge">2050年は最大時の 45.5</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17206_加賀市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>80,333人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>58,747人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>36,571人</strong><small>現在比 -37.7%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">温泉観光</span><span class="feature-tag">機械製造</span><span class="feature-tag">伝統工芸</span><span class="feature-tag">果樹</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>5.4%</strong><small>2025年・県内4位</small></div>
+<div><span>2050年シェア</span><strong>4.1%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>37.4% → 48.8%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>山代・山中・片山津温泉を中心とする観光と製造業が二本柱。大同工業の本社・工場、小松ウオールの工場などが立地し、山中漆器や九谷焼の文化もある。</p>
+<p><strong>農林水産・観光：</strong>米、なし、ぶどうなどの農業が行われ、温泉・食・工芸を組み合わせた観光産業が強い。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">山代大田楽</span><span class="local-chip event-chip">山中温泉こいこい祭</span><span class="local-chip event-chip">片山津温泉納涼花火</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">大聖寺高等学校</span><span class="local-chip school-chip">大聖寺実業高等学校</span><span class="local-chip school-chip">加賀高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：旧加賀市＋山中町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>ダンディ坂野</strong>
+<small>お笑いタレント</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>道場六三郎</strong>
+<small>料理人</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>深田久弥</strong>
+<small>作家・登山家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-academic">学術</span>
+<strong>中谷宇吉郎</strong>
+<small>物理学者</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>200区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>78</b></span>
+<span>地すべり <b>21</b></span>
+<span>急傾斜地 <b>101</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>42箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>22</b></span>
+<span>地すべり防止 <b>2</b></span>
+<span>急傾斜危険区域 <b>18</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に37.7%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>58,747人</span>
+<span>44,060人</span>
+<span>29,374人</span>
+<span>14,687人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>58,747人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:9.664684%;" title="0～14歳：5,655人（9.7%）"></div><div class="age-segment age-working" style="height:52.919059%;" title="15～64歳：30,964人（52.9%）"><span>30,964人<br/><small>52.9%</small></span></div><div class="age-segment age-old" style="height:37.416256%;" title="65歳以上：21,893人（37.4%）"><span>21,893人<br/><small>37.4%</small></span></div><div class="age-segment age-unknown" style="height:0.400020%;" title="年齢不詳：235人（0.4%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>5,655人</strong><small>9.7%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>30,964人</strong><small>52.9%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>21,893人</strong><small>37.4%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>235人</strong><small>0.4%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>36,571人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:62.251689%;">
+<div class="age-segment age-young" style="height:7.618058%;" title="0～14歳：2,786人（7.6%）"></div><div class="age-segment age-working" style="height:43.613792%;" title="15～64歳：15,950人（43.6%）"><span>15,950人<br/><small>43.6%</small></span></div><div class="age-segment age-old" style="height:48.768150%;" title="65歳以上：17,835人（48.8%）"><span>17,835人<br/><small>48.8%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>2,786人</strong><small>7.6%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>15,950人</strong><small>43.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>17,835人</strong><small>48.8%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳235人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>92.8億円</strong><small>1人当たり 15.8万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>57.8億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 1,735人（概算 3.0%）／2024→2025年 +162人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">南加賀</p><h3>能美市</h3></div>
+<span class="badge">2050年は最大時の 86.1</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17211_能美市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>48,881人</strong><small>2015年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>48,260人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>42,084人</strong><small>現在比 -12.8%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">先端製造業</span><span class="feature-tag">繊維・素材</span><span class="feature-tag">半導体</span><span class="feature-tag">外国人比率高め</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>4.4%</strong><small>2025年・県内6位</small></div>
+<div><span>2050年シェア</span><strong>4.7%</strong><small>県内人口の集中度は今後高まる見込み</small></div>
+<div><span>65歳以上</span><strong>26.8% → 36.4%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>製造業の比重が高く、小松マテーレ、加賀東芝エレクトロニクスなど、繊維・高機能素材・半導体関連の事業所が立地する。</p>
+<p><strong>農林水産・観光：</strong>加賀丸いも、米などが代表的。製造業の人手を外国人住民が支える面も大きい。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">九谷陶芸村まつり</span><span class="local-chip event-chip">根上り七夕まつり</span><span class="local-chip event-chip">辰口まつり</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">北陸先端科学技術大学院大学</span><span class="local-chip school-chip">寺井高等学校</span><span class="local-chip school-chip">辰口中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：根上町＋寺井町＋辰口町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>松井秀喜</strong>
+<small>元プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>森喜朗</strong>
+<small>政治家・元内閣総理大臣</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>京田陽太</strong>
+<small>プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>鈴木雄介</strong>
+<small>競歩選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>106区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>64</b></span>
+<span>地すべり <b>1</b></span>
+<span>急傾斜地 <b>41</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>6箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>2</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>4</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に12.8%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>48,260人</span>
+<span>36,195人</span>
+<span>24,130人</span>
+<span>12,065人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>48,260人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:12.872998%;" title="0～14歳：6,182人（12.9%）"><span>6,182人<br/><small>12.9%</small></span></div><div class="age-segment age-working" style="height:60.312767%;" title="15～64歳：28,964人（60.3%）"><span>28,964人<br/><small>60.3%</small></span></div><div class="age-segment age-old" style="height:26.814235%;" title="65歳以上：12,877人（26.8%）"><span>12,877人<br/><small>26.8%</small></span></div><div class="age-segment age-unknown" style="height:0.491090%;" title="年齢不詳：237人（0.5%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>6,182人</strong><small>12.9%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>28,964人</strong><small>60.3%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>12,877人</strong><small>26.8%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>237人</strong><small>0.5%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>42,084人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:87.202652%;">
+<div class="age-segment age-young" style="height:10.892501%;" title="0～14歳：4,584人（10.9%）"></div><div class="age-segment age-working" style="height:52.685106%;" title="15～64歳：22,172人（52.7%）"><span>22,172人<br/><small>52.7%</small></span></div><div class="age-segment age-old" style="height:36.422393%;" title="65歳以上：15,328人（36.4%）"><span>15,328人<br/><small>36.4%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>4,584人</strong><small>10.9%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>22,172人</strong><small>52.7%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>15,328人</strong><small>36.4%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳237人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>90.5億円</strong><small>1人当たり 18.8万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>78.9億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 1,746人（概算 3.6%）／2024→2025年 +171人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">南加賀</p><h3>川北町</h3></div>
+<span class="badge">2050年は最大時の 85.4</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17324_川北町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>6,347人</strong><small>2015年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>6,023人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>5,418人</strong><small>現在比 -10.0%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">小規模・工業集積</span><span class="feature-tag">電子部品</span><span class="feature-tag">手取川扇状地</span><span class="feature-tag">稲作</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>0.6%</strong><small>2025年・県内19位</small></div>
+<div><span>2050年シェア</span><strong>0.6%</strong><small>県人口に占める比重はおおむね横ばい</small></div>
+<div><span>65歳以上</span><strong>25.0% → 35.2%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>人口規模は県内最小だが、工業団地と大規模工場の影響が大きい。ジャパンディスプレイ石川工場が立地し、製造業の税収寄与が目立つ。</p>
+<p><strong>農林水産・観光：</strong>手取川扇状地の水田を中心に、米、大豆、野菜などを生産する。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">川北まつり・北國大花火川北大会</span><span class="local-chip event-chip">町民文化祭</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">川北中学校</span><span class="local-chip school-chip">川北小学校</span><span class="local-chip school-chip">中島小学校</span><span class="local-chip school-chip">橘小学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>角ゆりあ</strong>
+<small>アイドル</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>江戸満</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-academic">学術</span>
+<strong>曄道文芸</strong>
+<small>法学者</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>0区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>0</b></span>
+<span>地すべり <b>0</b></span>
+<span>急傾斜地 <b>0</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>0箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>0</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>0</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に10.0%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>6,023人</span>
+<span>4,517人</span>
+<span>3,012人</span>
+<span>1,506人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>6,023人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:14.129172%;" title="0～14歳：851人（14.1%）"><span>851人<br/><small>14.1%</small></span></div><div class="age-segment age-working" style="height:60.866678%;" title="15～64歳：3,666人（60.9%）"><span>3,666人<br/><small>60.9%</small></span></div><div class="age-segment age-old" style="height:25.004151%;" title="65歳以上：1,506人（25.0%）"><span>1,506人<br/><small>25.0%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>851人</strong><small>14.1%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>3,666人</strong><small>60.9%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>1,506人</strong><small>25.0%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>5,418人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:89.955172%;">
+<div class="age-segment age-young" style="height:11.221853%;" title="0～14歳：608人（11.2%）"></div><div class="age-segment age-working" style="height:53.599114%;" title="15～64歳：2,904人（53.6%）"><span>2,904人<br/><small>53.6%</small></span></div><div class="age-segment age-old" style="height:35.179033%;" title="65歳以上：1,906人（35.2%）"><span>1,906人<br/><small>35.2%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>608人</strong><small>11.2%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>2,904人</strong><small>53.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>1,906人</strong><small>35.2%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>13.1億円</strong><small>1人当たり 21.8万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>11.8億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 69人（概算 1.1%）</p>
+</article>
+</div></section><section class="region"><div class="region-title"><p class="eyebrow">REGION</p><h2>中能登</h2><p>2025年人口 105,683人 → 2050年 63,657人。外国人住民は 1,888人。</p></div><div class="city-grid">
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">中能登</p><h3>七尾市</h3></div>
+<span class="badge">2050年は最大時の 40.7</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17202_七尾市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>67,368人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>44,555人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>27,443人</strong><small>現在比 -38.4%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">能登の拠点</span><span class="feature-tag">港湾・水産</span><span class="feature-tag">和倉温泉</span><span class="feature-tag">食品製造</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>4.1%</strong><small>2025年・県内7位</small></div>
+<div><span>2050年シェア</span><strong>3.1%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>41.8% → 49.7%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>能登中部の商業・医療・港湾拠点。和倉温泉の観光、七尾港、水産加工が重要で、スギヨ、加賀屋、EIZO七尾工場などが立地する。</p>
+<p><strong>農林水産・観光：</strong>能登かき、水産物、能登島の野菜や果樹など、海と農業を組み合わせた産業構造。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">青柏祭</span><span class="local-chip event-chip">能登よさこい祭り</span><span class="local-chip event-chip">七尾港まつり</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">七尾高等学校</span><span class="local-chip school-chip">七尾東雲高等学校</span><span class="local-chip school-chip">田鶴浜高等学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2004年：旧七尾市＋田鶴浜町＋中島町＋能登島町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>輪島大士</strong>
+<small>大相撲力士・第54代横綱</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>辻口博啓</strong>
+<small>パティシエ</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>角中勝也</strong>
+<small>プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>瓦力</strong>
+<small>政治家</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>438区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>192</b></span>
+<span>地すべり <b>45</b></span>
+<span>急傾斜地 <b>201</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>77箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>15</b></span>
+<span>地すべり防止 <b>8</b></span>
+<span>急傾斜危険区域 <b>54</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に38.4%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>44,555人</span>
+<span>33,416人</span>
+<span>22,278人</span>
+<span>11,139人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>44,555人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:8.544426%;" title="0～14歳：3,761人（8.5%）"></div><div class="age-segment age-working" style="height:49.651271%;" title="15～64歳：21,855人（49.7%）"><span>21,855人<br/><small>49.7%</small></span></div><div class="age-segment age-old" style="height:41.804303%;" title="65歳以上：18,401人（41.8%）"><span>18,401人<br/><small>41.8%</small></span></div><div class="age-segment age-unknown" style="height:1.207496%;" title="年齢不詳：538人（1.2%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>3,761人</strong><small>8.5%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>21,855人</strong><small>49.7%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>18,401人</strong><small>41.8%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>538人</strong><small>1.2%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>27,443人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:61.593536%;">
+<div class="age-segment age-young" style="height:6.945305%;" title="0～14歳：1,906人（6.9%）"></div><div class="age-segment age-working" style="height:43.366250%;" title="15～64歳：11,901人（43.4%）"><span>11,901人<br/><small>43.4%</small></span></div><div class="age-segment age-old" style="height:49.688445%;" title="65歳以上：13,636人（49.7%）"><span>13,636人<br/><small>49.7%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,906人</strong><small>6.9%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>11,901人</strong><small>43.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>13,636人</strong><small>49.7%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳538人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>77.2億円</strong><small>1人当たり 17.3万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>47.6億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 913人（概算 2.0%）／2024→2025年 +98人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">中能登</p><h3>羽咋市</h3></div>
+<span class="badge">2050年は最大時の 41.7</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17207_羽咋市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>26,502人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>18,759人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>11,063人</strong><small>現在比 -41.0%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">能登の玄関口</span><span class="feature-tag">電子機器</span><span class="feature-tag">観光</span><span class="feature-tag">自然栽培</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.7%</strong><small>2025年・県内11位</small></div>
+<div><span>2050年シェア</span><strong>1.2%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>41.9% → 53.4%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>能登南部の交通・商業拠点。EIZO羽咋工場などの製造業があり、千里浜なぎさドライブウェイを中心とする観光も重要。</p>
+<p><strong>農林水産・観光：</strong>神子原米、自然栽培、いちじく、ぶどうなど、地域ブランド型の農業がみられる。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">唐戸山神事相撲</span><span class="local-chip event-chip">羽咋まつり</span><span class="local-chip event-chip">千里浜関連イベント</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">羽咋高等学校</span><span class="local-chip school-chip">羽咋工業高等学校</span><span class="local-chip school-chip">羽咋中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>折口信夫</strong>
+<small>民俗学者・歌人（羽咋ゆかり）</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>高野誠鮮</strong>
+<small>地域活性化活動家・科学ジャーナリスト</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>諏訪綾子</strong>
+<small>フードアーティスト</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>東善作</strong>
+<small>飛行家（羽咋ゆかり）</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>78区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>54</b></span>
+<span>地すべり <b>7</b></span>
+<span>急傾斜地 <b>17</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>37箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>29</b></span>
+<span>地すべり防止 <b>4</b></span>
+<span>急傾斜危険区域 <b>4</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に41.0%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>18,759人</span>
+<span>14,069人</span>
+<span>9,380人</span>
+<span>4,690人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>18,759人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:8.711230%;" title="0～14歳：1,629人（8.7%）"></div><div class="age-segment age-working" style="height:49.417112%;" title="15～64歳：9,241人（49.4%）"><span>9,241人<br/><small>49.4%</small></span></div><div class="age-segment age-old" style="height:41.871658%;" title="65歳以上：7,830人（41.9%）"><span>7,830人<br/><small>41.9%</small></span></div><div class="age-segment age-unknown" style="height:0.314516%;" title="年齢不詳：59人（0.3%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,629人</strong><small>8.7%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>9,241人</strong><small>49.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>7,830人</strong><small>41.9%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>59人</strong><small>0.3%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>11,063人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:58.974359%;">
+<div class="age-segment age-young" style="height:6.182771%;" title="0～14歳：684人（6.2%）"></div><div class="age-segment age-working" style="height:40.377836%;" title="15～64歳：4,467人（40.4%）"><span>4,467人<br/><small>40.4%</small></span></div><div class="age-segment age-old" style="height:53.439393%;" title="65歳以上：5,912人（53.4%）"><span>5,912人<br/><small>53.4%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>684人</strong><small>6.2%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>4,467人</strong><small>40.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>5,912人</strong><small>53.4%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳59人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>26.1億円</strong><small>1人当たり 13.9万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>15.4億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 267人（概算 1.4%）</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">中能登</p><h3>志賀町</h3></div>
+<span class="badge">2050年は最大時の 32.4</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17384_志賀町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>26,965人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>16,219人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>8,740人</strong><small>現在比 -46.1%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">原子力発電</span><span class="feature-tag">工業団地</span><span class="feature-tag">観光</span><span class="feature-tag">ころ柿</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.5%</strong><small>2025年・県内13位</small></div>
+<div><span>2050年シェア</span><strong>1.0%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>48.4% → 56.6%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>志賀原子力発電所と能登中核工業団地などが財政・雇用に影響する。製造業、観光、農林水産業が並存するが、原発関連収入は人口だけでは説明できない。</p>
+<p><strong>農林水産・観光：</strong>ころ柿、すいか、さつまいも、米のほか、沿岸漁業も地域産業を支える。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">西能登やっちゃ祭り</span><span class="local-chip event-chip">冨木八朔祭礼</span><span class="local-chip event-chip">志賀町祭</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">志賀高等学校</span><span class="local-chip school-chip">志賀中学校</span><span class="local-chip school-chip">富来中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：旧志賀町＋富来町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>小松辰雄</strong>
+<small>元プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>板倉美紀</strong>
+<small>陸上競技選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>坪野哲久</strong>
+<small>歌人</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>岡部文夫</strong>
+<small>歌人</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>245区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>130</b></span>
+<span>地すべり <b>15</b></span>
+<span>急傾斜地 <b>100</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>46箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>23</b></span>
+<span>地すべり防止 <b>1</b></span>
+<span>急傾斜危険区域 <b>22</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に46.1%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>16,219人</span>
+<span>12,164人</span>
+<span>8,110人</span>
+<span>4,055人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>16,219人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:7.356763%;" title="0～14歳：1,189人（7.4%）"></div><div class="age-segment age-working" style="height:44.245762%;" title="15～64歳：7,151人（44.2%）"><span>7,151人<br/><small>44.2%</small></span></div><div class="age-segment age-old" style="height:48.397476%;" title="65歳以上：7,822人（48.4%）"><span>7,822人<br/><small>48.4%</small></span></div><div class="age-segment age-unknown" style="height:0.351440%;" title="年齢不詳：57人（0.4%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,189人</strong><small>7.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>7,151人</strong><small>44.2%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>7,822人</strong><small>48.4%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>57人</strong><small>0.4%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>8,740人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:53.887416%;">
+<div class="age-segment age-young" style="height:6.029748%;" title="0～14歳：527人（6.0%）"></div><div class="age-segment age-working" style="height:37.391304%;" title="15～64歳：3,268人（37.4%）"><span>3,268人<br/><small>37.4%</small></span></div><div class="age-segment age-old" style="height:56.578947%;" title="65歳以上：4,945人（56.6%）"><span>4,945人<br/><small>56.6%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>527人</strong><small>6.0%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>3,268人</strong><small>37.4%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>4,945人</strong><small>56.6%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳57人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>39.4億円</strong><small>1人当たり 24.3万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>21.2億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 244人（概算 1.5%）</p>
+<div class="special-note">
+<strong>志賀町と原発関連収入について</strong>
+<p>志賀町は、志賀原子力発電所に関係する大規模償却資産の固定資産税の影響が大きい。2024年度の市町村税は <strong>39.4億円</strong> で、そのうち固定資産税は <strong>28.5億円</strong>、市町村税全体の <strong>72.3%</strong> を占める。住民税は <strong>8.3億円</strong>（21.1%）である。</p>
+<p>原発立地による収入は、単純に「人口が多いから税収が多い」という構造ではない。概念的には、①原子炉・建屋・機械設備にかかる固定資産税、②電力会社や関連企業にかかる法人関係の税、③電源立地地域対策交付金などの交付金、④運転・保守・協力会社・宿泊飲食などへの経済波及、という複数の経路で地域財政や地域経済に影響する。</p>
+<p>現在は原発が停止中でも、設備が残っている限り固定資産税は直ちにゼロにはならない。ただし、長期停止や設備の減価償却が進むと税収は徐々に低下しやすい。一方で、再稼働・廃炉・追加投資などのシナリオによって、税収や雇用、交付金の姿は大きく変わる。</p>
+<p>このため、本ページの「2050年税収単純試算」は、志賀町については特に参考値として見る必要がある。人口だけに連動させた試算では、原発関連の固定資産税や交付金の影響を十分に表せないためである。</p>
+</div>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">中能登</p><h3>宝達志水町</h3></div>
+<span class="badge">2050年は最大時の 38.1</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17386_宝達志水町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>16,409人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>10,986人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>6,245人</strong><small>現在比 -43.2%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">製造業</span><span class="feature-tag">農業</span><span class="feature-tag">千里浜</span><span class="feature-tag">いちじく</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.0%</strong><small>2025年・県内16位</small></div>
+<div><span>2050年シェア</span><strong>0.7%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>42.1% → 54.1%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>農業に加えて軸受関連などの製造業が立地。NTN宝達志水製作所は地域の代表的な事業所だが、2025年に生産機能の段階的移管が公表されており、今後の雇用構造には変化の可能性がある。</p>
+<p><strong>農林水産・観光：</strong>米、いちじく、ぶどうなどの農業と、千里浜周辺の観光が特徴。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">宝浪漫マラソン</span><span class="local-chip event-chip">宝達志水町民祭</span><span class="local-chip event-chip">千里浜関連イベント</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">宝達高等学校</span><span class="local-chip school-chip">宝達中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：志雄町＋押水町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>新川二朗</strong>
+<small>歌手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>萩山教嚴</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>石森大誠</strong>
+<small>プロ野球選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>中村和美</strong>
+<small>バレーボール選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>116区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>33</b></span>
+<span>地すべり <b>30</b></span>
+<span>急傾斜地 <b>53</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>30箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>16</b></span>
+<span>地すべり防止 <b>6</b></span>
+<span>急傾斜危険区域 <b>8</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に43.2%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>10,986人</span>
+<span>8,240人</span>
+<span>5,493人</span>
+<span>2,746人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>10,986人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:8.016762%;" title="0～14歳：880人（8.0%）"></div><div class="age-segment age-working" style="height:49.858796%;" title="15～64歳：5,473人（49.9%）"><span>5,473人<br/><small>49.9%</small></span></div><div class="age-segment age-old" style="height:42.124442%;" title="65歳以上：4,624人（42.1%）"><span>4,624人<br/><small>42.1%</small></span></div><div class="age-segment age-unknown" style="height:0.081922%;" title="年齢不詳：9人（0.1%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>880人</strong><small>8.0%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>5,473人</strong><small>49.9%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>4,624人</strong><small>42.1%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>9人</strong><small>0.1%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>6,245人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:56.845076%;">
+<div class="age-segment age-young" style="height:5.428343%;" title="0～14歳：339人（5.4%）"></div><div class="age-segment age-working" style="height:40.496397%;" title="15～64歳：2,529人（40.5%）"><span>2,529人<br/><small>40.5%</small></span></div><div class="age-segment age-old" style="height:54.075260%;" title="65歳以上：3,377人（54.1%）"><span>3,377人<br/><small>54.1%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>339人</strong><small>5.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>2,529人</strong><small>40.5%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>3,377人</strong><small>54.1%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳9人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>16.6億円</strong><small>1人当たり 15.1万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>9.4億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 256人（概算 2.3%）</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">中能登</p><h3>中能登町</h3></div>
+<span class="badge">2050年は最大時の 51.6</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17407_中能登町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>19,716人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>15,164人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>10,166人</strong><small>現在比 -33.0%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">繊維産業</span><span class="feature-tag">製造業</span><span class="feature-tag">農業</span><span class="feature-tag">歴史文化</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.4%</strong><small>2025年・県内14位</small></div>
+<div><span>2050年シェア</span><strong>1.1%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>38.9% → 46.3%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>能登の合繊織物産地の中心で、丸井織物などのテキスタイル企業が立地。製造業の比率が高く、地域雇用を支える。</p>
+<p><strong>農林水産・観光：</strong>米、野菜などの農業に加え、石動山などの歴史・文化資源を持つ。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">織姫夏ものがたり</span><span class="local-chip event-chip">おにぎりの里中能登まつり</span><span class="local-chip event-chip">石動山関連イベント</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">鹿西高等学校</span><span class="local-chip school-chip">中能登中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：鳥屋町＋鹿島町＋鹿西町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>近藤和也</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>神和住純</strong>
+<small>テニス選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>山下カズ子</strong>
+<small>将棋棋士</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>永源遙</strong>
+<small>プロレスラー</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>170区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>130</b></span>
+<span>地すべり <b>4</b></span>
+<span>急傾斜地 <b>36</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>49箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>47</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>2</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に33.0%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>15,164人</span>
+<span>11,373人</span>
+<span>7,582人</span>
+<span>3,791人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>15,164人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:10.602362%;" title="0～14歳：1,607人（10.6%）"></div><div class="age-segment age-working" style="height:50.491522%;" title="15～64歳：7,653人（50.5%）"><span>7,653人<br/><small>50.5%</small></span></div><div class="age-segment age-old" style="height:38.906116%;" title="65歳以上：5,897人（38.9%）"><span>5,897人<br/><small>38.9%</small></span></div><div class="age-segment age-unknown" style="height:0.046162%;" title="年齢不詳：7人（0.0%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,607人</strong><small>10.6%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>7,653人</strong><small>50.5%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>5,897人</strong><small>38.9%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>7人</strong><small>0.0%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>10,166人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:67.040359%;">
+<div class="age-segment age-young" style="height:9.453079%;" title="0～14歳：961人（9.5%）"></div><div class="age-segment age-working" style="height:44.275034%;" title="15～64歳：4,501人（44.3%）"><span>4,501人<br/><small>44.3%</small></span></div><div class="age-segment age-old" style="height:46.271887%;" title="65歳以上：4,704人（46.3%）"><span>4,704人<br/><small>46.3%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>961人</strong><small>9.5%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>4,501人</strong><small>44.3%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>4,704人</strong><small>46.3%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳7人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>16.6億円</strong><small>1人当たり 10.9万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>11.1億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 208人（概算 1.4%）</p>
+</article>
+</div></section><section class="region"><div class="region-title"><p class="eyebrow">REGION</p><h2>奥能登</h2><p>2025年人口 48,162人 → 2050年 25,739人。外国人住民は 508人。</p></div><div class="city-grid">
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">奥能登</p><h3>輪島市</h3></div>
+<span class="badge">2050年は最大時の 29.0</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17204_輪島市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>37,133人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>18,708人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>10,754人</strong><small>現在比 -42.5%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">輪島塗</span><span class="feature-tag">漁業</span><span class="feature-tag">観光</span><span class="feature-tag">震災復興</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.7%</strong><small>2025年・県内12位</small></div>
+<div><span>2050年シェア</span><strong>1.2%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>52.4% → 55.3%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>輪島塗を中心とする伝統工芸、朝市・観光、漁業、農林業が中心。大規模企業よりも地域の中小事業者と家族経営の比重が高い。</p>
+<p><strong>農林水産・観光：</strong>水産物、米、里山・里海の農林水産業が特徴。震災後は事業再開と担い手確保が大きな課題。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">輪島大祭</span><span class="local-chip event-chip">輪島市民まつり</span><span class="local-chip event-chip">あえの風冬まつり</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">輪島高等学校</span><span class="local-chip school-chip">門前高等学校</span><span class="local-chip school-chip">輪島中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2006年：旧輪島市＋門前町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>永井豪</strong>
+<small>漫画家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>前史雄</strong>
+<small>漆芸家・人間国宝</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>山中毅</strong>
+<small>競泳選手</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>北村茂男</strong>
+<small>政治家</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>966区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>374</b></span>
+<span>地すべり <b>217</b></span>
+<span>急傾斜地 <b>375</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>243箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>116</b></span>
+<span>地すべり防止 <b>49</b></span>
+<span>急傾斜危険区域 <b>78</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に42.5%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>18,708人</span>
+<span>14,031人</span>
+<span>9,354人</span>
+<span>4,677人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>18,708人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:6.133979%;" title="0～14歳：1,140人（6.1%）"></div><div class="age-segment age-working" style="height:41.474307%;" title="15～64歳：7,708人（41.5%）"><span>7,708人<br/><small>41.5%</small></span></div><div class="age-segment age-old" style="height:52.391714%;" title="65歳以上：9,737人（52.4%）"><span>9,737人<br/><small>52.4%</small></span></div><div class="age-segment age-unknown" style="height:0.657473%;" title="年齢不詳：123人（0.7%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>1,140人</strong><small>6.1%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>7,708人</strong><small>41.5%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>9,737人</strong><small>52.4%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>123人</strong><small>0.7%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>10,754人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:57.483430%;">
+<div class="age-segment age-young" style="height:5.821090%;" title="0～14歳：626人（5.8%）"></div><div class="age-segment age-working" style="height:38.832062%;" title="15～64歳：4,176人（38.8%）"><span>4,176人<br/><small>38.8%</small></span></div><div class="age-segment age-old" style="height:55.346848%;" title="65歳以上：5,952人（55.3%）"><span>5,952人<br/><small>55.3%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>626人</strong><small>5.8%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>4,176人</strong><small>38.8%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>5,952人</strong><small>55.3%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳123人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>20.5億円</strong><small>1人当たり 11.0万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>11.8億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 124人（概算 0.7%）／2024→2025年 +26人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">奥能登</p><h3>珠洲市</h3></div>
+<span class="badge">2050年は最大時の 23.6</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17205_珠洲市_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>21,580人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>9,812人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>5,083人</strong><small>現在比 -48.2%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">製塩</span><span class="feature-tag">珪藻土</span><span class="feature-tag">農林水産</span><span class="feature-tag">震災復興</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>0.9%</strong><small>2025年・県内17位</small></div>
+<div><span>2050年シェア</span><strong>0.6%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>55.3% → 61.8%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>製塩、珪藻土製品、観光、農林水産業が中心。人口規模は小さいが、能登独自の地域資源を活用した産業が多い。</p>
+<p><strong>農林水産・観光：</strong>米、豆類、野菜、漁業など。震災後の人口流出と地域産業の再建が将来人口を左右する。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">飯田燈籠山祭り</span><span class="local-chip event-chip">珠洲まつり</span><span class="local-chip event-chip">奥能登国際芸術祭</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">飯田高等学校</span><span class="local-chip school-chip">緑丘中学校</span><span class="local-chip school-chip">大谷小中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>井道千尋</strong>
+<small>将棋棋士</small>
+</div>
+<div class="person-card">
+<span class="person-category person-academic">学術</span>
+<strong>吉田豊</strong>
+<small>言語学者</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>千田一路</strong>
+<small>俳人</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>神保重吉</strong>
+<small>政治家</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>331区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>91</b></span>
+<span>地すべり <b>76</b></span>
+<span>急傾斜地 <b>164</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>110箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>54</b></span>
+<span>地すべり防止 <b>27</b></span>
+<span>急傾斜危険区域 <b>29</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に48.2%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>9,812人</span>
+<span>7,359人</span>
+<span>4,906人</span>
+<span>2,453人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>9,812人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:5.954448%;" title="0～14歳：583人（6.0%）"></div><div class="age-segment age-working" style="height:38.729445%;" title="15～64歳：3,792人（38.7%）"><span>3,792人<br/><small>38.7%</small></span></div><div class="age-segment age-old" style="height:55.316107%;" title="65歳以上：5,416人（55.3%）"><span>5,416人<br/><small>55.3%</small></span></div><div class="age-segment age-unknown" style="height:0.214024%;" title="年齢不詳：21人（0.2%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>583人</strong><small>6.0%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>3,792人</strong><small>38.7%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>5,416人</strong><small>55.3%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>21人</strong><small>0.2%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>5,083人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:51.803914%;">
+<div class="age-segment age-young" style="height:5.606925%;" title="0～14歳：285人（5.6%）"></div><div class="age-segment age-working" style="height:32.559512%;" title="15～64歳：1,655人（32.6%）"><span>1,655人<br/><small>32.6%</small></span></div><div class="age-segment age-old" style="height:61.833563%;" title="65歳以上：3,143人（61.8%）"><span>3,143人<br/><small>61.8%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>285人</strong><small>5.6%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>1,655人</strong><small>32.6%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>3,143人</strong><small>61.8%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳21人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>11.4億円</strong><small>1人当たり 11.6万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>5.9億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 88人（概算 0.9%）／2024→2025年 +14人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">奥能登</p><h3>穴水町</h3></div>
+<span class="badge">2050年は最大時の 30.9</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17461_穴水町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>12,053人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>6,655人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>3,729人</strong><small>現在比 -44.0%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">交通・生活拠点</span><span class="feature-tag">水産・養殖</span><span class="feature-tag">ワイン</span><span class="feature-tag">震災復興</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>0.6%</strong><small>2025年・県内18位</small></div>
+<div><span>2050年シェア</span><strong>0.4%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>52.4% → 56.3%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>奥能登への交通・医療・商業の中継拠点。水産、養殖、建設、サービス業の比重があり、震災復興事業の影響も大きい。</p>
+<p><strong>農林水産・観光：</strong>能登ワインの原料ぶどう、米、能登かきなど、農業と水産業を組み合わせた地域産業。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">雪中ジャンボかきまつり</span><span class="local-chip event-chip">長谷部まつり</span><span class="local-chip event-chip">ローエル祭</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">穴水高等学校</span><span class="local-chip school-chip">穴水中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>平成の大合併なし</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>遠藤聖大</strong>
+<small>大相撲力士</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>三枝こころ</strong>
+<small>ファッションモデル</small>
+</div>
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>坂本三十次</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-entertainment">芸能</span>
+<strong>三輪一雄</strong>
+<small>歌手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>220区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>93</b></span>
+<span>地すべり <b>12</b></span>
+<span>急傾斜地 <b>115</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>51箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>15</b></span>
+<span>地すべり防止 <b>0</b></span>
+<span>急傾斜危険区域 <b>36</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に44.0%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>6,655人</span>
+<span>4,991人</span>
+<span>3,328人</span>
+<span>1,664人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>6,655人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:6.447209%;" title="0～14歳：425人（6.4%）"></div><div class="age-segment age-working" style="height:41.125607%;" title="15～64歳：2,711人（41.1%）"><span>2,711人<br/><small>41.1%</small></span></div><div class="age-segment age-old" style="height:52.427184%;" title="65歳以上：3,456人（52.4%）"><span>3,456人<br/><small>52.4%</small></span></div><div class="age-segment age-unknown" style="height:0.946657%;" title="年齢不詳：63人（0.9%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>425人</strong><small>6.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>2,711人</strong><small>41.1%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>3,456人</strong><small>52.4%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>63人</strong><small>0.9%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>3,729人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:56.033058%;">
+<div class="age-segment age-young" style="height:5.551086%;" title="0～14歳：207人（5.6%）"></div><div class="age-segment age-working" style="height:38.160365%;" title="15～64歳：1,423人（38.2%）"><span>1,423人<br/><small>38.2%</small></span></div><div class="age-segment age-old" style="height:56.288549%;" title="65歳以上：2,099人（56.3%）"><span>2,099人<br/><small>56.3%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>207人</strong><small>5.6%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>1,423人</strong><small>38.2%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>2,099人</strong><small>56.3%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳63人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>10.2億円</strong><small>1人当たり 15.3万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>5.7億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 143人（概算 2.1%）／2024→2025年 -4人</p>
+</article>
+<article class="city-card">
+<div class="city-head">
+<div><p class="eyebrow">奥能登</p><h3>能登町</h3></div>
+<span class="badge">2050年は最大時の 24.1</span>
+</div>
+<div class="video-wrap">
+<video class="city-video" controls="" loop="" muted="" playsinline="" preload="metadata">
+<source src="videos/17463_能登町_人口ピラミッド_2020-2050.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="population-flow">
+<div><span>確認できる最大人口</span><strong>25,590人</strong><small>1995年</small></div>
+<div class="flow-arrow">→</div>
+<div><span>現在人口</span><strong>12,987人</strong><small>2025年10月</small></div>
+<div class="flow-arrow">→</div>
+<div><span>2050年人口</span><strong>6,173人</strong><small>現在比 -52.5%</small></div>
+</div>
+<section class="municipality-feature">
+<div class="feature-title-row">
+<h4>市町の特徴</h4>
+<div class="feature-tags"><span class="feature-tag">漁業</span><span class="feature-tag">農林業</span><span class="feature-tag">観光</span><span class="feature-tag">食品加工</span></div>
+</div>
+<div class="feature-stats">
+<div><span>県人口シェア</span><strong>1.2%</strong><small>2025年・県内15位</small></div>
+<div><span>2050年シェア</span><strong>0.7%</strong><small>県人口に占める比重は今後低下する見込み</small></div>
+<div><span>65歳以上</span><strong>54.7% → 62.9%</strong><small>2025年 → 2050年</small></div>
+</div>
+<div class="feature-copy">
+<p><strong>産業・企業：</strong>漁業、農林業、観光、食品加工が中心で、大規模企業より地域資源型の事業が多い。人口減少と高齢化が進み、担い手確保が重要。</p>
+<p><strong>農林水産・観光：</strong>いか、ぶりなどの水産物、米、ブルーベリー、きのこ類などが代表的。</p>
+</div>
+</section>
+<section class="local-context">
+<h4>イベント・学校・合併・防災指定</h4>
+<div class="local-info-grid">
+<div class="local-info-item">
+<span class="local-label">主なイベント</span>
+<div class="local-chips"><span class="local-chip event-chip">あばれ祭</span><span class="local-chip event-chip">ござれ祭り</span><span class="local-chip event-chip">松波人形キリコ祭り</span></div>
+<small>開催時期・実施状況は年度や災害復旧状況により変わる。</small>
+</div>
+<div class="local-info-item">
+<span class="local-label">主な学校</span>
+<div class="local-chips"><span class="local-chip school-chip">能登高等学校</span><span class="local-chip school-chip">能都中学校</span><span class="local-chip school-chip">柳田中学校</span><span class="local-chip school-chip">小木中学校</span></div>
+<small>大学・高校を優先し、該当しない町では中学校等を代表例として掲載。</small>
+</div>
+</div>
+<div class="merger-line">
+<span>市町村合併</span><strong>2005年：能都町＋柳田村＋内浦町</strong>
+</div>
+<section class="famous-people">
+<div class="famous-heading">
+<h4>出身・ゆかりの著名人</h4>
+<span>代表例</span>
+</div>
+<div class="people-grid">
+<div class="person-card">
+<span class="person-category person-politics">政治</span>
+<strong>益谷秀次</strong>
+<small>政治家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-academic">学術</span>
+<strong>西谷啓治</strong>
+<small>哲学者</small>
+</div>
+<div class="person-card">
+<span class="person-category person-culture">文化</span>
+<strong>津雲むつみ</strong>
+<small>漫画家</small>
+</div>
+<div class="person-card">
+<span class="person-category person-sports">スポーツ</span>
+<strong>岩下大輝</strong>
+<small>プロ野球選手</small>
+</div>
+</div>
+<p class="people-note">
+        現在の市町域（合併前の旧市町村を含む）の出身者を中心に掲載。
+        「ゆかり」と記した人物は、出生地以外でも地域との結び付きが特に強い人物。
+        肩書きは分かりやすく簡略化している。
+      </p>
+</section>
+
+<div class="hazard-panels">
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>土砂災害防止法</span>
+<strong>526区域</strong>
+</div>
+<div class="hazard-breakdown">
+<span>土石流 <b>240</b></span>
+<span>地すべり <b>68</b></span>
+<span>急傾斜地 <b>218</b></span>
+</div>
+<small>土砂災害（特別）警戒区域。2025年11月4日現在。</small>
+</div>
+<div class="hazard-panel">
+<div class="hazard-heading">
+<span>砂防三法の指定地</span>
+<strong>158箇所</strong>
+</div>
+<div class="hazard-breakdown">
+<span>砂防指定地 <b>53</b></span>
+<span>地すべり防止 <b>12</b></span>
+<span>急傾斜危険区域 <b>93</b></span>
+</div>
+<small>国土交通省所管の法指定地。2026年3月24日現在。</small>
+</div>
+</div>
+<p class="hazard-caution">
+        ※土砂災害警戒区域と砂防三法の指定地は、目的・指定基準・数え方が異なるため、件数を直接比較するものではない。
+      </p>
+</section>
+<h4 class="subhead">年齢3区分（総人数を反映・同じ基準線）</h4>
+<div class="age-side-chart">
+<div class="age-side-summary">
+<strong>2025年から2050年に52.5%減少</strong>
+<span>2本とも同じ縮尺・同じ基準線</span>
+</div>
+<div class="age-shared-frame">
+<div class="age-y-axis">
+<span>12,987人</span>
+<span>9,740人</span>
+<span>6,494人</span>
+<span>3,247人</span>
+<span>0人</span>
+</div>
+<div class="age-columns">
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>12,987人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:100.000000%;">
+<div class="age-segment age-young" style="height:6.407393%;" title="0～14歳：832人（6.4%）"></div><div class="age-segment age-working" style="height:38.844821%;" title="15～64歳：5,044人（38.8%）"><span>5,044人<br/><small>38.8%</small></span></div><div class="age-segment age-old" style="height:54.747786%;" title="65歳以上：7,109人（54.7%）"><span>7,109人<br/><small>54.7%</small></span></div><div class="age-segment age-unknown" style="height:0.015400%;" title="年齢不詳：2人（0.0%）"></div>
+</div>
+</div>
+<div class="aligned-year">2025年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>832人</strong><small>6.4%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>5,044人</strong><small>38.8%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>7,109人</strong><small>54.7%</small></li><li><i class="age-unknown"></i><span>年齢不詳</span><strong>2人</strong><small>0.0%</small></li></ul>
+</div>
+<div class="aligned-year-column">
+<div class="aligned-total">総人口 <strong>6,173人</strong></div>
+<div class="aligned-plot">
+<div class="aligned-bar" style="height:47.532148%;">
+<div class="age-segment age-young" style="height:5.070468%;" title="0～14歳：313人（5.1%）"></div><div class="age-segment age-working" style="height:32.010368%;" title="15～64歳：1,976人（32.0%）"><span>1,976人<br/><small>32.0%</small></span></div><div class="age-segment age-old" style="height:62.919164%;" title="65歳以上：3,884人（62.9%）"><span>3,884人<br/><small>62.9%</small></span></div>
+</div>
+</div>
+<div class="aligned-year">2050年</div>
+<ul class="aligned-breakdown"><li><i class="age-young"></i><span>0～14歳</span><strong>313人</strong><small>5.1%</small></li><li><i class="age-working"></i><span>15～64歳</span><strong>1,976人</strong><small>32.0%</small></li><li><i class="age-old"></i><span>65歳以上</span><strong>3,884人</strong><small>62.9%</small></li></ul>
+</div>
+</div>
+</div>
+<div class="age-chart-note">
+        棒の高さが総人口、色分けが年齢構成。2025年は年齢不詳2人を含む。
+      </div>
+</div>
+<div class="tax-row">
+<div><span>2024年度 市町村税</span><strong>14.9億円</strong><small>1人当たり 11.5万円</small></div>
+<div><span>2050年 税収単純試算</span><strong>7.1億円</strong><small>現在の1人当たり税収が続いた場合</small></div>
+</div>
+<p class="mini-note">外国人住民 153人（概算 1.2%）／2024→2025年 +17人</p>
+</article>
+</div></section>
+<section class="sources">
+<h2>出典と注記</h2>
+<ul>
+<li>過去人口：石川県統計書「国勢調査による市町別人口及び世帯数推移」。</li>
+<li>現在人口・年齢構成：石川県「年齢別推計人口（2025年10月1日現在推計）」。</li>
+<li>2050年人口・年齢構成：石川県「R5国立社会保障・人口問題研究所推計」。</li>
+<li>税収：石川県「市町財政状況資料集（令和6年度）」。</li>
+<li>外国人住民：石川県国際交流課の国籍別・地域別資料（2025年12月末）。</li>
+<li>2050年税収は公式推計ではなく、人口だけを連動させた単純試算。</li>
+<li>市町の産業・農林水産の特徴は、石川県・各市町・JA等の公開資料を基に、ページ用に簡潔に要約。</li><li>企業名は地域産業を説明する代表例であり、市町内の全企業や雇用規模の順位を示すものではない。</li><li>主な確認先：澁谷工業、アイオーデータ、コマツ、小松ウオール、PFU、EIZO、小松マテーレ、加賀東芝エレクトロニクス、大同工業、スギヨ、加賀屋、丸井織物、ジャパンディスプレイ、NTN、金沢工業大学、金沢医科大学の公式情報。</li><li>土砂災害（特別）警戒区域：石川県「土砂災害（特別）警戒区域指定状況」（2025年11月4日現在）。</li><li>砂防三法：石川県「土砂災害関係指定地一覧（国交省所管・2026年3月24日現在）」。</li><li>市町村合併：石川県「合併市町一覧表」。表示は主に平成の市町村合併を対象とした。</li><li>学校：石川県教育委員会の令和8年度公立学校一覧および各大学・自治体の公開情報から代表例を掲載。</li><li>イベント：石川県観光公式サイトおよび各市町の観光・イベント情報から代表例を掲載。開催状況は年度により異なる。</li><li>著名人：各市町・石川県の公式文化資料、名誉市民・偉人・アンバサダー等の紹介ページを優先して確認。</li><li>公式資料で一覧化されていない市町は、人物名鑑オンラインの市町別出身地情報等で補完。現在の市町域と合併前の旧市町村を含む。</li><li>肩書きは記事を読みやすくするため代表的な職業に簡略化。現職・所属・競技成績等は変わる場合がある。</li></ul>
+</section>
+<footer>更新版作成日：2026年7月18日</footer>
+</main>
+<script>
+const PLAYLIST = [{"label": "金沢市", "src": "videos/17201_金沢市_人口ピラミッド_2020-2050.mp4"}, {"label": "七尾市", "src": "videos/17202_七尾市_人口ピラミッド_2020-2050.mp4"}, {"label": "小松市", "src": "videos/17203_小松市_人口ピラミッド_2020-2050.mp4"}, {"label": "輪島市", "src": "videos/17204_輪島市_人口ピラミッド_2020-2050.mp4"}, {"label": "珠洲市", "src": "videos/17205_珠洲市_人口ピラミッド_2020-2050.mp4"}, {"label": "加賀市", "src": "videos/17206_加賀市_人口ピラミッド_2020-2050.mp4"}, {"label": "羽咋市", "src": "videos/17207_羽咋市_人口ピラミッド_2020-2050.mp4"}, {"label": "かほく市", "src": "videos/17209_かほく市_人口ピラミッド_2020-2050.mp4"}, {"label": "白山市", "src": "videos/17210_白山市_人口ピラミッド_2020-2050.mp4"}, {"label": "能美市", "src": "videos/17211_能美市_人口ピラミッド_2020-2050.mp4"}, {"label": "野々市市", "src": "videos/17212_野々市市_人口ピラミッド_2020-2050.mp4"}, {"label": "川北町", "src": "videos/17324_川北町_人口ピラミッド_2020-2050.mp4"}, {"label": "津幡町", "src": "videos/17361_津幡町_人口ピラミッド_2020-2050.mp4"}, {"label": "内灘町", "src": "videos/17365_内灘町_人口ピラミッド_2020-2050.mp4"}, {"label": "志賀町", "src": "videos/17384_志賀町_人口ピラミッド_2020-2050.mp4"}, {"label": "宝達志水町", "src": "videos/17386_宝達志水町_人口ピラミッド_2020-2050.mp4"}, {"label": "中能登町", "src": "videos/17407_中能登町_人口ピラミッド_2020-2050.mp4"}, {"label": "穴水町", "src": "videos/17461_穴水町_人口ピラミッド_2020-2050.mp4"}, {"label": "能登町", "src": "videos/17463_能登町_人口ピラミッド_2020-2050.mp4"}];
+const player=document.getElementById('mainPlayer');
+const nowLabel=document.getElementById('nowLabel');
+const list=document.getElementById('playlistList');
+let idx=0;
+function loadVideo(i, autoplay=true){
+  idx=(i+PLAYLIST.length)%PLAYLIST.length;
+  const item=PLAYLIST[idx];
+  player.src=item.src;
+  nowLabel.textContent=item.label;
+  [...list.children].forEach((li,n)=>li.style.fontWeight=n===idx?'800':'400');
+  if(autoplay) player.play().catch(()=>{});
+}
+PLAYLIST.forEach((item,i)=>{
+  const li=document.createElement('li');
+  li.textContent=item.label;
+  li.style.cursor='pointer';
+  li.onclick=()=>loadVideo(i,true);
+  list.appendChild(li);
+});
+player.addEventListener('ended',()=>loadVideo(idx+1,true));
+document.getElementById('nextBtn').onclick=()=>loadVideo(idx+1,true);
+document.getElementById('prevBtn').onclick=()=>loadVideo(idx-1,true);
+document.getElementById('muteBtn').onclick=()=>{player.muted=!player.muted;};
+loadVideo(0,true);
+
+const cityVideos=document.querySelectorAll('.city-video');
+if('IntersectionObserver' in window){
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting && entry.intersectionRatio>0.55) entry.target.play().catch(()=>{});
+      else entry.target.pause();
+    });
+  },{threshold:[0,.55,1]});
+  cityVideos.forEach(video=>observer.observe(video));
+}
+</script>
+</body></html>
