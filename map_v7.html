@@ -195,6 +195,14 @@ function addSearch(layer,property,label,color,zoom=17){
    layer,propertyName:property,textPlaceholder:label,
    marker:false,zoom,collapsed:window.innerWidth<700
  }).addTo(map);
+
+ // Leaflet Search は検索対象レイヤーを地図へ直接追加することがある。
+ // 検索データとしては保持しつつ、レイヤー一覧でOFFのものは初期表示しない。
+ if(map.hasLayer(layer)) map.removeLayer(layer);
+ setTimeout(()=>{
+   if(map.hasLayer(layer)) map.removeLayer(layer);
+ },0);
+
  const el=s._container||s.getContainer();
  const tag=document.createElement('span');
  tag.className='search-tag';
