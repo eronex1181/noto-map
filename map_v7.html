@@ -95,7 +95,12 @@ const kj1994=kjMap('03');
 
 const gsiPale=L.tileLayer(
  'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
- {minZoom:2,maxNativeZoom:18,maxZoom:19,opacity:.60,attribution:'© 国土地理院'}
+ {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
+);
+
+const gsiStd=L.tileLayer(
+ 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+ {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
 );
 
 // ---------- GSJ geology ----------
@@ -141,18 +146,19 @@ const tsunami=waterTile(
 );
 
 const baseMaps={
- '能登半島CS立体図':notoCS,
- '国土地理院 航空写真':gsiPhoto,
- '今昔マップ 金沢・富山 1909–1910年':kj1909,
- '今昔マップ 金沢・富山 1930年':kj1930,
- '今昔マップ 金沢・富山 1968–1969年':kj1968,
- '今昔マップ 金沢・富山 1981–1985年':kj1981,
- '今昔マップ 金沢・富山 1994–2001年':kj1994
+ '国土地理院（淡色）':gsiPale,
+ '国土地理院（標準）':gsiStd,
+ '国土地理院（航空写真）':gsiPhoto,
+ '今昔マップ 金沢・富山（1909～1910年）':kj1909,
+ '今昔マップ 金沢・富山（1930年）':kj1930,
+ '今昔マップ 金沢・富山（1968～1969年）':kj1968,
+ '今昔マップ 金沢・富山（1981～1985年）':kj1981,
+ '今昔マップ 金沢・富山（1994～2001年）':kj1994
 };
 
 const overlays={
- '国土地理院 淡色地図（透過）':gsiPale,
  '地質図 1/20万（シームレスV2・GSJ）':geology200k,
+ '能登半島CS立体図':notoCS,
  '① 洪水浸水想定区域（想定最大規模）':floodL2,
  '② 家屋倒壊等氾濫想定区域（氾濫流）':houseFlood,
  '③ 家屋倒壊等氾濫想定区域（河岸侵食）':houseErosion,
@@ -161,12 +167,13 @@ const overlays={
  '⑥ 津波浸水想定':tsunami
 };
 
-notoCS.addTo(map);
+// 千葉県版と同じく、淡色地図を初期ベースマップにする。
 gsiPale.addTo(map);
 
-const ctl=L.control.layers(baseMaps,overlays,{collapsed:window.innerWidth<700}).addTo(map);
-L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
+// レイヤー一覧は最初から展開。
+const ctl=L.control.layers(baseMaps,overlays,{collapsed:false}).addTo(map);
 
+L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
 // =====================================================
 // 国土基本図 1/2500 図郭（石川県）
@@ -218,7 +225,6 @@ fetchJson('ishikawa_kodokihonzu_2500.json')
   console.log(`石川県 国土基本図1/2500図郭：${data.features?.length||0}図郭を読込完了`);
 })
 .catch(err=>console.error('石川県 国土基本図1/2500図郭の読み込みに失敗:',err));
-
 
 // ---------- Helpers ----------
 function esc(v){
