@@ -46,7 +46,7 @@ html,body,#map{height:100%;margin:0}
 <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
-const map=L.map('map',{preferCanvas:true,maxZoom:19}).setView([37.20,136.90],10);
+const map=L.map('map',{preferCanvas:true,maxZoom:28}).setView([37.20,136.90],10);
 
 // ---------- Panes ----------
 map.createPane('geologyPane');
@@ -73,18 +73,18 @@ map.getPane('markersPane').style.zIndex=450;
 // ---------- Backgrounds ----------
 const notoCS=L.tileLayer(
  'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
- {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 林野庁'}
+ {minZoom:2,maxNativeZoom:18,maxZoom:28,attribution:'© 林野庁'}
 );
 
 const gsiPhoto=L.tileLayer(
  'https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
- {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
+ {minZoom:2,maxNativeZoom:18,maxZoom:28,attribution:'© 国土地理院'}
 );
 
 function kjMap(folder){
  return L.tileLayer(
    `https://ktgis.net/kjmapw/kjtilemap/kanazawa/${folder}/{z}/{x}/{-y}.png`,
-   {minZoom:8,maxNativeZoom:16,maxZoom:19,attribution:'今昔マップ on the web（谷 謙二）'}
+   {minZoom:8,maxNativeZoom:16,maxZoom:28,attribution:'今昔マップ on the web（谷 謙二）'}
  );
 }
 const kj1909=kjMap('2man');
@@ -95,12 +95,12 @@ const kj1994=kjMap('03');
 
 const gsiPale=L.tileLayer(
  'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
- {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
+ {minZoom:2,maxNativeZoom:18,maxZoom:28,attribution:'© 国土地理院'}
 );
 
 const gsiStd=L.tileLayer(
  'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
- {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
+ {minZoom:2,maxNativeZoom:18,maxZoom:28,attribution:'© 国土地理院'}
 );
 
 // ---------- GSJ geology ----------
@@ -120,7 +120,7 @@ const geology200k=L.tileLayer.wms(
 // ---------- Six water-hazard layers ----------
 function waterTile(url,opacity=.70){
  return L.tileLayer(url,{
-   minZoom:2,maxNativeZoom:17,maxZoom:19,
+   minZoom:2,maxNativeZoom:17,maxZoom:28,
    opacity,pane:'waterPane',
    attribution:'ハザードマップポータルサイト © 国土地理院'
  });
@@ -145,7 +145,9 @@ const tsunami=waterTile(
  'https://disaportaldata.gsi.go.jp/raster/04_tsunami_newlegend_data/{z}/{x}/{y}.png'
 );
 
-const baseMaps={
+// 背景地図もチェックボックス式にする。
+// 全部OFFにでき、1枚ONにすると他の背景地図は自動OFF。
+const backgroundMaps={
  '国土地理院（淡色）':gsiPale,
  '国土地理院（標準）':gsiStd,
  '国土地理院（航空写真）':gsiPhoto,
@@ -157,6 +159,7 @@ const baseMaps={
 };
 
 const overlays={
+ ...backgroundMaps,
  '地質図 1/20万（シームレスV2・GSJ）':geology200k,
  '能登半島CS立体図':notoCS,
  '① 洪水浸水想定区域（想定最大規模）':floodL2,
@@ -167,11 +170,24 @@ const overlays={
  '⑥ 津波浸水想定':tsunami
 };
 
-// 千葉県版と同じく、淡色地図を初期ベースマップにする。
+// 初期状態は淡色地図を表示。
+// このチェックを外せば、背景地図なしでも表示できる。
 gsiPale.addTo(map);
 
-// レイヤー一覧は最初から展開。
-const ctl=L.control.layers(baseMaps,overlays,{collapsed:false}).addTo(map);
+// baseMapsを空にして、背景地図もチェックボックス表示にする。
+const ctl=L.control.layers({},overlays,{collapsed:false}).addTo(map);
+
+// 背景地図は同時に1枚だけ。ただし全部OFFは可。
+const backgroundLayerSet=new Set(Object.values(backgroundMaps));
+let changingBackground=false;
+map.on('overlayadd',e=>{
+ if(changingBackground || !backgroundLayerSet.has(e.layer))return;
+ changingBackground=true;
+ backgroundLayerSet.forEach(layer=>{
+   if(layer!==e.layer && map.hasLayer(layer))map.removeLayer(layer);
+ });
+ changingBackground=false;
+});
 
 L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
 
