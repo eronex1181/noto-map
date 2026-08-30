@@ -1,107 +1,514 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <title>CS立体図 + 土砂災害警戒区域 + 大字境界 + 17000_1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <style>
-    html, body, #map { height: 100%; margin: 0; padding: 0; }
-    .legend {
-      background: #fff;
-      padding: 6px 10px;
-      line-height: 18px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    .legend i {
-      width: 18px;
-      height: 18px;
-      float: left;
-      margin-right: 8px;
-      opacity: 0.9;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>石川県・能登 防災Webマップ</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+<style>
+html,body,#map{height:100%;margin:0}
+#map{background:#f3f3f3}
+.leaflet-control-layers{max-height:76vh;overflow:auto}
+.search-tag{
+ display:inline-block;margin:6px;padding:2px 8px;border-radius:999px;
+ font-size:12px;color:#fff;background:#607d8b;font-weight:bold
+}
+.map-symbol-wrapper{background:transparent;border:none}
+.map-symbol{
+ width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+ border-radius:50%;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.55);
+ font-weight:bold
+}
+.shelter-symbol{background:#2e7d32;color:#fff}
+.pond-symbol{background:#1976d2;color:#fff}
+.land-symbol{background:#ef6c00;color:#fff}
+.bus-icon,.bear-icon{font-size:22px;text-align:center}
+.legend{
+ background:rgba(255,255,255,.96);padding:7px 10px;line-height:19px;
+ box-shadow:0 1px 7px rgba(0,0,0,.3);font-size:12px;max-height:46vh;overflow:auto
+}
+.legend i{display:inline-block;width:18px;height:12px;margin-right:6px;vertical-align:-1px}
+.legend-title{font-weight:bold;margin:2px 0 4px}
+</style>
 </head>
 <body>
-  <div id="map"></div>
+<div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    const map = L.map('map').setView([37.3, 136.9], 11);
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet-search@3.0.9/dist/leaflet-search.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.81.0/dist/L.Control.Locate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
 
-    const notoCS = L.tileLayer('https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: 'CS立体図 © <a href="https://rinya.maff.go.jp/">林野庁</a>'
-    }).addTo(map);
+<script>
+const map=L.map('map',{preferCanvas:true,maxZoom:19}).setView([37.20,136.90],10);
 
-    const gsiPale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      opacity: 0.6,
-      attribution: '© <a href="https://www.gsi.go.jp/">国土地理院</a>'
-    });
+// ---------- Panes ----------
+map.createPane('geologyPane');
+map.getPane('geologyPane').style.zIndex=405;
+map.getPane('geologyPane').style.pointerEvents='none';
 
-    const ctl = L.control.layers(
-      { 'Noto CSMap': notoCS },
-      { '淡色地図': gsiPale },
-      { collapsed: false }
-    ).addTo(map);
+map.createPane('waterPane');
+map.getPane('waterPane').style.zIndex=410;
+map.getPane('waterPane').style.pointerEvents='none';
 
-    L.control.scale({ position:'bottomleft', imperial:false }).addTo(map);
+map.createPane('boundaryPane');
+map.getPane('boundaryPane').style.zIndex=421;
 
-    // 土砂災害区域
-    fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/dosya.geojson')
-      .then(r => r.json())
-      .then(data => {
-        const zoneColor = v => (v == 1) ? '#ffff00' : (v == 2) ? '#ff0000' : '#888888';
-        const zoneName  = v => (v == 1) ? 'イエローゾーン' : (v == 2) ? 'レッドゾーン' : 'その他';
+map.createPane('zonesPane');
+map.getPane('zonesPane').style.zIndex=430;
 
-        const zoneLayer = L.geoJSON(data, {
-          style: f => ({ color: zoneColor(f.properties.A33_002), weight: 2, opacity: 0.9 }),
-          onEachFeature: (f, layer) => {
-            layer.bindPopup(`<b>${zoneName(f.properties.A33_002)}</b><br>箇所番号: ${f.properties.A33_004}<br>箇所名: ${f.properties.A33_005}`);
-          }
-        }).addTo(map);
+// 国土基本図1/2500図郭
+map.createPane('zukakuPane');
+map.getPane('zukakuPane').style.zIndex=447;
 
-        ctl.addOverlay(zoneLayer, '土砂災害警戒区域');
+map.createPane('markersPane');
+map.getPane('markersPane').style.zIndex=450;
+
+// ---------- Backgrounds ----------
+const notoCS=L.tileLayer(
+ 'https://rinya.geospatial.jp/tile/csmaptile_noto/{z}/{x}/{y}.png',
+ {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 林野庁'}
+);
+
+const gsiPhoto=L.tileLayer(
+ 'https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
+ {minZoom:2,maxNativeZoom:18,maxZoom:19,attribution:'© 国土地理院'}
+);
+
+function kjMap(folder){
+ return L.tileLayer(
+   `https://ktgis.net/kjmapw/kjtilemap/kanazawa/${folder}/{z}/{x}/{-y}.png`,
+   {minZoom:8,maxNativeZoom:16,maxZoom:19,attribution:'今昔マップ on the web（谷 謙二）'}
+ );
+}
+const kj1909=kjMap('2man');
+const kj1930=kjMap('00');
+const kj1968=kjMap('01');
+const kj1981=kjMap('02');
+const kj1994=kjMap('03');
+
+const gsiPale=L.tileLayer(
+ 'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+ {minZoom:2,maxNativeZoom:18,maxZoom:19,opacity:.60,attribution:'© 国土地理院'}
+);
+
+// ---------- GSJ geology ----------
+const geology200k=L.tileLayer.wms(
+ 'https://ows.gsj.jp/ows/seamlessv2',
+ {
+   layers:'seamlessV2_poly,seamlessV2_line,seamlessV2_poly_label',
+   format:'image/png',
+   transparent:true,
+   version:'1.1.1',
+   pane:'geologyPane',
+   opacity:.68,
+   attribution:'20万分の1日本シームレス地質図V2 © 産総研GSJ'
+ }
+);
+
+// ---------- Six water-hazard layers ----------
+function waterTile(url,opacity=.70){
+ return L.tileLayer(url,{
+   minZoom:2,maxNativeZoom:17,maxZoom:19,
+   opacity,pane:'waterPane',
+   attribution:'ハザードマップポータルサイト © 国土地理院'
+ });
+}
+
+const floodL2=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/01_flood_l2_shinsuishin_data/{z}/{x}/{y}.png'
+);
+const houseFlood=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/01_flood_l2_kaokutoukai_hanran_data/{z}/{x}/{y}.png',.75
+);
+const houseErosion=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/01_flood_l2_kaokutoukai_kagan_data/{z}/{x}/{y}.png',.75
+);
+const inlandFlood=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/02_naisui_data/{z}/{x}/{y}.png'
+);
+const stormSurge=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/03_hightide_l2_shinsuishin_data/{z}/{x}/{y}.png'
+);
+const tsunami=waterTile(
+ 'https://disaportaldata.gsi.go.jp/raster/04_tsunami_newlegend_data/{z}/{x}/{y}.png'
+);
+
+const baseMaps={
+ '能登半島CS立体図':notoCS,
+ '国土地理院 航空写真':gsiPhoto,
+ '今昔マップ 金沢・富山 1909–1910年':kj1909,
+ '今昔マップ 金沢・富山 1930年':kj1930,
+ '今昔マップ 金沢・富山 1968–1969年':kj1968,
+ '今昔マップ 金沢・富山 1981–1985年':kj1981,
+ '今昔マップ 金沢・富山 1994–2001年':kj1994
+};
+
+const overlays={
+ '国土地理院 淡色地図（透過）':gsiPale,
+ '地質図 1/20万（シームレスV2・GSJ）':geology200k,
+ '① 洪水浸水想定区域（想定最大規模）':floodL2,
+ '② 家屋倒壊等氾濫想定区域（氾濫流）':houseFlood,
+ '③ 家屋倒壊等氾濫想定区域（河岸侵食）':houseErosion,
+ '④ 内水（雨水出水）浸水想定区域':inlandFlood,
+ '⑤ 高潮浸水想定区域':stormSurge,
+ '⑥ 津波浸水想定':tsunami
+};
+
+notoCS.addTo(map);
+gsiPale.addTo(map);
+
+const ctl=L.control.layers(baseMaps,overlays,{collapsed:window.innerWidth<700}).addTo(map);
+L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
+
+
+// =====================================================
+// 国土基本図 1/2500 図郭（石川県）
+// ishikawa_kodokihonzu_2500.json は
+// JGD2011 / 平面直角座標系VII系（EPSG:6675）
+// Leaflet表示用にproj4jsでWGS84へ変換。
+// 初期OFF。ONにするとグレー枠で表示。
+// クリック／タップすると図郭番号を表示。
+// =====================================================
+
+proj4.defs(
+  'EPSG:6675',
+  '+proj=tmerc +lat_0=36 +lon_0=137.1666666666667 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs +type=crs'
+);
+
+function transformZukakuCoords(coords){
+  if(
+    Array.isArray(coords) &&
+    coords.length>=2 &&
+    typeof coords[0]==='number' &&
+    typeof coords[1]==='number'
+  ){
+    return proj4('EPSG:6675','EPSG:4326',[coords[0],coords[1]]);
+  }
+  return coords.map(transformZukakuCoords);
+}
+
+function convertZukakuToWgs84(gj){
+  const out=JSON.parse(JSON.stringify(gj));
+  (out.features||[]).forEach(f=>{
+    if(f.geometry?.coordinates){
+      f.geometry.coordinates=transformZukakuCoords(f.geometry.coordinates);
+    }
+  });
+  delete out.crs;
+  return out;
+}
+
+let zukaku2500Layer=null;
+
+fetchJson('ishikawa_kodokihonzu_2500.json')
+.then(raw=>{
+  const data=convertZukakuToWgs84(raw);
+
+  zukaku2500Layer=L.geoJSON(data,{
+    pane:'zukakuPane',
+    style:{
+      color:'#777',
+      weight:1,
+      opacity:.90,
+      fillColor:'#ffffff',
+      fillOpacity:.001
+    },
+    onEachFeature:(f,l)=>{
+      const p=f.properties||{};
+      const code=
+        p.sheet_code ||
+        p.SHEET_CODE ||
+        p.code ||
+        p.CODE ||
+        '不明';
+
+      l.bindPopup(
+        `<div style="font-size:13px;line-height:1.6;min-width:130px">`+
+        `<b>国土基本図 1/2500</b><br>`+
+        `図郭番号：<b>${esc(code)}</b>`+
+        `</div>`,
+        {maxWidth:260}
+      );
+
+      l.bindTooltip(`図郭番号：${esc(code)}`,{
+        sticky:true,
+        direction:'top',
+        opacity:.95
       });
 
-    // 大字境界
-    fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/kyoukai.geojson')
-      .then(r => r.json())
-      .then(data => {
-        const kyoukaiLayer = L.geoJSON(data, {
-          style: () => ({ color: 'green', weight: 2, dashArray: '4 4', opacity: 1 }),
-          onEachFeature: (f, layer) => {
-            layer.bindPopup(`<b>大字:</b> ${f.properties.大字 || '-'}<br><b>市町村:</b> ${f.properties.市町村 || '-'}`);
-          }
-        }).addTo(map);
-
-        ctl.addOverlay(kyoukaiLayer, '大字境界');
+      l.on({
+        mouseover:e=>{
+          e.target.setStyle({
+            color:'#555',
+            weight:2,
+            opacity:1,
+            fillOpacity:.015
+          });
+          if(e.target.bringToFront)e.target.bringToFront();
+        },
+        mouseout:e=>{
+          if(zukaku2500Layer)zukaku2500Layer.resetStyle(e.target);
+        }
       });
+    }
+  });
 
-    // ★ 新しいレイヤー（17000_1.geojson）
-    fetch('https://raw.githubusercontent.com/eronex1181/noto-map/main/17000_1.geojson')
-      .then(r => r.json())
-      .then(data => {
-        const newLayer = L.geoJSON(data, {
-          style: () => ({ color: 'blue', weight: 2, opacity: 0.7 }),
-          onEachFeature: (f, layer) => {
-            layer.bindPopup(`<b>属性情報:</b><br>${Object.entries(f.properties).map(([k,v]) => `${k}: ${v}`).join('<br>')}`);
-          }
-        }).addTo(map);
+  ctl.addOverlay(zukaku2500Layer,'国土基本図 1/2500 図郭');
+  console.log(`石川県 国土基本図1/2500図郭：${data.features?.length||0}図郭を読込完了`);
+})
+.catch(err=>{
+  console.error('石川県 国土基本図1/2500図郭の読み込みに失敗:',err);
+});
 
-        ctl.addOverlay(newLayer, '17000_1データ');
-      });
 
-    // 現在地表示
-    map.locate({ setView: false, watch: false });
-    map.on('locationfound', e => {
-      L.marker(e.latlng).addTo(map)
-        .bindPopup("現在地はこちらです").openPopup();
-    });
-    map.on('locationerror', e => {
-      console.warn("位置情報を取得できませんでした。", e);
-    });
-  </script>
+// ---------- Helpers ----------
+function esc(v){
+ return String(v??'').replace(/[&<>"']/g,c=>({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ }[c]));
+}
+
+function mapLinks(ll){
+ if(!ll)return '';
+ const lat=Number(ll.lat).toFixed(7), lng=Number(ll.lng).toFixed(7);
+ return `<div style="margin-top:8px;padding-top:7px;border-top:1px solid #ddd">
+ <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener"
+ style="display:inline-block;margin-right:6px;padding:5px 9px;border-radius:4px;background:#1976d2;color:#fff;text-decoration:none;font-weight:bold">📍 Googleマップ</a>
+ <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener"
+ style="display:inline-block;padding:5px 9px;border-radius:4px;background:#2e7d32;color:#fff;text-decoration:none;font-weight:bold">👁 ストリートビュー</a>
+ </div>`;
+}
+
+function propsHtml(title,p,ll){
+ const rows=Object.entries(p||{})
+  .filter(([k,v])=>!k.startsWith('_') && v!==null && v!==undefined && String(v).trim()!=='')
+  .map(([k,v])=>`<tr><th style="text-align:left;white-space:nowrap;padding-right:7px">${esc(k)}</th><td>${esc(v)}</td></tr>`)
+  .join('');
+ return `<b>${esc(title)}</b><div style="max-height:230px;overflow:auto"><table>${rows}</table></div>${mapLinks(ll)}`;
+}
+
+function addSearch(layer,property,label,color,zoom=17){
+ if(!L.Control.Search)return;
+ const s=new L.Control.Search({
+   layer,propertyName:property,textPlaceholder:label,
+   marker:false,zoom,collapsed:window.innerWidth<700
+ }).addTo(map);
+
+ // Leaflet Search は検索対象レイヤーを地図へ直接追加することがある。
+ // 検索データとしては保持しつつ、レイヤー一覧でOFFのものは初期表示しない。
+ if(map.hasLayer(layer)) map.removeLayer(layer);
+ setTimeout(()=>{
+   if(map.hasLayer(layer)) map.removeLayer(layer);
+ },0);
+
+ const el=s._container||s.getContainer();
+ const tag=document.createElement('span');
+ tag.className='search-tag';
+ tag.style.background=color;
+ tag.textContent=label;
+ (el.querySelector('form')||el).insertBefore(tag,el.firstChild);
+ s.on('search:locationfound',e=>{
+   if(e.layer?.getBounds) map.fitBounds(e.layer.getBounds(),{maxZoom:zoom,padding:[20,20]});
+   else if(e.latlng) map.setView(e.latlng,zoom);
+   if(e.layer?.openPopup)e.layer.openPopup();
+ });
+}
+
+function clusterLayer(geo,disableZoom=16){
+ const cluster=L.markerClusterGroup({
+   disableClusteringAtZoom:disableZoom,
+   spiderfyOnMaxZoom:true,
+   showCoverageOnHover:false
+ });
+ cluster.addLayer(geo);
+ return cluster;
+}
+
+async function fetchJson(file){
+ const r=await fetch('./'+encodeURIComponent(file),{cache:'no-store'});
+ if(!r.ok)throw new Error(file+' HTTP '+r.status);
+ return r.json();
+}
+
+// ---------- Oaza boundary ----------
+fetchJson('kyoukai.geojson').then(data=>{
+ const layer=L.geoJSON(data,{
+   pane:'boundaryPane',
+   style:{color:'#2e7d32',weight:1.3,dashArray:'4,4',fillOpacity:0},
+   onEachFeature:(f,l)=>{
+     const p=f.properties||{};
+     p._search=(p['大字']||'')+' '+(p['市町村']||'');
+     const c=l.getBounds?l.getBounds().getCenter():null;
+     l.bindPopup(propsHtml('大字境界',p,c));
+   }
+ });
+ ctl.addOverlay(layer,'大字境界');
+ addSearch(layer,'_search','🗺 大字','#2e7d32',15);
+}).catch(console.error);
+
+// ---------- Shelter ----------
+fetchJson('17000_1.geojson').then(data=>{
+ const icon=L.divIcon({
+   html:'<div class="map-symbol shelter-symbol">避</div>',
+   className:'map-symbol-wrapper',iconSize:[30,30],iconAnchor:[15,15]
+ });
+ const geo=L.geoJSON(data,{
+   pane:'markersPane',
+   pointToLayer:(f,ll)=>{
+     const p=f.properties||{};
+     p._search=p['施設・場所名']||p['名称']||'';
+     return L.marker(ll,{icon,title:p._search});
+   },
+   onEachFeature:(f,l)=>l.bindPopup(propsHtml('指定避難場所',f.properties,l.getLatLng()))
+ });
+ ctl.addOverlay(clusterLayer(geo),'指定避難場所');
+ addSearch(geo,'_search','🏫 避難所','#388e3c',17);
+}).catch(console.error);
+
+// ---------- Ponds ----------
+fetchJson('ため池.geojson').then(data=>{
+ const icon=L.divIcon({
+   html:'<div class="map-symbol pond-symbol">💧</div>',
+   className:'map-symbol-wrapper',iconSize:[30,30],iconAnchor:[15,15]
+ });
+ const geo=L.geoJSON(data,{
+   pane:'markersPane',
+   pointToLayer:(f,ll)=>{
+     const p=f.properties||{};
+     p._search=p.name||p['名称']||p.Name||'';
+     return L.marker(ll,{icon,title:p._search});
+   },
+   onEachFeature:(f,l)=>l.bindPopup(propsHtml('ため池',f.properties,l.getLatLng()))
+ });
+ ctl.addOverlay(clusterLayer(geo),'ため池');
+ addSearch(geo,'_search','💧 ため池','#1976d2',18);
+}).catch(console.error);
+
+// ---------- Bus stops ----------
+fetchJson('P11-22_17.geojson').then(data=>{
+ const icon=L.divIcon({html:'🚌',className:'bus-icon',iconSize:[28,28],iconAnchor:[14,14]});
+ const geo=L.geoJSON(data,{
+   pane:'markersPane',
+   pointToLayer:(f,ll)=>{
+     const p=f.properties||{};
+     const keys=['名称','停留所名','バス停名','name','Name'];
+     p._search=keys.map(k=>p[k]).find(Boolean)||'';
+     return L.marker(ll,{icon,title:p._search});
+   },
+   onEachFeature:(f,l)=>l.bindPopup(propsHtml('バス停（令和4年）',f.properties,l.getLatLng()))
+ });
+ ctl.addOverlay(clusterLayer(geo),'バス停（令和4年）');
+ addSearch(geo,'_search','🚌 バス停','#6a1b9a',18);
+}).catch(console.error);
+
+// ---------- Land price ----------
+fetchJson('石川地価2025.geojson').then(data=>{
+ const icon=L.divIcon({
+   html:'<div class="map-symbol land-symbol">¥</div>',
+   className:'map-symbol-wrapper',iconSize:[30,30],iconAnchor:[15,15]
+ });
+ const geo=L.geoJSON(data,{
+   pane:'markersPane',
+   pointToLayer:(f,ll)=>L.marker(ll,{icon}),
+   onEachFeature:(f,l)=>l.bindPopup(propsHtml('地価調査（2025年・石川）',f.properties,l.getLatLng()))
+ });
+ ctl.addOverlay(clusterLayer(geo),'地価調査（2025年・石川）');
+}).catch(console.error);
+
+// ---------- Bear sightings ----------
+fetchJson('R7石川熊.geojson').then(data=>{
+ const icon=L.divIcon({html:'🐻',className:'bear-icon',iconSize:[28,28],iconAnchor:[14,14]});
+ const geo=L.geoJSON(data,{
+   pane:'markersPane',
+   pointToLayer:(f,ll)=>L.marker(ll,{icon}),
+   onEachFeature:(f,l)=>l.bindPopup(propsHtml('くま目撃情報（2025年）',f.properties,l.getLatLng()))
+ });
+ ctl.addOverlay(clusterLayer(geo,17),'くま目撃情報（2025年）');
+}).catch(console.error);
+
+// ---------- Large-scale fill ----------
+fetchJson('A54-23_17.geojson').then(data=>{
+ const layer=L.geoJSON(data,{
+   pane:'zonesPane',
+   style:f=>{
+     const v=String(f.properties?.A54_001??'');
+     const color=v==='1'?'#43a047':v==='2'?'#fb8c00':v==='9'?'#8e24aa':'#757575';
+     return {color,weight:2,fillColor:color,fillOpacity:.30};
+   },
+   onEachFeature:(f,l)=>{
+     const c=l.getBounds?l.getBounds().getCenter():null;
+     l.bindPopup(propsHtml('大規模盛土造成地（2023年）',f.properties,c));
+   }
+ });
+ ctl.addOverlay(layer,'大規模盛土造成地（2023年）');
+}).catch(console.error);
+
+// ---------- Landslide hazard zones ----------
+fetchJson('dosya.geojson').then(data=>{
+ const zoneName=v=>String(v)==='1'?'土砂災害警戒区域（イエローゾーン）':
+                         String(v)==='2'?'土砂災害特別警戒区域（レッドゾーン）':'土砂災害区域';
+ const danger=L.geoJSON(data,{
+   pane:'zonesPane',
+   style:f=>{
+     const v=String(f.properties?.A33_002??'');
+     const c=v==='1'?'#ffff00':v==='2'?'#ff0000':'#888';
+     return {color:c,weight:1.8,opacity:.95,fillColor:c,fillOpacity:.28};
+   },
+   onEachFeature:(f,l)=>{
+     const p=f.properties||{};
+     p._search=`${p.A33_004||''} ${p.A33_005||''} ${p.A33_009||''}`.trim();
+     const c=l.getBounds?l.getBounds().getCenter():null;
+     l.bindPopup(
+       `<b>${zoneName(p.A33_002)}</b><br>`+
+       `<b>箇所番号:</b> ${esc(p.A33_004||'-')}<br>`+
+       `<b>箇所名:</b> ${esc(p.A33_005||'-')}`+
+       `${p.A33_009?`<br><b>市町村:</b> ${esc(p.A33_009)}`:''}`+
+       mapLinks(c)
+     );
+   }
+ }).addTo(map);
+ ctl.addOverlay(danger,'土砂災害警戒区域・特別警戒区域');
+ addSearch(danger,'_search','⚠️ 土砂災害','#e53935',16);
+}).catch(console.error);
+
+// ---------- Locate ----------
+if(L.control.locate){
+ L.control.locate({
+   position:'topleft',
+   flyTo:true,
+   keepCurrentZoomLevel:false,
+   strings:{title:'現在地を表示'},
+   locateOptions:{enableHighAccuracy:true}
+ }).addTo(map);
+}
+
+// ---------- Legend ----------
+const legend=L.control({position:'bottomright'});
+legend.onAdd=()=>{
+ const d=L.DomUtil.create('div','legend');
+ d.innerHTML=
+  '<div class="legend-title">土砂災害</div>'+
+  '<i style="background:#ffff00"></i>警戒区域（イエロー）<br>'+
+  '<i style="background:#ff0000"></i>特別警戒区域（レッド）<br>'+
+  '<hr style="border:0;border-top:1px solid #ccc">'+
+  '<div class="legend-title">水害レイヤー</div>'+
+  '① 洪水浸水想定区域<br>'+
+  '② 家屋倒壊（氾濫流）<br>'+
+  '③ 家屋倒壊（河岸侵食）<br>'+
+  '④ 内水浸水想定区域<br>'+
+  '⑤ 高潮浸水想定区域<br>'+
+  '⑥ 津波浸水想定';
+ return d;
+};
+legend.addTo(map);
+</script>
 </body>
 </html>
