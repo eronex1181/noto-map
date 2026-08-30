@@ -63,6 +63,10 @@ map.getPane('boundaryPane').style.zIndex=421;
 map.createPane('zonesPane');
 map.getPane('zonesPane').style.zIndex=430;
 
+// 国土基本図1/2500図郭
+map.createPane('zukakuPane');
+map.getPane('zukakuPane').style.zIndex=447;
+
 map.createPane('markersPane');
 map.getPane('markersPane').style.zIndex=450;
 
@@ -162,6 +166,59 @@ gsiPale.addTo(map);
 
 const ctl=L.control.layers(baseMaps,overlays,{collapsed:window.innerWidth<700}).addTo(map);
 L.control.scale({position:'bottomleft',imperial:false}).addTo(map);
+
+
+// =====================================================
+// 国土基本図 1/2500 図郭（石川県）
+// GeoJSONはWGS84（EPSG:4326）へ変換済み。
+// 初期OFF。ONでグレー枠表示、クリック／タップで図郭番号。
+// =====================================================
+let zukaku2500Layer=null;
+
+fetchJson('ishikawa_kodokihonzu_2500.json')
+.then(data=>{
+  zukaku2500Layer=L.geoJSON(data,{
+    pane:'zukakuPane',
+    style:{
+      color:'#777',
+      weight:1,
+      opacity:.90,
+      fillColor:'#ffffff',
+      fillOpacity:.001
+    },
+    onEachFeature:(f,l)=>{
+      const p=f.properties||{};
+      const code=p.sheet_code||p.SHEET_CODE||p.code||p.CODE||'不明';
+
+      l.bindPopup(
+        `<div style="font-size:13px;line-height:1.6;min-width:130px">`+
+        `<b>国土基本図 1/2500</b><br>`+
+        `図郭番号：<b>${esc(code)}</b>`+
+        `</div>`,
+        {maxWidth:260}
+      );
+
+      l.bindTooltip(`図郭番号：${esc(code)}`,{
+        sticky:true,direction:'top',opacity:.95
+      });
+
+      l.on({
+        mouseover:e=>{
+          e.target.setStyle({color:'#555',weight:2,opacity:1,fillOpacity:.015});
+          if(e.target.bringToFront)e.target.bringToFront();
+        },
+        mouseout:e=>{
+          if(zukaku2500Layer)zukaku2500Layer.resetStyle(e.target);
+        }
+      });
+    }
+  });
+
+  ctl.addOverlay(zukaku2500Layer,'国土基本図 1/2500 図郭');
+  console.log(`石川県 国土基本図1/2500図郭：${data.features?.length||0}図郭を読込完了`);
+})
+.catch(err=>console.error('石川県 国土基本図1/2500図郭の読み込みに失敗:',err));
+
 
 // ---------- Helpers ----------
 function esc(v){
